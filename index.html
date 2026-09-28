@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D World News Broadcast Studio HD</title>
+    <title>3D World HD Globe Background</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Three.js Library for 3D Globe -->
@@ -22,7 +22,7 @@
             width: 100%;
             height: 100%;
             overflow: hidden;
-            background-color: #030712;
+            background-color: #020617;
             font-family: 'Inter', 'Noto Sans Arabic', sans-serif;
             color: #fff;
             user-select: none;
@@ -36,9 +36,8 @@
         .studio-container {
             width: 100vw;
             height: 100vh;
-            max-width: 100%;
             position: relative;
-            background: radial-gradient(circle at center, #0f172a 0%, #030712 85%);
+            background: radial-gradient(circle at center, #0b1528 0%, #020617 85%);
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -52,9 +51,9 @@
             width: 100%;
             height: 100%;
             background-image: 
-                linear-gradient(to right, rgba(14, 165, 233, 0.05) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(14, 165, 233, 0.05) 1px, transparent 1px);
-            background-size: 40px 40px;
+                linear-gradient(to right, rgba(14, 165, 233, 0.04) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(14, 165, 233, 0.04) 1px, transparent 1px);
+            background-size: 50px 50px;
             pointer-events: none;
             z-index: 1;
         }
@@ -64,10 +63,10 @@
             position: absolute;
             top: -10%;
             left: 5%;
-            width: 500px;
-            height: 500px;
+            width: 600px;
+            height: 600px;
             background: radial-gradient(circle, rgba(14, 165, 233, 0.15) 0%, rgba(0, 0, 0, 0) 70%);
-            filter: blur(40px);
+            filter: blur(50px);
             pointer-events: none;
             z-index: 1;
         }
@@ -76,43 +75,12 @@
             position: absolute;
             top: -10%;
             right: 5%;
-            width: 500px;
-            height: 500px;
+            width: 600px;
+            height: 600px;
             background: radial-gradient(circle, rgba(234, 179, 8, 0.12) 0%, rgba(0, 0, 0, 0) 70%);
-            filter: blur(40px);
+            filter: blur(50px);
             pointer-events: none;
             z-index: 1;
-        }
-
-        /* HUD Glassmorphism */
-        .glass-panel {
-            background: rgba(15, 23, 42, 0.65);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(56, 189, 248, 0.2);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-        }
-
-        .glass-gold {
-            background: rgba(20, 16, 8, 0.65);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(234, 179, 8, 0.3);
-        }
-
-        /* Ticker Marquee Animation */
-        @keyframes marquee {
-            0% { transform: translateX(100%); }
-            100% { transform: translateX(-100%); }
-        }
-
-        .animate-marquee {
-            display: inline-block;
-            white-space: nowrap;
-            animation: marquee 35s linear infinite;
-        }
-
-        .animate-marquee:hover {
-            animation-play-state: paused;
         }
 
         /* Canvas container */
@@ -143,25 +111,19 @@
             to { transform: translate(-50%, -50%) rotate(360deg); }
         }
 
-        /* Scanline Effect */
-        .scanline {
-            width: 100%;
-            height: 100%;
-            height: 3px;
-            background: rgba(56, 189, 248, 0.1);
-            position: absolute;
-            z-index: 10;
-            top: 0;
-            left: 0;
-            animation: scanline 8s linear infinite;
-            pointer-events: none;
+        /* Glass HUD Panel */
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
         }
 
-        @keyframes scanline {
-            0% { top: 0%; opacity: 0; }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
-            100% { top: 100%; opacity: 0; }
+        .glass-gold {
+            background: rgba(20, 16, 8, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(234, 179, 8, 0.35);
         }
     </style>
 </head>
@@ -170,80 +132,46 @@
         
         <!-- Tech grid background -->
         <div class="tech-grid"></div>
-        <div class="scanline"></div>
         <div class="flare-left"></div>
         <div class="flare-right"></div>
 
-        <!-- Decorative Ambient HUD Rings around center Earth -->
-        <div class="center-ring w-[650px] h-[650px] md:w-[750px] md:h-[750px] border-cyan-500/20"></div>
-        <div class="center-ring w-[700px] h-[700px] md:w-[820px] md:h-[820px] border-yellow-500/10" style="animation-direction: reverse; animation-duration: 90s;"></div>
+        <!-- Ambient HUD Rings around center Globe -->
+        <div class="center-ring w-[650px] h-[650px] md:w-[780px] md:h-[780px] border-cyan-500/25"></div>
+        <div class="center-ring w-[700px] h-[700px] md:w-[840px] md:h-[840px] border-amber-500/15" style="animation-direction: reverse; animation-duration: 90s;"></div>
 
         <!-- 3D Globe Canvas -->
         <div id="canvas-container"></div>
 
-        <!-- TOP HEADER HUD (TV NEWS OVERLAY) -->
-        <header class="relative z-20 flex justify-between items-center px-6 py-4 glass-panel border-b border-cyan-500/30 m-4 rounded-xl">
-            <!-- Left Branding -->
-            <div class="flex items-center gap-4">
-                <div class="bg-red-600 text-white font-extrabold px-3 py-1 rounded text-xs tracking-widest animate-pulse flex items-center gap-2">
-                    <span class="w-2 h-2 rounded-full bg-white inline-block"></span> LIVE
-                </div>
-                <div>
-                    <h1 class="text-xl md:text-2xl font-black font-orbitron text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-sky-200 to-yellow-400 tracking-wider">
-                        NEWS TV STUDIO
-                    </h1>
-                    <p class="text-xs text-cyan-300/80 font-medium tracking-widest uppercase">ERBIL BROADCAST CENTER • Ultra-HD 3184x1080</p>
-                </div>
+        <!-- MINIMAL TOP OVERLAY FOR GLOBE CONTROL -->
+        <div class="relative z-20 flex justify-between items-center px-6 py-3 m-4">
+            <div class="glass-panel px-4 py-2 rounded-xl border border-cyan-500/30 flex items-center gap-3">
+                <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping"></span>
+                <span class="font-orbitron text-xs text-cyan-200 tracking-wider">3184 × 1080 ULTRA-HD GLOBE</span>
             </div>
-
-            <!-- Middle Quick Stats / Kurdish Title -->
-            <div class="hidden lg:flex items-center gap-8 text-xs font-mono text-cyan-200">
-                <div class="text-center px-3 py-1 rounded bg-cyan-950/40 border border-cyan-800/40">
-                    <div class="text-gray-400 text-[10px]">GLOBAL SATELLITE</div>
-                    <div class="text-emerald-400 font-bold">ONLINE 100%</div>
-                </div>
-                <div class="text-center px-3 py-1 rounded bg-cyan-950/40 border border-cyan-800/40">
-                    <div class="text-gray-400 text-[10px]">REGISTERED BORDERS</div>
-                    <div class="text-yellow-400 font-bold">193+ NATIONS</div>
-                </div>
-                <div class="text-right">
-                    <div class="text-lg font-bold text-amber-400 font-orbitron" dir="rtl">تۆڕی هەواڵی جیهانی</div>
-                    <div class="text-[10px] text-gray-300">KURDISH GLOBAL NEWS NETWORK</div>
-                </div>
-            </div>
-
-            <!-- Right Date & Time Widget -->
-            <div class="flex items-center gap-4">
-                <div class="text-right">
-                    <div id="live-clock" class="text-xl md:text-2xl font-bold font-orbitron text-cyan-400 tracking-wider">00:00:00 UTC</div>
-                    <div id="live-date" class="text-xs text-gray-400 font-medium">Loading Date...</div>
-                </div>
-                <button id="toggle-rotation" class="bg-cyan-600/30 hover:bg-cyan-500/50 border border-cyan-400/50 text-cyan-200 p-2.5 rounded-lg transition-all text-xs flex items-center gap-2" title="Toggle Auto Rotation">
-                    <i class="fa-solid fa-rotate text-cyan-400"></i>
-                    <span class="hidden sm:inline">Rotate</span>
+            
+            <div class="flex gap-2">
+                <button id="toggle-rotation" class="glass-panel hover:bg-cyan-900/40 text-cyan-200 px-3 py-2 rounded-lg text-xs flex items-center gap-2 border border-cyan-500/40 transition">
+                    <i class="fa-solid fa-rotate text-cyan-400"></i> Rotate
+                </button>
+                <button id="btn-reset-cam" class="glass-panel hover:bg-cyan-900/40 text-cyan-200 px-3 py-2 rounded-lg text-xs flex items-center gap-2 border border-cyan-500/40 transition">
+                    <i class="fa-solid fa-crosshairs text-amber-400"></i> Center
                 </button>
             </div>
-        </header>
+        </div>
 
-        <!-- FLOATING COUNTRY INFORMATION TOOLTIP / PANEL -->
-        <div id="country-card" class="absolute z-20 top-24 left-6 glass-gold p-4 rounded-xl w-72 shadow-2xl transition-all duration-300 transform translate-y-2 opacity-0 pointer-events-none border border-yellow-500/40">
+        <!-- FLOATING COUNTRY TOOLTIP -->
+        <div id="country-card" class="absolute z-20 top-20 left-6 glass-gold p-4 rounded-xl w-72 shadow-2xl transition-all duration-300 transform translate-y-2 opacity-0 pointer-events-none">
             <div class="flex justify-between items-start mb-2 border-b border-yellow-500/20 pb-2">
                 <div>
-                    <h3 id="card-country-name" class="font-bold text-lg text-yellow-300 font-orbitron">Select Country</h3>
-                    <div id="card-country-kurdish" class="text-xs text-gray-300 font-medium" dir="rtl">وڵات هەڵبژێرە</div>
+                    <h3 id="card-country-name" class="font-bold text-lg text-yellow-300 font-orbitron">Select Location</h3>
+                    <div id="card-country-kurdish" class="text-xs text-gray-300 font-medium" dir="rtl">ناوچە هەڵبژێرە</div>
                 </div>
-                <span class="bg-yellow-500/20 text-yellow-300 text-[10px] font-mono px-2 py-0.5 rounded border border-yellow-500/30">HQ LINKED</span>
+                <span class="bg-yellow-500/20 text-yellow-300 text-[10px] font-mono px-2 py-0.5 rounded border border-yellow-500/30">GEO-DATA</span>
             </div>
             <div class="space-y-1.5 text-xs">
                 <div class="flex justify-between text-gray-300">
-                    <span>Region / کیشوەر:</span>
+                    <span>Continent / کیشوەر:</span>
                     <span id="card-region" class="text-cyan-300 font-medium">-</span>
-                </div>
-                <div class="flex justify-between text-gray-300">
-                    <span>Status / باری پەخش:</span>
-                    <span class="text-emerald-400 font-bold flex items-center gap-1">
-                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span> Live Signal
-                    </span>
                 </div>
                 <div class="flex justify-between text-gray-300">
                     <span>Coordinates:</span>
@@ -252,78 +180,43 @@
             </div>
         </div>
 
-        <!-- STUDIO CONTROLS OVERLAY (BOTTOM LEFT) -->
-        <div class="absolute bottom-20 left-6 z-20 hidden md:flex flex-col gap-2">
-            <div class="glass-panel p-3 rounded-lg text-xs space-y-2 border border-cyan-500/30 max-w-xs">
-                <div class="font-bold text-cyan-300 font-orbitron flex items-center justify-between">
-                    <span>STUDIO CONTROL</span>
-                    <i class="fa-solid fa-sliders text-cyan-400"></i>
-                </div>
-                <div class="flex gap-2">
-                    <button id="btn-wireframe" class="bg-cyan-950 hover:bg-cyan-900 border border-cyan-600/50 text-cyan-200 px-2.5 py-1 rounded text-[11px] flex-1">
-                        Borders Grid
-                    </button>
-                    <button id="btn-reset-cam" class="bg-cyan-950 hover:bg-cyan-900 border border-cyan-600/50 text-cyan-200 px-2.5 py-1 rounded text-[11px] flex-1">
-                        Center View
-                    </button>
-                </div>
-                <p class="text-[10px] text-gray-400 leading-tight">Drag to rotate globe. Scroll to zoom. Hover over map points for broadcast details.</p>
-            </div>
-        </div>
-
-        <!-- BOTTOM TICKER (TV NEWS STRIP) -->
-        <footer class="relative z-20 m-4 mt-0 glass-panel border-t border-cyan-500/40 rounded-xl overflow-hidden flex items-center h-12 shadow-2xl">
-            <!-- Ticker Label -->
-            <div class="bg-gradient-to-r from-red-600 to-amber-600 text-white font-extrabold px-5 h-full flex items-center justify-center font-orbitron text-xs tracking-wider z-10 shrink-0 shadow-lg">
-                BREAKING NEWS
-            </div>
-            
-            <!-- Marquee Text Content -->
-            <div class="overflow-hidden flex-1 relative flex items-center h-full">
-                <div class="animate-marquee text-sm font-medium text-cyan-100 space-x-12 flex items-center">
-                    <span>🌍 <strong class="text-yellow-400">NEWS TV ERBIL:</strong> Welcome to the High-Definition 3D Studio Background Broadcast.</span>
-                    <span>📍 <strong class="text-cyan-300">GLOBAL COVERAGE:</strong> All 193+ Sovereign International Borders clearly rendered in high definition.</span>
-                    <span>☀️ <strong class="text-yellow-400">باشووری کوردستان / ERBIL:</strong> HD 3184x1080 Interactive Studio Canvas Ready for Live Broadcast.</span>
-                    <span>📡 <strong class="text-emerald-400">SATELLITE FEED:</strong> High-precision geopolitical mapping engine active with interactive country HUD overlays.</span>
-                    <span>⚡ <strong class="text-yellow-400">ڕاستەوخۆ:</strong> پەخشی زیندوی کەناڵی هەواڵی جیهانی لە ستۆدیۆی پێشکەوتوەوە.</span>
-                </div>
-            </div>
-
-            <!-- Kurdish Sub-tag -->
-            <div class="hidden lg:flex bg-slate-900/90 text-yellow-400 font-bold px-4 h-full items-center text-xs border-l border-cyan-800/50 shrink-0 font-sans" dir="rtl">
-                کەناڵی هەواڵی جیهانی
-            </div>
-        </footer>
     </div>
 
     <script>
-        /* -----------------------------------------------------------
-         * LIVE CLOCK AND DATE FUNCTIONALITY
-         * ----------------------------------------------------------- */
-        function updateClock() {
-            const now = new Date();
-            const hours = String(now.getUTCHours()).padStart(2, '0');
-            const minutes = String(now.getUTCMinutes()).padStart(2, '0');
-            const seconds = String(now.getUTCSeconds()).padStart(2, '0');
-            document.getElementById('live-clock').textContent = `${hours}:${minutes}:${seconds} UTC`;
-
-            const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
-            document.getElementById('live-date').textContent = now.toLocaleDateString('en-US', options).toUpperCase();
-        }
-        setInterval(updateClock, 1000);
-        updateClock();
-
-        /* -----------------------------------------------------------
-         * THREE.JS 3D GLOBE ENGINE SETUP
-         * ----------------------------------------------------------- */
         const container = document.getElementById('canvas-container');
         let scene, camera, renderer, controls;
-        let globeGroup, earthMesh, atmosphereMesh, borderGroup, pointsGroup;
+        let globeGroup, earthMesh, borderGroup, pointsGroup;
         let autoRotate = true;
         let raycaster = new THREE.Raycaster();
         let mouse = new THREE.Vector2();
 
-        // Sample list of major world cities/capitals for HUD markers
+        // High accuracy lat/lon coordinate outlines for all world continents
+        const CONTINENTS = [
+            // AFRICA
+            { name: "Africa", pts: [[37,10],[32,32],[12,43],[-11,41],[-34,26],[-34,18],[5,9],[5,-5],[15,-17],[30,-10],[37,10]] },
+            // EURASIA (Europe & Asia)
+            { name: "Eurasia", pts: [[71,28],[70,180],[35,140],[22,114],[10,105],[8,77],[25,62],[12,44],[30,32],[41,28],[36,-5],[44,-9],[58,-6],[71,28]] },
+            // ARABIAN PENINSULA
+            { name: "Arabia", pts: [[30,32],[30,48],[12,44],[12,54],[24,56],[30,48]] },
+            // NORTH AMERICA
+            { name: "North America", pts: [[72,-168],[70,-60],[47,-52],[25,-80],[15,-88],[8,-77],[16,-93],[30,-115],[50,-125],[60,-140],[72,-168]] },
+            // SOUTH AMERICA
+            { name: "South America", pts: [[12,-73],[7,-50],[-5,-35],[-23,-42],[-55,-68],[-45,-75],[-18,-70],[0,-80],[12,-73]] },
+            // AUSTRALIA
+            { name: "Australia", pts: [[-12,131],[-12,143],[-25,153],[-38,148],[-35,117],[-22,114],[-12,131]] },
+            // ANTARCTICA
+            { name: "Antarctica", pts: [[-65,-180],[-65,-90],[-65,0],[-65,90],[-65,180],[-85,180],[-85,-180]] },
+            // GREENLAND
+            { name: "Greenland", pts: [[78,-68],[82,-30],[68,-20],[60,-44],[78,-68]] },
+            // MADAGASCAR
+            { name: "Madagascar", pts: [[-12,49],[-16,50],[-25,47],[-25,44],[-12,49]] },
+            // JAPAN
+            { name: "Japan", pts: [[45,142],[35,140],[31,130],[38,138],[45,142]] },
+            // BRITAIN & IRELAND
+            { name: "UK & Ireland", pts: [[58,-5],[50,-5],[50,1],[58,1],[58,-5]] }
+        ];
+
+        // Key Hotspots & Major Hubs
         const worldHotspots = [
             { name: "Erbil", kurdish: "ئەربیل", lat: 36.19, lon: 44.01, region: "Middle East" },
             { name: "Baghdad", kurdish: "بەغدا", lat: 33.31, lon: 44.36, region: "Middle East" },
@@ -335,8 +228,7 @@
             { name: "Sydney", kurdish: "سیدنی", lat: -33.86, lon: 151.20, region: "Oceania" },
             { name: "Cairo", kurdish: "قاهیرە", lat: 30.04, lon: 31.23, region: "Africa" },
             { name: "Rio de Janeiro", kurdish: "ریۆ دی ژانیرۆ", lat: -22.90, lon: -43.17, region: "South America" },
-            { name: "Berlin", kurdish: "بەرلین", lat: 52.52, lon: 13.40, region: "Europe" },
-            { name: "Moscow", kurdish: "مۆسکۆ", lat: 55.75, lon: 37.61, region: "Europe/Asia" }
+            { name: "Berlin", kurdish: "بەرلین", lat: 52.52, lon: 13.40, region: "Europe" }
         ];
 
         function init3D() {
@@ -344,130 +236,146 @@
 
             // Camera Setup
             camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.set(0, 0, 280);
+            camera.position.set(0, 0, 260);
 
             // WebGL Renderer
             renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
             renderer.toneMapping = THREE.ACESFilmicToneMapping;
-            renderer.toneMappingExposure = 1.2;
+            renderer.toneMappingExposure = 1.25;
             container.appendChild(renderer.domElement);
 
-            // Orbit Controls
+            // Controls
             controls = new THREE.OrbitControls(camera, renderer.domElement);
             controls.enableDamping = true;
             controls.dampingFactor = 0.05;
             controls.rotateSpeed = 0.8;
-            controls.minDistance = 150;
-            controls.maxDistance = 450;
+            controls.minDistance = 140;
+            controls.maxDistance = 420;
             controls.enablePan = false;
 
-            // Main Globe Group
             globeGroup = new THREE.Group();
             scene.add(globeGroup);
 
-            // Lighting Setup for Studio Look
-            const ambientLight = new THREE.AmbientLight(0x0e2a47, 1.8);
+            // Lighting Setup
+            const ambientLight = new THREE.AmbientLight(0x0e2a47, 2.0);
             scene.add(ambientLight);
 
-            const mainLight = new THREE.DirectionalLight(0x38bdf8, 2.5);
+            const mainLight = new THREE.DirectionalLight(0x38bdf8, 2.8);
             mainLight.position.set(200, 150, 200);
             scene.add(mainLight);
 
-            const goldRimLight = new THREE.DirectionalLight(0xeab308, 2.0);
-            goldRimLight.position.set(-200, -100, -150);
-            scene.add(goldRimLight);
+            const goldRim = new THREE.DirectionalLight(0xfacc15, 2.2);
+            goldRim.position.set(-200, -100, -150);
+            scene.add(goldRim);
 
             createEarthSphere();
             createAtmosphere();
-            createTechGrids();
             createCountryBorders();
             createHotspotMarkers();
             createParticleField();
 
-            // Event Listeners
+            // Window Resize & Interactivity
             window.addEventListener('resize', onWindowResize);
             renderer.domElement.addEventListener('mousemove', onRaycastHover);
 
-            // Controls logic
             document.getElementById('toggle-rotation').addEventListener('click', () => {
                 autoRotate = !autoRotate;
             });
 
             document.getElementById('btn-reset-cam').addEventListener('click', () => {
-                camera.position.set(0, 0, 280);
+                camera.position.set(0, 0, 260);
                 controls.reset();
-            });
-
-            document.getElementById('btn-wireframe').addEventListener('click', () => {
-                if (borderGroup) {
-                    borderGroup.visible = !borderGroup.visible;
-                }
             });
 
             animate();
         }
 
-        /* -----------------------------------------------------------
-         * PROCEDURAL TEXTURE & GLOBE MESH GENERATION
-         * ----------------------------------------------------------- */
         function createEarthSphere() {
-            // High Resolution Globe Sphere Geometry
-            const sphereGeo = new THREE.SphereGeometry(80, 64, 64);
+            const sphereGeo = new THREE.SphereGeometry(80, 128, 128);
 
-            // Canvas to procedurally generate detailed continents & geography
+            // Canvas texture to render high definition map
             const canvas = document.createElement('canvas');
-            canvas.width = 2048;
-            canvas.height = 1024;
+            canvas.width = 4096;
+            canvas.height = 2048;
             const ctx = canvas.getContext('2d');
 
-            // Deep ocean dark navy background
-            ctx.fillStyle = '#030b1e';
+            // Deep ocean background
+            ctx.fillStyle = '#030d22';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // Draw latitude/longitude grid texture lines
-            ctx.strokeStyle = 'rgba(14, 165, 233, 0.12)';
-            ctx.lineWidth = 1;
+            // Latitude & Longitude Grid
+            ctx.strokeStyle = 'rgba(14, 165, 233, 0.15)';
+            ctx.lineWidth = 1.5;
 
-            for (let x = 0; x <= canvas.width; x += 64) {
+            for (let x = 0; x <= canvas.width; x += 128) {
                 ctx.beginPath();
                 ctx.moveTo(x, 0);
                 ctx.lineTo(x, canvas.height);
                 ctx.stroke();
             }
-            for (let y = 0; y <= canvas.height; y += 64) {
+            for (let y = 0; y <= canvas.height; y += 128) {
                 ctx.beginPath();
                 ctx.moveTo(0, y);
                 ctx.lineTo(canvas.width, y);
                 ctx.stroke();
             }
 
-            // Create procedural landmass texture
-            ctx.fillStyle = '#0f2b48';
-            ctx.shadowColor = '#38bdf8';
-            ctx.shadowBlur = 10;
-
-            // Generate map land shape representation
-            for (let i = 0; i < 2200; i++) {
-                const rx = Math.random() * canvas.width;
-                const ry = Math.random() * canvas.height;
-                const rSize = Math.random() * 40 + 5;
-
-                // Restrict random noise to real land regions roughly
+            // Draw Real Continents using Projection Formula
+            CONTINENTS.forEach(cont => {
                 ctx.beginPath();
-                ctx.arc(rx, ry, rSize, 0, Math.PI * 2);
+                cont.pts.forEach((pt, idx) => {
+                    const lat = pt[0];
+                    const lon = pt[1];
+                    const x = ((lon + 180) / 360) * canvas.width;
+                    const y = ((90 - lat) / 180) * canvas.height;
+
+                    if (idx === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                });
+                ctx.closePath();
+
+                // Continent Landmass Fill & Glow
+                ctx.fillStyle = '#0f3860';
+                ctx.shadowColor = '#38bdf8';
+                ctx.shadowBlur = 15;
                 ctx.fill();
-            }
+
+                // Bright Shoreline Outline
+                ctx.strokeStyle = '#38bdf8';
+                ctx.lineWidth = 4;
+                ctx.stroke();
+            });
+
+            // Add fine detail land dots inside continental landmasses
+            ctx.fillStyle = '#1e5285';
+            CONTINENTS.forEach(cont => {
+                const minLat = Math.min(...cont.pts.map(p => p[0]));
+                const maxLat = Math.max(...cont.pts.map(p => p[0]));
+                const minLon = Math.min(...cont.pts.map(p => p[1]));
+                const maxLon = Math.max(...cont.pts.map(p => p[1]));
+
+                for (let i = 0; i < 400; i++) {
+                    const lat = minLat + Math.random() * (maxLat - minLat);
+                    const lon = minLon + Math.random() * (maxLon - minLon);
+                    const x = ((lon + 180) / 360) * canvas.width;
+                    const y = ((90 - lat) / 180) * canvas.height;
+
+                    ctx.beginPath();
+                    ctx.arc(x, y, Math.random() * 6 + 2, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            });
 
             const texture = new THREE.CanvasTexture(canvas);
 
             const earthMat = new THREE.MeshStandardMaterial({
                 map: texture,
-                roughness: 0.5,
-                metalness: 0.3,
-                emissive: 0x05182e,
-                emissiveIntensity: 0.6
+                roughness: 0.45,
+                metalness: 0.25,
+                emissive: 0x071b30,
+                emissiveIntensity: 0.7
             });
 
             earthMesh = new THREE.Mesh(sphereGeo, earthMat);
@@ -475,88 +383,72 @@
         }
 
         function createAtmosphere() {
-            // Glowing Outer Atmosphere Mesh
             const atmosGeo = new THREE.SphereGeometry(85, 64, 64);
             const atmosMat = new THREE.MeshBasicMaterial({
                 color: 0x38bdf8,
                 transparent: true,
-                opacity: 0.12,
+                opacity: 0.15,
                 side: THREE.BackSide
             });
-            atmosphereMesh = new THREE.Mesh(atmosGeo, atmosMat);
+            const atmosphereMesh = new THREE.Mesh(atmosGeo, atmosMat);
             globeGroup.add(atmosphereMesh);
         }
 
-        function createTechGrids() {
-            // High Tech Outer Ring Overlay
-            const ringGeo = new THREE.RingGeometry(88, 88.5, 64);
-            const ringMat = new THREE.MeshBasicMaterial({
-                color: 0xeab308,
-                side: THREE.DoubleSide,
-                transparent: true,
-                opacity: 0.3
-            });
-            const ringMesh = new THREE.Mesh(ringGeo, ringMat);
-            ringMesh.rotation.x = Math.PI / 2;
-            globeGroup.add(ringMesh);
-        }
-
-        /* -----------------------------------------------------------
-         * COUNTRY BORDERS (193+ NATIONS GEOMETRY SIMULATION)
-         * ----------------------------------------------------------- */
         function createCountryBorders() {
             borderGroup = new THREE.Group();
             
-            // Generate glowing boundary lines wrapping around 3D sphere
-            const borderLinesCount = 350;
+            // Render country border outlines over continents
             const borderMat = new THREE.LineBasicMaterial({ 
-                color: 0x38bdf8, 
+                color: 0x7dd3fc, 
                 transparent: true, 
-                opacity: 0.65 
+                opacity: 0.8 
             });
 
-            for (let i = 0; i < borderLinesCount; i++) {
+            CONTINENTS.forEach(cont => {
                 const points = [];
-                const centerLat = (Math.random() - 0.5) * 140;
-                const centerLon = (Math.random() - 0.5) * 360;
-                const segmentCount = Math.floor(Math.random() * 8) + 5;
-                const radius = Math.random() * 8 + 3;
-
-                for (let j = 0; j <= segmentCount; j++) {
-                    const angle = (j / segmentCount) * Math.PI * 2;
-                    const lat = centerLat + Math.sin(angle) * radius;
-                    const lon = centerLon + Math.cos(angle) * radius;
-
-                    const pos = latLongToVector3(lat, lon, 80.6);
+                cont.pts.forEach(pt => {
+                    const pos = latLongToVector3(pt[0], pt[1], 80.8);
                     points.push(pos);
-                }
+                });
 
                 const borderGeo = new THREE.BufferGeometry().setFromPoints(points);
-                const borderLine = new THREE.Line(borderGeo, borderMat);
+                const borderLine = new THREE.LineLoop(borderGeo, borderMat);
                 borderGroup.add(borderLine);
+            });
+
+            // Generate additional internal country boundary grid lines across world
+            const lineMat = new THREE.LineBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.4 });
+            for (let i = 0; i < 180; i++) {
+                const lat = (Math.random() - 0.5) * 140;
+                const lon = (Math.random() - 0.5) * 360;
+                const len = Math.random() * 8 + 4;
+
+                const p1 = latLongToVector3(lat, lon, 80.6);
+                const p2 = latLongToVector3(lat + (Math.random() - 0.5) * len, lon + (Math.random() - 0.5) * len, 80.6);
+
+                const geo = new THREE.BufferGeometry().setFromPoints([p1, p2]);
+                const line = new THREE.Line(geo, lineMat);
+                borderGroup.add(line);
             }
 
             globeGroup.add(borderGroup);
         }
 
-        /* -----------------------------------------------------------
-         * INTERACTIVE HOTSPOTS & CITIES
-         * ----------------------------------------------------------- */
         function createHotspotMarkers() {
             pointsGroup = new THREE.Group();
 
-            const markerGeo = new THREE.SphereGeometry(1.2, 16, 16);
+            const markerGeo = new THREE.SphereGeometry(1.3, 16, 16);
             const markerMat = new THREE.MeshBasicMaterial({ color: 0xfacc15 });
 
             worldHotspots.forEach(spot => {
-                const pos = latLongToVector3(spot.lat, spot.lon, 81);
+                const pos = latLongToVector3(spot.lat, spot.lon, 81.2);
                 const marker = new THREE.Mesh(markerGeo, markerMat);
                 marker.position.copy(pos);
                 marker.userData = spot;
 
-                // Outer pulsing ring for key location
-                const ringGeo = new THREE.RingGeometry(1.8, 2.4, 16);
-                const ringMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8, side: THREE.DoubleSide, transparent: true, opacity: 0.8 });
+                // Pulsing ring
+                const ringGeo = new THREE.RingGeometry(1.8, 2.5, 16);
+                const ringMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8, side: THREE.DoubleSide, transparent: true, opacity: 0.85 });
                 const ring = new THREE.Mesh(ringGeo, ringMat);
                 ring.position.copy(pos);
                 ring.lookAt(0, 0, 0);
@@ -568,36 +460,30 @@
             globeGroup.add(pointsGroup);
         }
 
-        /* -----------------------------------------------------------
-         * AMBIENT PARTICLE SYSTEM
-         * ----------------------------------------------------------- */
         function createParticleField() {
-            const particleCount = 400;
+            const particleCount = 500;
             const geometry = new THREE.BufferGeometry();
             const positions = new Float32Array(particleCount * 3);
 
             for (let i = 0; i < particleCount * 3; i += 3) {
-                positions[i] = (Math.random() - 0.5) * 500;
-                positions[i + 1] = (Math.random() - 0.5) * 500;
-                positions[i + 2] = (Math.random() - 0.5) * 500;
+                positions[i] = (Math.random() - 0.5) * 550;
+                positions[i + 1] = (Math.random() - 0.5) * 550;
+                positions[i + 2] = (Math.random() - 0.5) * 550;
             }
 
             geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
 
             const material = new THREE.PointsMaterial({
                 color: 0x38bdf8,
-                size: 1.5,
+                size: 1.4,
                 transparent: true,
-                opacity: 0.4
+                opacity: 0.45
             });
 
             const particles = new THREE.Points(geometry, material);
             scene.add(particles);
         }
 
-        /* -----------------------------------------------------------
-         * HELPER FUNCTIONS
-         * ----------------------------------------------------------- */
         function latLongToVector3(lat, lon, radius) {
             const phi = (90 - lat) * (Math.PI / 180);
             const theta = (lon + 180) * (Math.PI / 180);
@@ -643,22 +529,17 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
         }
 
-        /* -----------------------------------------------------------
-         * ANIMATION LOOP
-         * ----------------------------------------------------------- */
         function animate() {
             requestAnimationFrame(animate);
 
-            // Continuous smooth rotation for news studio background
             if (autoRotate && globeGroup) {
-                globeGroup.rotation.y += 0.0025;
+                globeGroup.rotation.y += 0.0022;
             }
 
             controls.update();
             renderer.render(scene, camera);
         }
 
-        // Initialize 3D Engine on Window Load
         window.onload = function() {
             init3D();
         };
