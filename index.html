@@ -20,13 +20,30 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800;900&family=Inter:wght@300;400;600;700&family=Noto+Sans+Arabic:wght@400;700;900&display=swap');
 
+        :root {
+            --theme-accent: #38bdf8;
+            --theme-strong: #00f0ff;
+            --theme-warm: #facc15;
+            --theme-soft: #8be9ff;
+            --theme-glow: rgba(56, 189, 248, 0.30);
+            --theme-bg-1: #12345b;
+            --theme-bg-2: #07182d;
+            --theme-bg-3: #020916;
+            --side-light-left: 0.24;
+            --side-light-right: 0.20;
+            --side-light-bottom: 0.09;
+            --background-brightness: 1;
+            --background-grid-opacity: 0.65;
+            --background-flare-opacity: 0.55;
+        }
+
         body, html {
             margin: 0;
             padding: 0;
             width: 100%;
             height: 100%;
             overflow: hidden;
-            background-color: #020617;
+            background-color: #061326;
             font-family: 'Inter', 'Noto Sans Arabic', sans-serif;
             color: #fff;
             user-select: none;
@@ -42,13 +59,45 @@
             width: 100vw;
             height: 100vh;
             position: relative;
-            background: radial-gradient(circle at center, #0f2342 0%, #030a1a 70%, #01040a 100%);
+            background: #000;
+
             display: flex;
             flex-direction: column;
             justify-content: space-between;
         }
 
+        /* Full background layer. This layer is separate from the 3D Earth, so
+           the LIGHT control changes the complete background without changing the globe. */
+        .studio-container::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background: radial-gradient(circle at 50% 42%, var(--theme-bg-1) 0%, var(--theme-bg-2) 48%, var(--theme-bg-3) 100%);
+            filter: brightness(var(--background-brightness));
+        }
+
         /* Graphic Grid Overlay */
+        .studio-container::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background:
+                radial-gradient(ellipse 34% 78% at 0% 52%, rgba(var(--theme-accent-rgb), var(--side-light-left)), transparent 72%),
+                radial-gradient(ellipse 34% 78% at 100% 52%, rgba(var(--theme-strong-rgb), var(--side-light-right)), transparent 72%),
+                radial-gradient(ellipse 48% 48% at 50% 100%, rgba(var(--theme-warm-rgb), var(--side-light-bottom)), transparent 75%);
+            filter: blur(12px) brightness(var(--background-brightness));
+        }
+
+        /* Theme-aware Tailwind accent overrides */
+        [class*="text-cyan-"] { color: var(--theme-soft) !important; }
+        [class*="border-cyan-"] { border-color: color-mix(in srgb, var(--theme-accent) 45%, transparent) !important; }
+        [class*="text-amber-"] { color: var(--theme-warm) !important; }
+        [class*="border-amber-"] { border-color: color-mix(in srgb, var(--theme-warm) 48%, transparent) !important; }
+
         .tech-grid {
             position: absolute;
             top: 0;
@@ -56,9 +105,10 @@
             width: 100%;
             height: 100%;
             background-image: 
-                linear-gradient(to right, rgba(56, 189, 248, 0.05) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(56, 189, 248, 0.05) 1px, transparent 1px);
+                linear-gradient(to right, rgba(var(--theme-accent-rgb), .13) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(var(--theme-accent-rgb), .13) 1px, transparent 1px);
             background-size: 64px 64px;
+            opacity: var(--background-grid-opacity);
             pointer-events: none;
             z-index: 1;
         }
@@ -70,10 +120,11 @@
             left: 5%;
             width: 800px;
             height: 800px;
-            background: radial-gradient(circle, rgba(14, 165, 233, 0.2) 0%, rgba(0, 0, 0, 0) 70%);
-            filter: blur(80px);
+            background: radial-gradient(circle, rgba(var(--theme-accent-rgb), .42) 0%, rgba(0, 0, 0, 0) 70%);
+            filter: blur(65px);
             pointer-events: none;
             z-index: 1;
+            opacity: var(--background-flare-opacity);
         }
 
         .flare-right {
@@ -82,10 +133,11 @@
             right: 5%;
             width: 800px;
             height: 800px;
-            background: radial-gradient(circle, rgba(234, 179, 8, 0.16) 0%, rgba(0, 0, 0, 0) 70%);
-            filter: blur(80px);
+            background: radial-gradient(circle, rgba(var(--theme-warm-rgb), .34) 0%, rgba(0, 0, 0, 0) 70%);
+            filter: blur(65px);
             pointer-events: none;
             z-index: 1;
+            opacity: var(--background-flare-opacity);
         }
 
         #canvas-container {
@@ -102,14 +154,14 @@
             background: rgba(15, 23, 42, 0.85);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(56, 189, 248, 0.3);
+            border: 1px solid color-mix(in srgb, var(--theme-accent) 45%, transparent);
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7);
         }
 
         .glass-gold {
             background: rgba(26, 20, 8, 0.9);
             backdrop-filter: blur(20px);
-            border: 1px solid rgba(234, 179, 8, 0.5);
+            border: 1px solid color-mix(in srgb, var(--theme-warm) 60%, transparent);
             box-shadow: 0 0 25px rgba(234, 179, 8, 0.3);
         }
 
@@ -128,6 +180,114 @@
         ::-webkit-scrollbar-thumb {
             background: rgba(56, 189, 248, 0.5);
             border-radius: 4px;
+        }
+
+        .theme-btn {
+            width: 24px;
+            height: 24px;
+            padding: 2px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.18);
+            background: rgba(15,23,42,0.75);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+        }
+        .theme-btn:hover { transform: scale(1.12); }
+        .theme-btn.active {
+            border-color: #fff;
+            box-shadow: 0 0 0 2px var(--theme-accent), 0 0 14px var(--theme-glow);
+        }
+        .color-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            display: block;
+        }
+        .theme-palette {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            max-width: 300px;
+        }
+        .custom-color-btn {
+            position: relative;
+            width: 24px;
+            height: 24px;
+            padding: 2px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.18);
+            background: conic-gradient(red, yellow, lime, cyan, blue, magenta, red);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+            overflow: hidden;
+        }
+        .custom-color-btn:hover { transform: scale(1.12); }
+        .custom-color-btn .custom-dot {
+            width: 14px;
+            height: 14px;
+            background: #38bdf8;
+            border: 1px solid rgba(255,255,255,.7);
+        }
+        .custom-color-btn input {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+        .brightness-control {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            min-width: 190px;
+            padding: 6px 8px;
+            border-radius: 12px;
+            background: rgba(2, 8, 23, 0.62);
+            border: 1px solid rgba(125, 211, 252, 0.18);
+        }
+        .brightness-control label {
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: .06em;
+            color: var(--theme-soft);
+            white-space: nowrap;
+        }
+        #background-brightness {
+            width: 105px;
+            accent-color: var(--theme-accent);
+            cursor: pointer;
+        }
+        #brightness-value {
+            width: 46px;
+            text-align: right;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 9px;
+            color: var(--theme-soft);
+        }
+        .brightness-control button {
+            border: 1px solid rgba(255,255,255,.15);
+            background: rgba(15,23,42,.7);
+            color: var(--theme-soft);
+            width: 22px;
+            height: 22px;
+            border-radius: 7px;
+            cursor: pointer;
+        }
+        .brightness-control button:hover {
+            background: rgba(255,255,255,.12);
+        }
+
+        @media (max-width: 1100px) {
+            .theme-palette { max-width: 240px; }
         }
     </style>
 </head>
@@ -163,6 +323,43 @@
                     <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-cyan-400 text-xs"></i>
                     <!-- Auto-complete Search Dropdown -->
                     <div id="search-results" class="absolute left-0 top-12 w-full glass-panel rounded-xl max-h-52 overflow-y-auto hidden z-40 divide-y divide-cyan-800/40"></div>
+                </div>
+
+                <!-- Color Theme Picker -->
+                <div class="flex items-center gap-1.5 px-2 py-1.5 rounded-xl bg-slate-950/55 border border-cyan-500/20">
+                    <span class="text-[9px] text-cyan-300/80 font-semibold tracking-wider mr-1">COLOR</span>
+                    <div class="theme-palette" title="Choose a studio color">
+                        <button class="theme-btn" data-theme="red" title="Red" aria-label="Red"><span class="color-dot" style="background:#ff3347"></span></button>
+                        <button class="theme-btn" data-theme="crimson" title="Crimson" aria-label="Crimson"><span class="color-dot" style="background:#dc143c"></span></button>
+                        <button class="theme-btn" data-theme="pink" title="Pink" aria-label="Pink"><span class="color-dot" style="background:#ff4fa3"></span></button>
+                        <button class="theme-btn" data-theme="magenta" title="Magenta" aria-label="Magenta"><span class="color-dot" style="background:#ff00d4"></span></button>
+                        <button class="theme-btn" data-theme="purple" title="Purple" aria-label="Purple"><span class="color-dot" style="background:#b56cff"></span></button>
+                        <button class="theme-btn" data-theme="indigo" title="Indigo" aria-label="Indigo"><span class="color-dot" style="background:#6366f1"></span></button>
+                        <button class="theme-btn active" data-theme="blue" title="Blue" aria-label="Blue"><span class="color-dot" style="background:#38bdf8"></span></button>
+                        <button class="theme-btn" data-theme="cyan" title="Cyan" aria-label="Cyan"><span class="color-dot" style="background:#00e5ff"></span></button>
+                        <button class="theme-btn" data-theme="teal" title="Teal" aria-label="Teal"><span class="color-dot" style="background:#14b8a6"></span></button>
+                        <button class="theme-btn" data-theme="green" title="Green" aria-label="Green"><span class="color-dot" style="background:#22e67a"></span></button>
+                        <button class="theme-btn" data-theme="lime" title="Lime" aria-label="Lime"><span class="color-dot" style="background:#84ff00"></span></button>
+                        <button class="theme-btn" data-theme="yellow" title="Yellow" aria-label="Yellow"><span class="color-dot" style="background:#ffe000"></span></button>
+                        <button class="theme-btn" data-theme="gold" title="Gold" aria-label="Gold"><span class="color-dot" style="background:#ffb300"></span></button>
+                        <button class="theme-btn" data-theme="orange" title="Orange" aria-label="Orange"><span class="color-dot" style="background:#ff9f43"></span></button>
+                        <button class="theme-btn" data-theme="amber" title="Amber" aria-label="Amber"><span class="color-dot" style="background:#ff8c00"></span></button>
+                        <button class="theme-btn" data-theme="coral" title="Coral" aria-label="Coral"><span class="color-dot" style="background:#ff6f61"></span></button>
+                        <button class="theme-btn" data-theme="white" title="White" aria-label="White"><span class="color-dot" style="background:#f8fafc"></span></button>
+                        <label class="custom-color-btn" title="Custom color" aria-label="Custom color">
+                            <span class="color-dot custom-dot"></span>
+                            <input id="custom-color" type="color" value="#38bdf8" aria-label="Custom color picker">
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Background Light Control: 0% = very dark, 10000% = extremely bright -->
+                <div class="brightness-control" title="Test background brightness from dark to very bright">
+                    <label for="background-brightness">LIGHT</label>
+                    <button id="brightness-down" type="button" title="Decrease light">−</button>
+                    <input id="background-brightness" type="range" min="0" max="10000" value="100" step="10" aria-label="Background brightness">
+                    <button id="brightness-up" type="button" title="Increase light">+</button>
+                    <span id="brightness-value">100%</span>
                 </div>
 
                 <!-- Quick Action Buttons -->
@@ -219,6 +416,30 @@
         let worldGeoData = null;
         const raycaster = new THREE.Raycaster();
         const mouse = new THREE.Vector2();
+
+        // Color themes. Blue is the default; clicking a color changes the complete studio palette.
+        const THEMES = {
+            blue:    { accent:'#38bdf8', strong:'#00f0ff', warm:'#facc15', soft:'#8be9ff', glow:'rgba(56,189,248,.30)', bg1:'#12345b', bg2:'#07182d', bg3:'#020916', globe:'#07549b', country:'#0c3e70', ocean:'#03142d' },
+            red:     { accent:'#ff4b5c', strong:'#ff1633', warm:'#ffd166', soft:'#ff9aa5', glow:'rgba(255,51,71,.32)', bg1:'#5a1820', bg2:'#250b12', bg3:'#0d0307', globe:'#8f1d2d', country:'#5b1621', ocean:'#260811' },
+            crimson: { accent:'#ff5a70', strong:'#dc143c', warm:'#ffb3c1', soft:'#ffb8c5', glow:'rgba(220,20,60,.32)', bg1:'#591522', bg2:'#250811', bg3:'#0d0206', globe:'#9e1736', country:'#651128', ocean:'#26050e' },
+            pink:    { accent:'#ff70b8', strong:'#ff2f92', warm:'#ffd1e8', soft:'#ffb5d8', glow:'rgba(255,79,163,.30)', bg1:'#5a1b3f', bg2:'#260b1b', bg3:'#0f0309', globe:'#9e2865', country:'#651640', ocean:'#290817' },
+            magenta: { accent:'#ff55e7', strong:'#ff00d4', warm:'#ffc2f5', soft:'#ffb3ed', glow:'rgba(255,0,212,.30)', bg1:'#58164f', bg2:'#26091f', bg3:'#0f020c', globe:'#a51a8f', country:'#68105d', ocean:'#29081f' },
+            purple:  { accent:'#c084ff', strong:'#9b4dff', warm:'#f0b8ff', soft:'#dfb8ff', glow:'rgba(181,108,255,.32)', bg1:'#3a1b58', bg2:'#180b2c', bg3:'#08030f', globe:'#6620a1', country:'#43136d', ocean:'#1a0829' },
+            indigo:  { accent:'#8b8cff', strong:'#4f46e5', warm:'#c7d2fe', soft:'#b9baff', glow:'rgba(99,102,241,.32)', bg1:'#20245e', bg2:'#0d1030', bg3:'#050617', globe:'#3438a0', country:'#25276f', ocean:'#0b0d2b' },
+            cyan:    { accent:'#63f6ff', strong:'#00e5ff', warm:'#b9ffff', soft:'#b8fbff', glow:'rgba(0,229,255,.32)', bg1:'#104b59', bg2:'#06242d', bg3:'#021013', globe:'#087c91', country:'#075968', ocean:'#031b22' },
+            teal:    { accent:'#5eead4', strong:'#14b8a6', warm:'#b8fff4', soft:'#b4f5eb', glow:'rgba(20,184,166,.30)', bg1:'#10483f', bg2:'#06251f', bg3:'#02110e', globe:'#087766', country:'#075548', ocean:'#031b18' },
+            green:   { accent:'#45f28a', strong:'#00e676', warm:'#e6ff6a', soft:'#9fffc3', glow:'rgba(34,230,122,.30)', bg1:'#103f2b', bg2:'#062419', bg3:'#02100a', globe:'#087a49', country:'#0b5135', ocean:'#031b12' },
+            lime:    { accent:'#b8ff4a', strong:'#84ff00', warm:'#f3ffad', soft:'#d8ff99', glow:'rgba(132,255,0,.30)', bg1:'#314f12', bg2:'#152508', bg3:'#081002', globe:'#5f9200', country:'#3e6200', ocean:'#101d03' },
+            yellow:  { accent:'#ffe45e', strong:'#ffd000', warm:'#fff4a3', soft:'#fff7bf', glow:'rgba(255,224,0,.28)', bg1:'#514b13', bg2:'#252207', bg3:'#0e0d02', globe:'#a88900', country:'#665600', ocean:'#292500' },
+            gold:    { accent:'#ffd15c', strong:'#ffb300', warm:'#fff0a8', soft:'#ffe6a0', glow:'rgba(255,179,0,.30)', bg1:'#543b12', bg2:'#271b06', bg3:'#100b02', globe:'#9b6700', country:'#684500', ocean:'#2a1904' },
+            orange:  { accent:'#ff9f43', strong:'#ff6b00', warm:'#ffe08a', soft:'#ffc477', glow:'rgba(255,159,67,.32)', bg1:'#56331a', bg2:'#271508', bg3:'#0f0702', globe:'#a65313', country:'#68300c', ocean:'#2a1205' },
+            amber:   { accent:'#ffb84d', strong:'#ff8c00', warm:'#ffe6a8', soft:'#ffd08a', glow:'rgba(255,140,0,.32)', bg1:'#563612', bg2:'#271804', bg3:'#100a02', globe:'#9c5600', country:'#683800', ocean:'#2a1403' },
+            coral:   { accent:'#ff887c', strong:'#ff5f56', warm:'#ffd0c9', soft:'#ffb9b1', glow:'rgba(255,111,97,.30)', bg1:'#5a251f', bg2:'#28100d', bg3:'#100403', globe:'#9f332d', country:'#68231f', ocean:'#2a0d0a' },
+            white:   { accent:'#f8fafc', strong:'#ffffff', warm:'#dbeafe', soft:'#ffffff', glow:'rgba(248,250,252,.30)', bg1:'#43505f', bg2:'#1c2530', bg3:'#090d13', globe:'#7b8da3', country:'#526276', ocean:'#151d28' }
+        };
+        let currentTheme = THEMES.blue;
+        let atmosphereMesh = null;
+        let starParticles = null;
 
         // Auto-hide Timer Management
         let idleTimer = null;
@@ -317,58 +538,61 @@
             window.addEventListener('touchstart', handleUserActivity);
 
             setupUIInteractions();
+            applyTheme('blue');
             animate();
         }
 
         function buildGraphicGlobeTexture(geoData) {
-            const sphereGeo = new THREE.SphereGeometry(80, 128, 128);
+            if (earthMesh) {
+                globeGroup.remove(earthMesh);
+                earthMesh.geometry.dispose();
+                earthMesh.material.dispose();
+                if (earthMesh.material.map) earthMesh.material.map.dispose();
+            }
 
+            const sphereGeo = new THREE.SphereGeometry(80, 128, 128);
             const canvas = document.createElement('canvas');
             canvas.width = 4096;
             canvas.height = 2048;
             const ctx = canvas.getContext('2d');
 
-            // Deep Oceanic Studio Globe Background
-            ctx.fillStyle = '#030c1e';
+            ctx.fillStyle = currentTheme.ocean;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             const projection = d3.geoEquirectangular()
                 .translate([canvas.width / 2, canvas.height / 2])
                 .scale(canvas.width / (2 * Math.PI));
-
             const path = d3.geoPath().projection(projection).context(ctx);
 
-            // High-Tech Latitude / Longitude Graticule
             const graticule = d3.geoGraticule().step([10, 10]);
             ctx.beginPath();
             path(graticule());
-            ctx.strokeStyle = 'rgba(56, 189, 248, 0.12)';
-            ctx.lineWidth = 1.0;
+            ctx.strokeStyle = currentTheme.glow;
+            ctx.lineWidth = 1.2;
             ctx.stroke();
 
             if (geoData) {
-                // All Country Areas with Graphic Fill Shapes
                 geoData.features.forEach(feature => {
                     ctx.beginPath();
                     path(feature);
-                    ctx.fillStyle = 'rgba(12, 45, 82, 0.90)';
+                    ctx.fillStyle = currentTheme.country;
                     ctx.fill();
-
-                    ctx.strokeStyle = 'rgba(56, 189, 248, 0.85)';
+                    ctx.strokeStyle = currentTheme.accent;
                     ctx.lineWidth = 1.8;
                     ctx.stroke();
                 });
 
-                // Highlight Iraq / Kurdistan Area Graphic in Gold
                 const iraqFeature = geoData.features.find(f => f.id === "368" || (f.properties && f.properties.name === "Iraq"));
                 if (iraqFeature) {
                     ctx.beginPath();
                     path(iraqFeature);
-                    ctx.fillStyle = 'rgba(234, 179, 8, 0.65)';
+                    ctx.fillStyle = currentTheme.warm;
+                    ctx.globalAlpha = 0.45;
                     ctx.fill();
-                    ctx.strokeStyle = '#facc15';
+                    ctx.globalAlpha = 1;
+                    ctx.strokeStyle = currentTheme.warm;
                     ctx.lineWidth = 4.0;
-                    ctx.shadowColor = '#facc15';
+                    ctx.shadowColor = currentTheme.warm;
                     ctx.shadowBlur = 15;
                     ctx.stroke();
                     ctx.shadowBlur = 0;
@@ -376,175 +600,239 @@
             }
 
             const texture = new THREE.CanvasTexture(canvas);
-
             const earthMat = new THREE.MeshStandardMaterial({
                 map: texture,
                 roughness: 0.35,
                 metalness: 0.25,
-                emissive: 0x051a33,
-                emissiveIntensity: 0.85
+                emissive: new THREE.Color(currentTheme.ocean),
+                emissiveIntensity: 0.95
             });
-
             earthMesh = new THREE.Mesh(sphereGeo, earthMat);
             globeGroup.add(earthMesh);
         }
 
         function build3DVectorBorders(geoData) {
             if (!geoData) return;
+            if (borderLinesGroup) globeGroup.remove(borderLinesGroup);
             borderLinesGroup = new THREE.Group();
 
-            const borderMat = new THREE.LineBasicMaterial({
-                color: 0x38bdf8,
-                transparent: true,
-                opacity: 0.85
-            });
-
-            const goldBorderMat = new THREE.LineBasicMaterial({
-                color: 0xfacc15,
-                transparent: true,
-                opacity: 1.0
-            });
+            const borderMat = new THREE.LineBasicMaterial({ color: new THREE.Color(currentTheme.accent), transparent: true, opacity: 0.95 });
+            const goldBorderMat = new THREE.LineBasicMaterial({ color: new THREE.Color(currentTheme.warm), transparent: true, opacity: 1.0 });
 
             geoData.features.forEach(feature => {
                 const isIraq = feature.id === "368" || (feature.properties && feature.properties.name === "Iraq");
                 const mat = isIraq ? goldBorderMat : borderMat;
                 const radiusOffset = isIraq ? 80.5 : 80.3;
-
                 const geom = feature.geometry;
-                const coordinates = geom.type === 'Polygon' ? [geom.coordinates] : 
-                                    geom.type === 'MultiPolygon' ? geom.coordinates : [];
+                const coordinates = geom.type === 'Polygon' ? [geom.coordinates] : geom.type === 'MultiPolygon' ? geom.coordinates : [];
 
                 coordinates.forEach(polygon => {
                     polygon.forEach(ring => {
-                        const points = [];
-                        ring.forEach(coord => {
-                            const lon = coord[0];
-                            const lat = coord[1];
-                            points.push(latLongToVector3(lat, lon, radiusOffset));
-                        });
-
+                        const points = ring.map(coord => latLongToVector3(coord[1], coord[0], radiusOffset));
                         if (points.length > 1) {
-                            const lineGeo = new THREE.BufferGeometry().setFromPoints(points);
-                            const line = new THREE.Line(lineGeo, mat);
-                            borderLinesGroup.add(line);
+                            borderLinesGroup.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(points), mat));
                         }
                     });
                 });
             });
-
             globeGroup.add(borderLinesGroup);
         }
 
         function buildAtmosphere() {
+            if (atmosphereMesh) scene.remove(atmosphereMesh);
             const atmosGeo = new THREE.SphereGeometry(86, 64, 64);
             const atmosMat = new THREE.MeshBasicMaterial({
-                color: 0x00f0ff,
+                color: new THREE.Color(currentTheme.strong),
                 side: THREE.BackSide,
                 transparent: true,
-                opacity: 0.12
+                opacity: 0.16
             });
-            const atmosMesh = new THREE.Mesh(atmosGeo, atmosMat);
-            scene.add(atmosMesh);
+            atmosphereMesh = new THREE.Mesh(atmosGeo, atmosMat);
+            scene.add(atmosphereMesh);
         }
 
         function buildCityPins() {
+            if (pinsGroup) globeGroup.remove(pinsGroup);
             pinsGroup = new THREE.Group();
-
             const pinGeo = new THREE.SphereGeometry(1.2, 16, 16);
-            const defaultMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8 });
-            const goldMat = new THREE.MeshBasicMaterial({ color: 0xfacc15 });
+            const defaultMat = new THREE.MeshBasicMaterial({ color: new THREE.Color(currentTheme.accent) });
+            const goldMat = new THREE.MeshBasicMaterial({ color: new THREE.Color(currentTheme.warm) });
 
             WORLD_COUNTRIES.forEach((country, idx) => {
-                const isHome = idx === 0; // Iraq / Kurdistan
+                const isHome = idx === 0;
                 const pos = latLongToVector3(country.lat, country.lon, 81.2);
-                
                 const pin = new THREE.Mesh(pinGeo, isHome ? goldMat : defaultMat);
                 pin.position.copy(pos);
                 pin.userData = country;
 
-                // Pulsing Ring Indicator
                 const ringGeo = new THREE.RingGeometry(1.6, 2.5, 16);
-                const ringMat = new THREE.MeshBasicMaterial({ 
-                    color: isHome ? 0xfacc15 : 0x00f0ff, 
-                    side: THREE.DoubleSide, 
-                    transparent: true, 
-                    opacity: 0.85 
+                const ringMat = new THREE.MeshBasicMaterial({
+                    color: new THREE.Color(isHome ? currentTheme.warm : currentTheme.strong),
+                    side: THREE.DoubleSide,
+                    transparent: true,
+                    opacity: 0.85
                 });
                 const ring = new THREE.Mesh(ringGeo, ringMat);
                 ring.position.copy(pos);
                 ring.lookAt(0, 0, 0);
-
-                pinsGroup.add(pin);
-                pinsGroup.add(ring);
+                pinsGroup.add(pin, ring);
             });
-
             globeGroup.add(pinsGroup);
         }
 
         function buildArcConnections() {
+            if (arcsGroup) globeGroup.remove(arcsGroup);
             arcsGroup = new THREE.Group();
             arcPulses = [];
-            const center = WORLD_COUNTRIES[0]; // Erbil / Iraq Hub
+            const center = WORLD_COUNTRIES[0];
 
-            WORLD_COUNTRIES.slice(1, 16).forEach((target, idx) => {
+            WORLD_COUNTRIES.slice(1, 16).forEach(target => {
                 const p1 = latLongToVector3(center.lat, center.lon, 80.5);
                 const p2 = latLongToVector3(target.lat, target.lon, 80.5);
-
                 const mid = new THREE.Vector3().addVectors(p1, p2).multiplyScalar(0.5);
                 const distance = p1.distanceTo(p2);
                 mid.normalize().multiplyScalar(80.5 + distance * 0.28);
-
                 const curve = new THREE.QuadraticBezierCurve3(p1, mid, p2);
 
-                // Medium-thickness 3D Tube Geometry (balanced between thin and bold)
                 const tubeGeo = new THREE.TubeGeometry(curve, 64, 0.22, 8, false);
-                const tubeMat = new THREE.MeshBasicMaterial({
-                    color: 0x00f0ff,
-                    transparent: true,
-                    opacity: 0.75
-                });
-                const tubeMesh = new THREE.Mesh(tubeGeo, tubeMat);
-                arcsGroup.add(tubeMesh);
+                const tubeMat = new THREE.MeshBasicMaterial({ color: new THREE.Color(currentTheme.strong), transparent: true, opacity: 0.78 });
+                arcsGroup.add(new THREE.Mesh(tubeGeo, tubeMat));
 
-                // Balanced glowing gold pulse particle traveling along each arc
                 const pulseGeo = new THREE.SphereGeometry(1.0, 16, 16);
-                const pulseMat = new THREE.MeshBasicMaterial({ color: 0xfacc15 });
+                const pulseMat = new THREE.MeshBasicMaterial({ color: new THREE.Color(currentTheme.warm) });
                 const pulseMesh = new THREE.Mesh(pulseGeo, pulseMat);
                 arcsGroup.add(pulseMesh);
-
-                arcPulses.push({
-                    curve: curve,
-                    pulseMesh: pulseMesh,
-                    progress: Math.random(), // Staggered start progress
-                    speed: 0.003 + Math.random() * 0.003
-                });
+                arcPulses.push({ curve, pulseMesh, progress: Math.random(), speed: 0.003 + Math.random() * 0.003 });
             });
-
             globeGroup.add(arcsGroup);
         }
 
         function buildStarfield() {
-            const count = 700;
+            const count = 900;
             const geometry = new THREE.BufferGeometry();
             const positions = new Float32Array(count * 3);
-
             for (let i = 0; i < count * 3; i += 3) {
                 positions[i] = (Math.random() - 0.5) * 700;
                 positions[i + 1] = (Math.random() - 0.5) * 700;
                 positions[i + 2] = (Math.random() - 0.5) * 700;
             }
-
             geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            const material = new THREE.PointsMaterial({ color: new THREE.Color(currentTheme.accent), size: 1.2, transparent: true, opacity: 0.55 });
+            starParticles = new THREE.Points(geometry, material);
+            scene.add(starParticles);
+        }
 
-            const material = new THREE.PointsMaterial({
-                color: 0x38bdf8,
-                size: 1.2,
-                transparent: true,
-                opacity: 0.45
-            });
+        function createCustomTheme(hex) {
+            const color = new THREE.Color(hex);
+            const hsl = {};
+            color.getHSL(hsl);
 
-            const particles = new THREE.Points(geometry, material);
-            scene.add(particles);
+            // Generate a readable studio palette from any chosen color.
+            const accent = '#' + color.getHexString();
+            const strongColor = new THREE.Color().setHSL(hsl.h, Math.min(1, hsl.s + 0.08), Math.min(0.72, hsl.l + 0.02));
+            const warmColor = new THREE.Color().setHSL((hsl.h + 0.12) % 1, Math.min(1, hsl.s + 0.05), Math.min(0.88, hsl.l + 0.25));
+            const softColor = new THREE.Color().setHSL(hsl.h, Math.max(0.18, hsl.s * 0.72), Math.min(0.9, hsl.l + 0.30));
+            const bg1 = new THREE.Color().setHSL(hsl.h, Math.min(0.72, hsl.s + 0.02), 0.16);
+            const bg2 = new THREE.Color().setHSL(hsl.h, Math.min(0.68, hsl.s), 0.075);
+            const bg3 = new THREE.Color().setHSL(hsl.h, Math.min(0.62, hsl.s), 0.025);
+            const globe = new THREE.Color().setHSL(hsl.h, Math.min(0.85, hsl.s + 0.08), 0.32);
+            const country = new THREE.Color().setHSL(hsl.h, Math.min(0.85, hsl.s + 0.05), 0.22);
+            const ocean = new THREE.Color().setHSL(hsl.h, Math.min(0.78, hsl.s), 0.045);
+
+            return {
+                accent,
+                strong: '#' + strongColor.getHexString(),
+                warm: '#' + warmColor.getHexString(),
+                soft: '#' + softColor.getHexString(),
+                glow: `rgba(${Math.round(color.r * 255)},${Math.round(color.g * 255)},${Math.round(color.b * 255)},.32)`,
+                bg1: '#' + bg1.getHexString(),
+                bg2: '#' + bg2.getHexString(),
+                bg3: '#' + bg3.getHexString(),
+                globe: '#' + globe.getHexString(),
+                country: '#' + country.getHexString(),
+                ocean: '#' + ocean.getHexString()
+            };
+        }
+
+        function applyCustomColor(hex) {
+            currentTheme = createCustomTheme(hex);
+            applyThemeObject(currentTheme, 'custom');
+            const dot = document.querySelector('.custom-color-btn .custom-dot');
+            if (dot) dot.style.background = hex;
+        }
+
+        function hexToRgbString(hex) {
+            const clean = hex.replace('#', '');
+            const value = parseInt(clean, 16);
+            return `${(value >> 16) & 255},${(value >> 8) & 255},${value & 255}`;
+        }
+
+        function updateThemeRgbVariables(theme) {
+            const root = document.documentElement;
+            root.style.setProperty('--theme-accent-rgb', hexToRgbString(theme.accent));
+            root.style.setProperty('--theme-strong-rgb', hexToRgbString(theme.strong));
+            root.style.setProperty('--theme-warm-rgb', hexToRgbString(theme.warm));
+            root.style.setProperty('--theme-bg-rgb', hexToRgbString(theme.bg1));
+        }
+
+        function setBackgroundBrightness(value) {
+            value = Math.max(0, Math.min(10000, Number(value) || 0));
+            const level = value / 100;
+
+            // This brightness affects ONLY the HTML/CSS background layers.
+            // The Three.js Earth, borders, pins and arcs are not brightness-filtered.
+            const cssBrightness = Math.min(4.0, 0.12 + level * 0.0388);
+            const left = Math.min(1.0, 0.01 + level * 0.035);
+            const right = Math.min(1.0, 0.01 + level * 0.032);
+            const bottom = Math.min(0.72, 0.005 + level * 0.024);
+            const grid = Math.min(1.0, 0.12 + level * 0.075);
+            const flares = Math.min(1.0, 0.05 + level * 0.09);
+
+            const root = document.documentElement;
+            root.style.setProperty('--background-brightness', cssBrightness.toFixed(3));
+            root.style.setProperty('--side-light-left', left.toFixed(3));
+            root.style.setProperty('--side-light-right', right.toFixed(3));
+            root.style.setProperty('--side-light-bottom', bottom.toFixed(3));
+            root.style.setProperty('--background-grid-opacity', grid.toFixed(3));
+            root.style.setProperty('--background-flare-opacity', flares.toFixed(3));
+
+            const slider = document.getElementById('background-brightness');
+            const output = document.getElementById('brightness-value');
+            if (slider) slider.value = value;
+            if (output) output.textContent = `${value}%`;
+            localStorage.setItem('globeBackgroundBrightness', String(value));
+        }
+
+        function applyThemeObject(theme, name) {
+            currentTheme = theme;
+            const root = document.documentElement;
+            root.style.setProperty('--theme-accent', currentTheme.accent);
+            root.style.setProperty('--theme-strong', currentTheme.strong);
+            root.style.setProperty('--theme-warm', currentTheme.warm);
+            root.style.setProperty('--theme-soft', currentTheme.soft);
+            root.style.setProperty('--theme-glow', currentTheme.glow);
+            root.style.setProperty('--theme-bg-1', currentTheme.bg1);
+            root.style.setProperty('--theme-bg-2', currentTheme.bg2);
+            root.style.setProperty('--theme-bg-3', currentTheme.bg3);
+            updateThemeRgbVariables(currentTheme);
+
+            document.querySelectorAll('.theme-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.theme === name));
+
+            if (worldGeoData && globeGroup) {
+                buildGraphicGlobeTexture(worldGeoData);
+                build3DVectorBorders(worldGeoData);
+                buildAtmosphere();
+                buildCityPins();
+                buildArcConnections();
+                if (arcsGroup) arcsGroup.visible = showArcs;
+            }
+            if (starParticles) starParticles.material.color.set(currentTheme.accent);
+            if (renderer) renderer.setClearColor(new THREE.Color(currentTheme.bg3), 0);
+        }
+
+        function applyTheme(name) {
+            if (!THEMES[name]) return;
+            applyThemeObject(THEMES[name], name);
         }
 
         function latLongToVector3(lat, lon, radius) {
@@ -642,6 +930,39 @@
         }
 
         function setupUIInteractions() {
+            document.querySelectorAll('.theme-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    applyTheme(btn.dataset.theme);
+                    handleUserActivity();
+                });
+            });
+
+            const customColor = document.getElementById('custom-color');
+            if (customColor) {
+                customColor.addEventListener('input', (event) => {
+                    applyCustomColor(event.target.value);
+                    handleUserActivity();
+                });
+            }
+
+            const brightnessSlider = document.getElementById('background-brightness');
+            const savedBrightness = Number(localStorage.getItem('globeBackgroundBrightness'));
+            setBackgroundBrightness(Number.isFinite(savedBrightness) ? savedBrightness : 100);
+            if (brightnessSlider) {
+                brightnessSlider.addEventListener('input', (event) => {
+                    setBackgroundBrightness(event.target.value);
+                    handleUserActivity();
+                });
+            }
+            document.getElementById('brightness-down').addEventListener('click', () => {
+                setBackgroundBrightness(Number(brightnessSlider.value) - 10);
+                handleUserActivity();
+            });
+            document.getElementById('brightness-up').addEventListener('click', () => {
+                setBackgroundBrightness(Number(brightnessSlider.value) + 10);
+                handleUserActivity();
+            });
+
             document.getElementById('toggle-rotation').addEventListener('click', () => {
                 autoRotate = !autoRotate;
             });
