@@ -30,6 +30,7 @@
             font-family: 'Inter', 'Noto Sans Arabic', sans-serif;
             color: #fff;
             user-select: none;
+            cursor: default;
         }
 
         .font-orbitron {
@@ -55,8 +56,8 @@
             width: 100%;
             height: 100%;
             background-image: 
-                linear-gradient(to right, rgba(56, 189, 248, 0.06) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(56, 189, 248, 0.06) 1px, transparent 1px);
+                linear-gradient(to right, rgba(56, 189, 248, 0.05) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(56, 189, 248, 0.05) 1px, transparent 1px);
             background-size: 64px 64px;
             pointer-events: none;
             z-index: 1;
@@ -69,7 +70,7 @@
             left: 5%;
             width: 800px;
             height: 800px;
-            background: radial-gradient(circle, rgba(14, 165, 233, 0.22) 0%, rgba(0, 0, 0, 0) 70%);
+            background: radial-gradient(circle, rgba(14, 165, 233, 0.2) 0%, rgba(0, 0, 0, 0) 70%);
             filter: blur(80px);
             pointer-events: none;
             z-index: 1;
@@ -81,7 +82,7 @@
             right: 5%;
             width: 800px;
             height: 800px;
-            background: radial-gradient(circle, rgba(234, 179, 8, 0.18) 0%, rgba(0, 0, 0, 0) 70%);
+            background: radial-gradient(circle, rgba(234, 179, 8, 0.16) 0%, rgba(0, 0, 0, 0) 70%);
             filter: blur(80px);
             pointer-events: none;
             z-index: 1;
@@ -98,18 +99,23 @@
 
         /* Glass HUD Styling */
         .glass-panel {
-            background: rgba(15, 23, 42, 0.75);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(56, 189, 248, 0.35);
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7);
         }
 
         .glass-gold {
-            background: rgba(26, 20, 8, 0.85);
-            backdrop-filter: blur(16px);
+            background: rgba(26, 20, 8, 0.9);
+            backdrop-filter: blur(20px);
             border: 1px solid rgba(234, 179, 8, 0.5);
-            box-shadow: 0 0 25px rgba(234, 179, 8, 0.25);
+            box-shadow: 0 0 25px rgba(234, 179, 8, 0.3);
+        }
+
+        /* Smooth Auto-Hide Animation */
+        .auto-hide-menu {
+            transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1), transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         /* Custom Scrollbar */
@@ -134,42 +140,51 @@
         <!-- 3D Canvas -->
         <div id="canvas-container"></div>
 
-        <!-- TOP BAR: STUDIO DISPLAY INFORMATION & CONTROLS -->
-        <div class="relative z-20 flex flex-wrap justify-between items-center px-8 py-5 gap-4">
-            <!-- Studio Display Badge -->
-            <div class="glass-panel px-5 py-2.5 rounded-xl flex items-center gap-3">
-                <span class="w-3 h-3 rounded-full bg-cyan-400 animate-ping"></span>
-                <span class="w-3 h-3 rounded-full bg-cyan-400 -ml-6"></span>
-                <span class="font-orbitron text-xs text-cyan-200 tracking-wider">3D GRAPHIC COUNTRY BOUNDARIES & REGIONAL AREA MAP</span>
-            </div>
-
-            <!-- Country Quick Search & Camera Controls -->
-            <div class="flex items-center gap-3">
-                <div class="relative">
-                    <input type="text" id="country-search" placeholder="Search Country / بگەڕێ بۆ وڵات..." 
-                           class="glass-panel text-xs text-cyan-100 placeholder-cyan-400/60 px-4 py-2.5 pl-9 rounded-xl outline-none focus:border-cyan-400 w-64 transition-all">
-                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-cyan-400 text-xs"></i>
-                    <!-- Auto-complete Search Dropdown -->
-                    <div id="search-results" class="absolute left-0 top-12 w-full glass-panel rounded-xl max-h-52 overflow-y-auto hidden z-30 divide-y divide-cyan-800/40"></div>
+        <!-- CONSOLIDATED AUTO-HIDING SINGLE MENU OVERLAY -->
+        <div id="unified-menu" class="auto-hide-menu opacity-0 pointer-events-none fixed top-6 left-1/2 transform -translate-x-1/2 z-30 w-11/12 max-w-5xl">
+            <div class="glass-panel rounded-2xl p-4 flex flex-wrap items-center justify-between gap-4 border border-cyan-500/30">
+                
+                <!-- Studio Title / Status Badge -->
+                <div class="flex items-center gap-3">
+                    <div class="relative flex items-center justify-center">
+                        <span class="w-3 h-3 rounded-full bg-cyan-400 animate-ping absolute"></span>
+                        <span class="w-3 h-3 rounded-full bg-cyan-400"></span>
+                    </div>
+                    <div>
+                        <span class="font-orbitron text-xs text-cyan-200 tracking-widest font-bold block">3D GLOBE STUDIO</span>
+                        <span class="text-[10px] text-cyan-400/80">3840×1080 4K Ultra-Wide</span>
+                    </div>
                 </div>
 
-                <button id="btn-highlight-kurdistan" class="glass-gold hover:bg-amber-900/40 text-amber-300 px-4 py-2.5 rounded-xl text-xs font-semibold flex items-center gap-2 transition">
-                    <i class="fa-solid fa-location-dot text-amber-400"></i> Kurdistan / عێراق
-                </button>
-                <button id="toggle-arcs" class="glass-panel hover:bg-cyan-900/40 text-cyan-200 px-3.5 py-2.5 rounded-xl text-xs flex items-center gap-2 transition">
-                    <i class="fa-solid fa-circle-nodes text-cyan-400"></i> Connections
-                </button>
-                <button id="toggle-rotation" class="glass-panel hover:bg-cyan-900/40 text-cyan-200 px-3.5 py-2.5 rounded-xl text-xs flex items-center gap-2 transition">
-                    <i class="fa-solid fa-rotate text-cyan-400"></i> Rotate
-                </button>
-                <button id="btn-reset-cam" class="glass-panel hover:bg-cyan-900/40 text-cyan-200 px-3.5 py-2.5 rounded-xl text-xs flex items-center gap-2 transition">
-                    <i class="fa-solid fa-crosshairs text-cyan-400"></i> Center
-                </button>
+                <!-- Country Search Bar -->
+                <div class="relative flex-1 max-w-md">
+                    <input type="text" id="country-search" placeholder="Search Country / بگەڕێ بۆ وڵات..." 
+                           class="w-full bg-slate-900/80 text-xs text-cyan-100 placeholder-cyan-400/50 px-4 py-2.5 pl-9 rounded-xl outline-none border border-cyan-500/40 focus:border-cyan-400 transition-all">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-cyan-400 text-xs"></i>
+                    <!-- Auto-complete Search Dropdown -->
+                    <div id="search-results" class="absolute left-0 top-12 w-full glass-panel rounded-xl max-h-52 overflow-y-auto hidden z-40 divide-y divide-cyan-800/40"></div>
+                </div>
+
+                <!-- Quick Action Buttons -->
+                <div class="flex items-center gap-2">
+                    <button id="btn-highlight-kurdistan" class="glass-gold hover:bg-amber-900/50 text-amber-300 px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 transition">
+                        <i class="fa-solid fa-location-dot text-amber-400"></i> Kurdistan / عێراق
+                    </button>
+                    <button id="toggle-arcs" class="bg-slate-800/80 hover:bg-cyan-900/50 text-cyan-200 border border-cyan-500/30 px-3 py-2 rounded-xl text-xs flex items-center gap-1.5 transition">
+                        <i class="fa-solid fa-circle-nodes text-cyan-400"></i> Arcs
+                    </button>
+                    <button id="toggle-rotation" class="bg-slate-800/80 hover:bg-cyan-900/50 text-cyan-200 border border-cyan-500/30 px-3 py-2 rounded-xl text-xs flex items-center gap-1.5 transition">
+                        <i class="fa-solid fa-rotate text-cyan-400"></i> Rotate
+                    </button>
+                    <button id="btn-reset-cam" class="bg-slate-800/80 hover:bg-cyan-900/50 text-cyan-200 border border-cyan-500/30 px-3 py-2 rounded-xl text-xs flex items-center gap-1.5 transition">
+                        <i class="fa-solid fa-crosshairs text-cyan-400"></i> Center
+                    </button>
+                </div>
             </div>
         </div>
 
-        <!-- FLOATING GRAPHIC COUNTRY INFORMATION CARD -->
-        <div id="country-card" class="absolute z-20 bottom-8 left-8 glass-gold p-5 rounded-2xl w-84 shadow-2xl transition-all duration-300 transform translate-y-2 opacity-0 pointer-events-none">
+        <!-- FLOATING AUTO-HIDING COUNTRY DETAILS CARD -->
+        <div id="country-card" class="auto-hide-menu opacity-0 pointer-events-none fixed z-30 bottom-8 left-8 glass-gold p-5 rounded-2xl w-80 shadow-2xl transition-all duration-300">
             <div class="flex justify-between items-start mb-3 border-b border-amber-500/30 pb-2.5">
                 <div>
                     <h3 id="card-country-name" class="font-bold text-base text-amber-300 font-orbitron">COUNTRY NAME</h3>
@@ -198,11 +213,16 @@
     <script>
         let scene, camera, renderer, controls;
         let globeGroup, earthMesh, borderLinesGroup, arcsGroup, pinsGroup;
+        let arcPulses = [];
         let autoRotate = true;
         let showArcs = true;
         let worldGeoData = null;
         const raycaster = new THREE.Raycaster();
         const mouse = new THREE.Vector2();
+
+        // Auto-hide Timer Management
+        let idleTimer = null;
+        let isSearching = false;
 
         // 193+ World Countries Dataset with Kurdish Translations & Geo Coordinates
         const WORLD_COUNTRIES = [
@@ -283,7 +303,7 @@
                     build3DVectorBorders(worldGeoData);
                 })
                 .catch(err => {
-                    console.warn("Falling back to standard canvas renderer:", err);
+                    console.warn("Falling back to canvas generator:", err);
                     buildGraphicGlobeTexture(null);
                 });
 
@@ -293,7 +313,8 @@
             buildStarfield();
 
             window.addEventListener('resize', onWindowResize);
-            renderer.domElement.addEventListener('mousemove', onHoverRaycast);
+            window.addEventListener('mousemove', handleUserActivity);
+            window.addEventListener('touchstart', handleUserActivity);
 
             setupUIInteractions();
             animate();
@@ -307,7 +328,7 @@
             canvas.height = 2048;
             const ctx = canvas.getContext('2d');
 
-            // Deep Space Oceanic Globe Background
+            // Deep Oceanic Studio Globe Background
             ctx.fillStyle = '#030c1e';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -317,7 +338,7 @@
 
             const path = d3.geoPath().projection(projection).context(ctx);
 
-            // 1. Draw High-Tech Latitude / Longitude Graticule
+            // High-Tech Latitude / Longitude Graticule
             const graticule = d3.geoGraticule().step([10, 10]);
             ctx.beginPath();
             path(graticule());
@@ -326,22 +347,19 @@
             ctx.stroke();
 
             if (geoData) {
-                // 2. Draw ALL Country Areas with Graphic Fill Shapes
+                // All Country Areas with Graphic Fill Shapes
                 geoData.features.forEach(feature => {
                     ctx.beginPath();
                     path(feature);
-                    
-                    // Distinct Graphic Color Fills for Country Polygons
                     ctx.fillStyle = 'rgba(12, 45, 82, 0.90)';
                     ctx.fill();
 
-                    // Country Boundary Strokes
                     ctx.strokeStyle = 'rgba(56, 189, 248, 0.85)';
                     ctx.lineWidth = 1.8;
                     ctx.stroke();
                 });
 
-                // 3. Highlight Iraq / Kurdistan Area Graphic in Gold
+                // Highlight Iraq / Kurdistan Area Graphic in Gold
                 const iraqFeature = geoData.features.find(f => f.id === "368" || (f.properties && f.properties.name === "Iraq"));
                 if (iraqFeature) {
                     ctx.beginPath();
@@ -353,7 +371,7 @@
                     ctx.shadowColor = '#facc15';
                     ctx.shadowBlur = 15;
                     ctx.stroke();
-                    ctx.shadowBlur = 0; // Reset shadow
+                    ctx.shadowBlur = 0;
                 }
             }
 
@@ -465,10 +483,10 @@
 
         function buildArcConnections() {
             arcsGroup = new THREE.Group();
-
+            arcPulses = [];
             const center = WORLD_COUNTRIES[0]; // Erbil / Iraq Hub
 
-            WORLD_COUNTRIES.slice(1, 16).forEach(target => {
+            WORLD_COUNTRIES.slice(1, 16).forEach((target, idx) => {
                 const p1 = latLongToVector3(center.lat, center.lon, 80.5);
                 const p2 = latLongToVector3(target.lat, target.lon, 80.5);
 
@@ -477,17 +495,29 @@
                 mid.normalize().multiplyScalar(80.5 + distance * 0.28);
 
                 const curve = new THREE.QuadraticBezierCurve3(p1, mid, p2);
-                const points = curve.getPoints(50);
-                const curveGeo = new THREE.BufferGeometry().setFromPoints(points);
 
-                const arcMat = new THREE.LineBasicMaterial({
-                    color: 0x38bdf8,
+                // Medium-thickness 3D Tube Geometry (balanced between thin and bold)
+                const tubeGeo = new THREE.TubeGeometry(curve, 64, 0.22, 8, false);
+                const tubeMat = new THREE.MeshBasicMaterial({
+                    color: 0x00f0ff,
                     transparent: true,
-                    opacity: 0.45
+                    opacity: 0.75
                 });
+                const tubeMesh = new THREE.Mesh(tubeGeo, tubeMat);
+                arcsGroup.add(tubeMesh);
 
-                const arcLine = new THREE.Line(curveGeo, arcMat);
-                arcsGroup.add(arcLine);
+                // Balanced glowing gold pulse particle traveling along each arc
+                const pulseGeo = new THREE.SphereGeometry(1.0, 16, 16);
+                const pulseMat = new THREE.MeshBasicMaterial({ color: 0xfacc15 });
+                const pulseMesh = new THREE.Mesh(pulseGeo, pulseMat);
+                arcsGroup.add(pulseMesh);
+
+                arcPulses.push({
+                    curve: curve,
+                    pulseMesh: pulseMesh,
+                    progress: Math.random(), // Staggered start progress
+                    speed: 0.003 + Math.random() * 0.003
+                });
             });
 
             globeGroup.add(arcsGroup);
@@ -528,6 +558,33 @@
             return new THREE.Vector3(x, y, z);
         }
 
+        function handleUserActivity(event) {
+            if (event && event.type === 'mousemove') {
+                onHoverRaycast(event);
+            }
+
+            const menu = document.getElementById('unified-menu');
+            
+            // Show the consolidated menu when user moves mouse
+            menu.classList.remove('opacity-0', 'pointer-events-none');
+            menu.classList.add('opacity-100');
+
+            // Reset inactivity hide timer (3.5 seconds)
+            clearTimeout(idleTimer);
+
+            // Only auto-hide if user is not actively typing in the search bar
+            if (!isSearching) {
+                idleTimer = setTimeout(() => {
+                    menu.classList.remove('opacity-100');
+                    menu.classList.add('opacity-0', 'pointer-events-none');
+                    
+                    const card = document.getElementById('country-card');
+                    card.classList.remove('opacity-100');
+                    card.classList.add('opacity-0', 'pointer-events-none');
+                }, 3500);
+            }
+        }
+
         function onHoverRaycast(event) {
             mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
             mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
@@ -545,8 +602,8 @@
                 }
             }
 
-            card.classList.remove('opacity-100', 'translate-y-0');
-            card.classList.add('opacity-0', 'pointer-events-none', 'translate-y-2');
+            card.classList.remove('opacity-100');
+            card.classList.add('opacity-0', 'pointer-events-none');
         }
 
         function showCountryCard(data) {
@@ -558,8 +615,8 @@
             document.getElementById('card-code').textContent = data.code;
             document.getElementById('card-coords').textContent = `${data.lat.toFixed(2)}° N, ${data.lon.toFixed(2)}° E`;
 
-            card.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-2');
-            card.classList.add('opacity-100', 'translate-y-0');
+            card.classList.remove('opacity-0', 'pointer-events-none');
+            card.classList.add('opacity-100');
         }
 
         function focusOnCountry(country) {
@@ -605,6 +662,12 @@
 
             const searchInput = document.getElementById('country-search');
             const searchResults = document.getElementById('search-results');
+
+            searchInput.addEventListener('focus', () => { isSearching = true; });
+            searchInput.addEventListener('blur', () => { 
+                isSearching = false; 
+                setTimeout(() => searchResults.classList.add('hidden'), 200);
+            });
 
             searchInput.addEventListener('input', (e) => {
                 const query = e.target.value.toLowerCase().trim();
@@ -663,6 +726,14 @@
 
             if (autoRotate && globeGroup) {
                 globeGroup.rotation.y += 0.002;
+            }
+
+            // Animate traveling signal pulses along arcs
+            if (showArcs && arcPulses.length > 0) {
+                arcPulses.forEach(p => {
+                    p.progress = (p.progress + p.speed) % 1;
+                    p.pulseMesh.position.copy(p.curve.getPoint(p.progress));
+                });
             }
 
             controls.update();
