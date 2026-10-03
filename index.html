@@ -50,9 +50,7 @@
             cursor: default;
         }
 
-        .font-orbitron {
-            font-family: 'Orbitron', sans-serif;
-        }
+        .font-orbitron { font-family: 'Orbitron', sans-serif; }
 
         .studio-container {
             width: 100vw;
@@ -94,10 +92,7 @@
 
         .tech-grid {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0; width: 100%; height: 100%;
             background-image: 
                 linear-gradient(to right, rgba(var(--theme-accent-rgb), .13) 1px, transparent 1px),
                 linear-gradient(to bottom, rgba(var(--theme-accent-rgb), .13) 1px, transparent 1px);
@@ -108,39 +103,18 @@
         }
 
         .flare-left {
-            position: absolute;
-            top: -20%;
-            left: 5%;
-            width: 800px;
-            height: 800px;
+            position: absolute; top: -20%; left: 5%; width: 800px; height: 800px;
             background: radial-gradient(circle, rgba(var(--theme-accent-rgb), .42) 0%, rgba(0, 0, 0, 0) 70%);
-            filter: blur(65px);
-            pointer-events: none;
-            z-index: 1;
-            opacity: var(--background-flare-opacity);
+            filter: blur(65px); pointer-events: none; z-index: 1; opacity: var(--background-flare-opacity);
         }
 
         .flare-right {
-            position: absolute;
-            bottom: -20%;
-            right: 5%;
-            width: 800px;
-            height: 800px;
+            position: absolute; bottom: -20%; right: 5%; width: 800px; height: 800px;
             background: radial-gradient(circle, rgba(var(--theme-warm-rgb), .34) 0%, rgba(0, 0, 0, 0) 70%);
-            filter: blur(65px);
-            pointer-events: none;
-            z-index: 1;
-            opacity: var(--background-flare-opacity);
+            filter: blur(65px); pointer-events: none; z-index: 1; opacity: var(--background-flare-opacity);
         }
 
-        #canvas-container {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 2;
-        }
+        #canvas-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; }
 
         .glass-panel {
             background: rgba(15, 23, 42, 0.85);
@@ -166,101 +140,41 @@
         ::-webkit-scrollbar-thumb { background: rgba(56, 189, 248, 0.5); border-radius: 4px; }
 
         .theme-btn {
-            width: 24px;
-            height: 24px;
-            padding: 2px;
-            border-radius: 999px;
-            border: 1px solid rgba(255,255,255,0.18);
-            background: rgba(15,23,42,0.75);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
+            width: 24px; height: 24px; padding: 2px; border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.18); background: rgba(15,23,42,0.75);
+            display: inline-flex; align-items: center; justify-content: center; cursor: pointer;
             transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
         }
         .theme-btn:hover { transform: scale(1.12); }
-        .theme-btn.active {
-            border-color: #fff;
-            box-shadow: 0 0 0 2px var(--theme-accent), 0 0 14px var(--theme-glow);
-        }
+        .theme-btn.active { border-color: #fff; box-shadow: 0 0 0 2px var(--theme-accent), 0 0 14px var(--theme-glow); }
         .color-dot { width: 14px; height: 14px; border-radius: 50%; display: block; }
-        .theme-palette {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            justify-content: center;
-            gap: 3px;
-            max-width: 300px;
-        }
+        .theme-palette { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 3px; max-width: 300px; }
         .custom-color-btn {
-            position: relative;
-            width: 24px;
-            height: 24px;
-            padding: 2px;
-            border-radius: 999px;
-            border: 1px solid rgba(255,255,255,0.18);
-            background: conic-gradient(red, yellow, lime, cyan, blue, magenta, red);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
-            overflow: hidden;
+            position: relative; width: 24px; height: 24px; padding: 2px; border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.18); background: conic-gradient(red, yellow, lime, cyan, blue, magenta, red);
+            display: inline-flex; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.18s ease; overflow: hidden;
         }
         .custom-color-btn:hover { transform: scale(1.12); }
-        .custom-color-btn .custom-dot {
-            width: 14px;
-            height: 14px;
-            background: #38bdf8;
-            border: 1px solid rgba(255,255,255,.7);
-        }
-        .custom-color-btn input {
-            position: absolute;
-            inset: 0;
-            opacity: 0;
-            width: 100%;
-            height: 100%;
-            cursor: pointer;
-        }
+        .custom-color-btn .custom-dot { width: 14px; height: 14px; background: #38bdf8; border: 1px solid rgba(255,255,255,.7); }
+        .custom-color-btn input { position: absolute; inset: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer; }
         .brightness-control {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            min-width: 190px;
-            padding: 6px 8px;
-            border-radius: 12px;
-            background: rgba(2, 8, 23, 0.62);
-            border: 1px solid rgba(125, 211, 252, 0.18);
+            display: flex; align-items: center; gap: 6px; min-width: 190px; padding: 6px 8px;
+            border-radius: 12px; background: rgba(2, 8, 23, 0.62); border: 1px solid rgba(125, 211, 252, 0.18);
         }
-        .brightness-control label {
-            font-size: 9px;
-            font-weight: 700;
-            letter-spacing: .06em;
-            color: var(--theme-soft);
-            white-space: nowrap;
-        }
+        .brightness-control label { font-size: 9px; font-weight: 700; letter-spacing: .06em; color: var(--theme-soft); white-space: nowrap; }
         #background-brightness { width: 105px; accent-color: var(--theme-accent); cursor: pointer; }
-        #brightness-value {
-            width: 46px;
-            text-align: right;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 9px;
-            color: var(--theme-soft);
-        }
-        .brightness-control button {
-            border: 1px solid rgba(255,255,255,.15);
-            background: rgba(15,23,42,.7);
-            color: var(--theme-soft);
-            width: 22px;
-            height: 22px;
-            border-radius: 7px;
-            cursor: pointer;
-        }
+        #brightness-value { width: 46px; text-align: right; font-family: 'Orbitron', sans-serif; font-size: 9px; color: var(--theme-soft); }
+        .brightness-control button { border: 1px solid rgba(255,255,255,.15); background: rgba(15,23,42,.7); color: var(--theme-soft); width: 22px; height: 22px; border-radius: 7px; cursor: pointer; }
         .brightness-control button:hover { background: rgba(255,255,255,.12); }
 
-        @media (max-width: 1100px) {
-            .theme-palette { max-width: 240px; }
+        .arc-mode-btn.active {
+            background: rgba(56, 189, 248, 0.25) !important;
+            border-color: var(--theme-accent) !important;
+            color: #fff !important;
+            box-shadow: 0 0 10px var(--theme-glow);
         }
+
+        @media (max-width: 1100px) { .theme-palette { max-width: 240px; } }
     </style>
 </head>
 <body>
@@ -271,7 +185,7 @@
 
         <div id="canvas-container"></div>
 
-        <div id="unified-menu" class="auto-hide-menu opacity-0 pointer-events-none fixed top-6 left-1/2 transform -translate-x-1/2 z-30 w-11/12 max-w-5xl">
+        <div id="unified-menu" class="auto-hide-menu opacity-0 pointer-events-none fixed top-6 left-1/2 transform -translate-x-1/2 z-30 w-11/12 max-w-6xl">
             <div class="glass-panel rounded-2xl p-4 flex flex-wrap items-center justify-between gap-4 border border-cyan-500/30">
                 
                 <div class="flex items-center gap-3">
@@ -285,7 +199,7 @@
                     </div>
                 </div>
 
-                <div class="relative flex-1 max-w-md">
+                <div class="relative flex-1 max-w-xs">
                     <input type="text" id="country-search" placeholder="Search Country / بگەڕێ بۆ وڵات..." 
                            class="w-full bg-slate-900/80 text-xs text-cyan-100 placeholder-cyan-400/50 px-4 py-2.5 pl-9 rounded-xl outline-none border border-cyan-500/40 focus:border-cyan-400 transition-all">
                     <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-cyan-400 text-xs"></i>
@@ -294,25 +208,25 @@
 
                 <div class="flex items-center gap-1.5 px-2 py-1.5 rounded-xl bg-slate-950/55 border border-cyan-500/20">
                     <span class="text-[9px] text-cyan-300/80 font-semibold tracking-wider mr-1">COLOR</span>
-                    <div class="theme-palette" title="Choose a studio color">
-                        <button class="theme-btn" data-theme="red" title="Red"><span class="color-dot" style="background:#ff3347"></span></button>
-                        <button class="theme-btn" data-theme="crimson" title="Crimson"><span class="color-dot" style="background:#dc143c"></span></button>
-                        <button class="theme-btn" data-theme="pink" title="Pink"><span class="color-dot" style="background:#ff4fa3"></span></button>
-                        <button class="theme-btn" data-theme="magenta" title="Magenta"><span class="color-dot" style="background:#ff00d4"></span></button>
-                        <button class="theme-btn" data-theme="purple" title="Purple"><span class="color-dot" style="background:#b56cff"></span></button>
-                        <button class="theme-btn" data-theme="indigo" title="Indigo"><span class="color-dot" style="background:#6366f1"></span></button>
-                        <button class="theme-btn active" data-theme="blue" title="Blue"><span class="color-dot" style="background:#38bdf8"></span></button>
-                        <button class="theme-btn" data-theme="cyan" title="Cyan"><span class="color-dot" style="background:#00e5ff"></span></button>
-                        <button class="theme-btn" data-theme="teal" title="Teal"><span class="color-dot" style="background:#14b8a6"></span></button>
-                        <button class="theme-btn" data-theme="green" title="Green"><span class="color-dot" style="background:#22e67a"></span></button>
-                        <button class="theme-btn" data-theme="lime" title="Lime"><span class="color-dot" style="background:#84ff00"></span></button>
-                        <button class="theme-btn" data-theme="yellow" title="Yellow"><span class="color-dot" style="background:#ffe000"></span></button>
-                        <button class="theme-btn" data-theme="gold" title="Gold"><span class="color-dot" style="background:#ffb300"></span></button>
-                        <button class="theme-btn" data-theme="orange" title="Orange"><span class="color-dot" style="background:#ff9f43"></span></button>
-                        <button class="theme-btn" data-theme="amber" title="Amber"><span class="color-dot" style="background:#ff8c00"></span></button>
-                        <button class="theme-btn" data-theme="coral" title="Coral"><span class="color-dot" style="background:#ff6f61"></span></button>
-                        <button class="theme-btn" data-theme="white" title="White"><span class="color-dot" style="background:#f8fafc"></span></button>
-                        <label class="custom-color-btn" title="Custom color">
+                    <div class="theme-palette">
+                        <button class="theme-btn" data-theme="red"><span class="color-dot" style="background:#ff3347"></span></button>
+                        <button class="theme-btn" data-theme="crimson"><span class="color-dot" style="background:#dc143c"></span></button>
+                        <button class="theme-btn" data-theme="pink"><span class="color-dot" style="background:#ff4fa3"></span></button>
+                        <button class="theme-btn" data-theme="magenta"><span class="color-dot" style="background:#ff00d4"></span></button>
+                        <button class="theme-btn" data-theme="purple"><span class="color-dot" style="background:#b56cff"></span></button>
+                        <button class="theme-btn" data-theme="indigo"><span class="color-dot" style="background:#6366f1"></span></button>
+                        <button class="theme-btn active" data-theme="blue"><span class="color-dot" style="background:#38bdf8"></span></button>
+                        <button class="theme-btn" data-theme="cyan"><span class="color-dot" style="background:#00e5ff"></span></button>
+                        <button class="theme-btn" data-theme="teal"><span class="color-dot" style="background:#14b8a6"></span></button>
+                        <button class="theme-btn" data-theme="green"><span class="color-dot" style="background:#22e67a"></span></button>
+                        <button class="theme-btn" data-theme="lime"><span class="color-dot" style="background:#84ff00"></span></button>
+                        <button class="theme-btn" data-theme="yellow"><span class="color-dot" style="background:#ffe000"></span></button>
+                        <button class="theme-btn" data-theme="gold"><span class="color-dot" style="background:#ffb300"></span></button>
+                        <button class="theme-btn" data-theme="orange"><span class="color-dot" style="background:#ff9f43"></span></button>
+                        <button class="theme-btn" data-theme="amber"><span class="color-dot" style="background:#ff8c00"></span></button>
+                        <button class="theme-btn" data-theme="coral"><span class="color-dot" style="background:#ff6f61"></span></button>
+                        <button class="theme-btn" data-theme="white"><span class="color-dot" style="background:#f8fafc"></span></button>
+                        <label class="custom-color-btn">
                             <span class="color-dot custom-dot"></span>
                             <input id="custom-color" type="color" value="#38bdf8">
                         </label>
@@ -328,12 +242,19 @@
                 </div>
 
                 <div class="flex items-center gap-2">
-                    <button id="btn-highlight-kurdistan" class="glass-gold hover:bg-amber-900/50 text-amber-300 px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 transition">
+                    <button id="btn-highlight-kurdistan" class="glass-gold hover:bg-amber-900/50 text-amber-300 px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition">
                         <i class="fa-solid fa-location-dot text-amber-400"></i> Kurdistan / عێراق
                     </button>
-                    <button id="toggle-arcs" class="bg-slate-800/80 hover:bg-cyan-900/50 text-cyan-200 border border-cyan-500/30 px-3 py-2 rounded-xl text-xs flex items-center gap-1.5 transition">
-                        <i class="fa-solid fa-circle-nodes text-cyan-400"></i> Arcs
-                    </button>
+                    
+                    <div class="flex items-center bg-slate-900/80 p-1 rounded-xl border border-cyan-500/30 gap-1">
+                        <button id="btn-arcs-inside" class="arc-mode-btn active text-cyan-200 px-2.5 py-1.5 rounded-lg text-xs flex items-center gap-1 transition">
+                            <i class="fa-solid fa-arrow-down-to-line text-cyan-400"></i> Arcs Inside
+                        </button>
+                        <button id="btn-arcs-outside" class="arc-mode-btn text-cyan-200 px-2.5 py-1.5 rounded-lg text-xs flex items-center gap-1 transition">
+                            <i class="fa-solid fa-arrow-up-from-line text-cyan-400"></i> Arcs Outside
+                        </button>
+                    </div>
+
                     <button id="toggle-rotation" class="bg-slate-800/80 hover:bg-cyan-900/50 text-cyan-200 border border-cyan-500/30 px-3 py-2 rounded-xl text-xs flex items-center gap-1.5 transition">
                         <i class="fa-solid fa-rotate text-cyan-400"></i> Rotate
                     </button>
@@ -367,17 +288,15 @@
                 </div>
             </div>
         </div>
-
     </div>
-
     <script>
         let scene, camera, renderer, controls;
         let globeGroup, earthMesh, borderLinesGroup, arcsGroup, pinsGroup;
         let arcPulses = [];
         let autoRotate = true;
-        let showArcs = true;
+        let arcDirection = 'inside';
         let worldGeoData = null;
-        let highlightedCountryCode = "IRQ"; // Default highlighted country is Iraq (IRQ / 368)
+        let highlightedCountryCode = "IRQ";
         
         const raycaster = new THREE.Raycaster();
         const mouse = new THREE.Vector2();
@@ -404,7 +323,6 @@
         let currentTheme = THEMES.blue;
         let atmosphereMesh = null;
         let starParticles = null;
-
         let idleTimer = null;
         let isSearching = false;
 
@@ -441,7 +359,6 @@
 
         function init3D() {
             const container = document.getElementById('canvas-container');
-
             scene = new THREE.Scene();
 
             const aspect = window.innerWidth / window.innerHeight;
@@ -485,7 +402,7 @@
                     build3DVectorBorders(worldGeoData);
                 })
                 .catch(err => {
-                    console.warn("Falling back to canvas generator:", err);
+                    console.warn("Fallback to generator:", err);
                     buildGraphicGlobeTexture(null);
                 });
 
@@ -503,7 +420,6 @@
             animate();
         }
 
-        // Helper check for country code matching
         function isCountryMatch(feature, code) {
             if (!feature || !code) return false;
             if (code === "IRQ" && (feature.id === "368" || (feature.properties && feature.properties.name === "Iraq"))) return true;
@@ -536,8 +452,7 @@
 
             const sphereGeo = new THREE.SphereGeometry(80, 128, 128);
             const canvas = document.createElement('canvas');
-            canvas.width = 4096;
-            canvas.height = 2048;
+            canvas.width = 4096; canvas.height = 2048;
             const ctx = canvas.getContext('2d');
 
             ctx.fillStyle = currentTheme.ocean;
@@ -549,50 +464,31 @@
             const path = d3.geoPath().projection(projection).context(ctx);
 
             const graticule = d3.geoGraticule().step([10, 10]);
-            ctx.beginPath();
-            path(graticule());
-            ctx.strokeStyle = currentTheme.glow;
-            ctx.lineWidth = 1.2;
-            ctx.stroke();
+            ctx.beginPath(); path(graticule());
+            ctx.strokeStyle = currentTheme.glow; ctx.lineWidth = 1.2; ctx.stroke();
 
             if (geoData) {
                 geoData.features.forEach(feature => {
-                    ctx.beginPath();
-                    path(feature);
-                    ctx.fillStyle = currentTheme.country;
-                    ctx.fill();
-                    ctx.strokeStyle = currentTheme.accent;
-                    ctx.lineWidth = 1.8;
-                    ctx.stroke();
+                    ctx.beginPath(); path(feature);
+                    ctx.fillStyle = currentTheme.country; ctx.fill();
+                    ctx.strokeStyle = currentTheme.accent; ctx.lineWidth = 1.8; ctx.stroke();
                 });
 
-                // Highlight the dynamically selected country in Yellow/Warm accent
                 if (highlightedCountryCode) {
                     const targetFeature = geoData.features.find(f => isCountryMatch(f, highlightedCountryCode));
                     if (targetFeature) {
-                        ctx.beginPath();
-                        path(targetFeature);
-                        ctx.fillStyle = currentTheme.warm;
-                        ctx.globalAlpha = 0.45;
-                        ctx.fill();
-                        ctx.globalAlpha = 1;
-                        ctx.strokeStyle = currentTheme.warm;
-                        ctx.lineWidth = 4.0;
-                        ctx.shadowColor = currentTheme.warm;
-                        ctx.shadowBlur = 15;
-                        ctx.stroke();
-                        ctx.shadowBlur = 0;
+                        ctx.beginPath(); path(targetFeature);
+                        ctx.fillStyle = currentTheme.warm; ctx.globalAlpha = 0.45; ctx.fill();
+                        ctx.globalAlpha = 1; ctx.strokeStyle = currentTheme.warm; ctx.lineWidth = 4.0;
+                        ctx.shadowColor = currentTheme.warm; ctx.shadowBlur = 15; ctx.stroke(); ctx.shadowBlur = 0;
                     }
                 }
             }
 
             const texture = new THREE.CanvasTexture(canvas);
             const earthMat = new THREE.MeshStandardMaterial({
-                map: texture,
-                roughness: 0.35,
-                metalness: 0.25,
-                emissive: new THREE.Color(currentTheme.ocean),
-                emissiveIntensity: 0.95
+                map: texture, roughness: 0.35, metalness: 0.25,
+                emissive: new THREE.Color(currentTheme.ocean), emissiveIntensity: 0.95
             });
             earthMesh = new THREE.Mesh(sphereGeo, earthMat);
             globeGroup.add(earthMesh);
@@ -629,10 +525,7 @@
             if (atmosphereMesh) scene.remove(atmosphereMesh);
             const atmosGeo = new THREE.SphereGeometry(86, 64, 64);
             const atmosMat = new THREE.MeshBasicMaterial({
-                color: new THREE.Color(currentTheme.strong),
-                side: THREE.BackSide,
-                transparent: true,
-                opacity: 0.16
+                color: new THREE.Color(currentTheme.strong), side: THREE.BackSide, transparent: true, opacity: 0.16
             });
             atmosphereMesh = new THREE.Mesh(atmosGeo, atmosMat);
             scene.add(atmosphereMesh);
@@ -655,9 +548,7 @@
                 const ringGeo = new THREE.RingGeometry(1.6, 2.5, 16);
                 const ringMat = new THREE.MeshBasicMaterial({
                     color: new THREE.Color(isSelected ? currentTheme.warm : currentTheme.strong),
-                    side: THREE.DoubleSide,
-                    transparent: true,
-                    opacity: 0.85
+                    side: THREE.DoubleSide, transparent: true, opacity: 0.85
                 });
                 const ring = new THREE.Mesh(ringGeo, ringMat);
                 ring.position.copy(pos);
@@ -671,15 +562,27 @@
             if (arcsGroup) globeGroup.remove(arcsGroup);
             arcsGroup = new THREE.Group();
             arcPulses = [];
-            const center = WORLD_COUNTRIES[0];
 
-            WORLD_COUNTRIES.slice(1, 16).forEach(target => {
-                const p1 = latLongToVector3(center.lat, center.lon, 80.5);
-                const p2 = latLongToVector3(target.lat, target.lon, 80.5);
-                const mid = new THREE.Vector3().addVectors(p1, p2).multiplyScalar(0.5);
-                const distance = p1.distanceTo(p2);
+            const activeCountry = WORLD_COUNTRIES.find(c => c.code === highlightedCountryCode) || WORLD_COUNTRIES[0];
+            const activePos = latLongToVector3(activeCountry.lat, activeCountry.lon, 80.5);
+            const otherCountries = WORLD_COUNTRIES.filter(c => c.code !== activeCountry.code);
+
+            otherCountries.slice(0, 15).forEach(target => {
+                const targetPos = latLongToVector3(target.lat, target.lon, 80.5);
+                
+                let startPos, endPos;
+                if (arcDirection === 'inside') {
+                    startPos = targetPos;
+                    endPos = activePos;
+                } else {
+                    startPos = activePos;
+                    endPos = targetPos;
+                }
+
+                const mid = new THREE.Vector3().addVectors(startPos, endPos).multiplyScalar(0.5);
+                const distance = startPos.distanceTo(endPos);
                 mid.normalize().multiplyScalar(80.5 + distance * 0.28);
-                const curve = new THREE.QuadraticBezierCurve3(p1, mid, p2);
+                const curve = new THREE.QuadraticBezierCurve3(startPos, mid, endPos);
 
                 const tubeGeo = new THREE.TubeGeometry(curve, 64, 0.22, 8, false);
                 const tubeMat = new THREE.MeshBasicMaterial({ color: new THREE.Color(currentTheme.strong), transparent: true, opacity: 0.78 });
@@ -689,7 +592,10 @@
                 const pulseMat = new THREE.MeshBasicMaterial({ color: new THREE.Color(currentTheme.warm) });
                 const pulseMesh = new THREE.Mesh(pulseGeo, pulseMat);
                 arcsGroup.add(pulseMesh);
-                arcPulses.push({ curve, pulseMesh, progress: Math.random(), speed: 0.003 + Math.random() * 0.003 });
+                
+                arcPulses.push({ 
+                    curve, pulseMesh, progress: Math.random(), speed: 0.003 + Math.random() * 0.003 
+                });
             });
             globeGroup.add(arcsGroup);
         }
@@ -726,17 +632,10 @@
             const ocean = new THREE.Color().setHSL(hsl.h, Math.min(0.78, hsl.s), 0.045);
 
             return {
-                accent,
-                strong: '#' + strongColor.getHexString(),
-                warm: '#' + warmColor.getHexString(),
-                soft: '#' + softColor.getHexString(),
+                accent, strong: '#' + strongColor.getHexString(), warm: '#' + warmColor.getHexString(), soft: '#' + softColor.getHexString(),
                 glow: `rgba(${Math.round(color.r * 255)},${Math.round(color.g * 255)},${Math.round(color.b * 255)},.32)`,
-                bg1: '#' + bg1.getHexString(),
-                bg2: '#' + bg2.getHexString(),
-                bg3: '#' + bg3.getHexString(),
-                globe: '#' + globe.getHexString(),
-                country: '#' + country.getHexString(),
-                ocean: '#' + ocean.getHexString()
+                bg1: '#' + bg1.getHexString(), bg2: '#' + bg2.getHexString(), bg3: '#' + bg3.getHexString(),
+                globe: '#' + globe.getHexString(), country: '#' + country.getHexString(), ocean: '#' + ocean.getHexString()
             };
         }
 
@@ -808,7 +707,6 @@
                 buildAtmosphere();
                 buildCityPins();
                 buildArcConnections();
-                if (arcsGroup) arcsGroup.visible = showArcs;
             }
             if (starParticles) starParticles.material.color.set(currentTheme.accent);
             if (renderer) renderer.setClearColor(new THREE.Color(currentTheme.bg3), 0);
@@ -836,7 +734,6 @@
             }
 
             const menu = document.getElementById('unified-menu');
-            
             menu.classList.remove('opacity-0', 'pointer-events-none');
             menu.classList.add('opacity-100');
 
@@ -889,18 +786,17 @@
         }
 
         function focusOnCountry(country) {
-            // Update highlighted country code and rebuild textures/borders dynamically
             highlightedCountryCode = country.code;
             if (worldGeoData) {
                 buildGraphicGlobeTexture(worldGeoData);
                 build3DVectorBorders(worldGeoData);
                 buildCityPins();
+                buildArcConnections();
             }
 
             showCountryCard(country);
 
             const targetPos = latLongToVector3(country.lat, country.lon, 230);
-            
             let startTime = null;
             const startPos = camera.position.clone();
 
@@ -956,9 +852,21 @@
                 autoRotate = !autoRotate;
             });
 
-            document.getElementById('toggle-arcs').addEventListener('click', () => {
-                showArcs = !showArcs;
-                arcsGroup.visible = showArcs;
+            const btnInside = document.getElementById('btn-arcs-inside');
+            const btnOutside = document.getElementById('btn-arcs-outside');
+
+            btnInside.addEventListener('click', () => {
+                arcDirection = 'inside';
+                btnInside.classList.add('active');
+                btnOutside.classList.remove('active');
+                buildArcConnections();
+            });
+
+            btnOutside.addEventListener('click', () => {
+                arcDirection = 'outside';
+                btnOutside.classList.add('active');
+                btnInside.classList.remove('active');
+                buildArcConnections();
             });
 
             document.getElementById('btn-reset-cam').addEventListener('click', () => {
@@ -1038,7 +946,7 @@
                 globeGroup.rotation.y += 0.002;
             }
 
-            if (showArcs && arcPulses.length > 0) {
+            if (arcPulses.length > 0) {
                 arcPulses.forEach(p => {
                     p.progress = (p.progress + p.speed) % 1;
                     p.pulseMesh.position.copy(p.curve.getPoint(p.progress));
