@@ -1,1069 +1,1108 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D World HD Globe Background</title>
+‏<!DOCTYPE html>
+‏<html lang="en">
+‏<head>
+‏    <meta charset="UTF-8">
+‏    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+‏    <title>3D World HD Globe Background</title>
     
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Three.js Library -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <!-- OrbitControls for smooth 3D camera navigation -->
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
-    <!-- D3.js & TopoJSON for real vector country polygon boundary rendering -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+‏    <!-- Tailwind CSS -->
+‏    <script src="https://cdn.tailwindcss.com"></script>
+‏    <!-- Three.js Library -->
+‏    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+‏    <!-- OrbitControls for smooth 3D camera navigation -->
+‏    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+‏    <!-- D3.js & TopoJSON for real vector country polygon boundary rendering -->
+‏    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+‏    <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
+‏    <!-- FontAwesome Icons -->
+‏    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800;900&family=Inter:wght@300;400;600;700&family=Noto+Sans+Arabic:wght@400;700;900&display=swap');
+‏    <style>
+‏        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800;900&family=Inter:wght@300;400;600;700&family=Noto+Sans+Arabic:wght@400;700;900&display=swap');
 
-        :root {
-            --theme-accent: #38bdf8;
-            --theme-strong: #00f0ff;
-            --theme-warm: #facc15;
-            --theme-soft: #8be9ff;
-            --theme-glow: rgba(56, 189, 248, 0.30);
-            --theme-bg-1: #12345b;
-            --theme-bg-2: #07182d;
-            --theme-bg-3: #020916;
-            --side-light-left: 0.24;
-            --side-light-right: 0.20;
-            --side-light-bottom: 0.09;
-            --background-brightness: 1;
-            --background-grid-opacity: 0.65;
-            --background-flare-opacity: 0.55;
-        }
-
-        body, html {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            background-color: #061326;
-            font-family: 'Inter', 'Noto Sans Arabic', sans-serif;
-            color: #fff;
-            user-select: none;
-            cursor: default;
+‏        :root {
+‏            --theme-accent: #38bdf8;
+‏            --theme-strong: #00f0ff;
+‏            --theme-warm: #facc15;
+‏            --theme-soft: #8be9ff;
+‏            --theme-glow: rgba(56, 189, 248, 0.30);
+‏            --theme-bg-1: #12345b;
+‏            --theme-bg-2: #07182d;
+‏            --theme-bg-3: #020916;
+‏            --side-light-left: 0.24;
+‏            --side-light-right: 0.20;
+‏            --side-light-bottom: 0.09;
+‏            --background-brightness: 1;
+‏            --background-grid-opacity: 0.65;
+‏            --background-flare-opacity: 0.55;
         }
 
-        .font-orbitron {
-            font-family: 'Orbitron', sans-serif;
+‏        body, html {
+‏            margin: 0;
+‏            padding: 0;
+‏            width: 100%;
+‏            height: 100%;
+‏            overflow: hidden;
+‏            background-color: #061326;
+‏            font-family: 'Inter', 'Noto Sans Arabic', sans-serif;
+‏            color: #fff;
+‏            user-select: none;
+‏            cursor: default;
         }
 
-        /* Studio Container optimized for ultra-wide screen displays */
-        .studio-container {
-            width: 100vw;
-            height: 100vh;
-            position: relative;
-            background: #000;
-
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
+‏        .font-orbitron {
+‏            font-family: 'Orbitron', sans-serif;
         }
 
-        /* Full background layer. This layer is separate from the 3D Earth, so
-           the LIGHT control changes the complete background without changing the globe. */
-        .studio-container::after {
-            content: "";
-            position: absolute;
-            inset: 0;
-            z-index: 0;
-            pointer-events: none;
-            background: radial-gradient(circle at 50% 42%, var(--theme-bg-1) 0%, var(--theme-bg-2) 48%, var(--theme-bg-3) 100%);
-            filter: brightness(var(--background-brightness));
+‏        .studio-container {
+‏            width: 100vw;
+‏            height: 100vh;
+‏            position: relative;
+‏            background: #000;
+‏            display: flex;
+‏            flex-direction: column;
+‏            justify-content: space-between;
         }
 
-        /* Graphic Grid Overlay */
-        .studio-container::before {
-            content: "";
-            position: absolute;
-            inset: 0;
-            z-index: 0;
-            pointer-events: none;
-            background:
-                radial-gradient(ellipse 34% 78% at 0% 52%, rgba(var(--theme-accent-rgb), var(--side-light-left)), transparent 72%),
-                radial-gradient(ellipse 34% 78% at 100% 52%, rgba(var(--theme-strong-rgb), var(--side-light-right)), transparent 72%),
-                radial-gradient(ellipse 48% 48% at 50% 100%, rgba(var(--theme-warm-rgb), var(--side-light-bottom)), transparent 75%);
-            filter: blur(12px) brightness(var(--background-brightness));
+‏        .studio-container::after {
+‏            content: "";
+‏            position: absolute;
+‏            inset: 0;
+‏            z-index: 0;
+‏            pointer-events: none;
+‏            background: radial-gradient(circle at 50% 42%, var(--theme-bg-1) 0%, var(--theme-bg-2) 48%, var(--theme-bg-3) 100%);
+‏            filter: brightness(var(--background-brightness));
         }
 
-        /* Theme-aware Tailwind accent overrides */
-        [class*="text-cyan-"] { color: var(--theme-soft) !important; }
-        [class*="border-cyan-"] { border-color: color-mix(in srgb, var(--theme-accent) 45%, transparent) !important; }
-        [class*="text-amber-"] { color: var(--theme-warm) !important; }
-        [class*="border-amber-"] { border-color: color-mix(in srgb, var(--theme-warm) 48%, transparent) !important; }
-
-        .tech-grid {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: 
-                linear-gradient(to right, rgba(var(--theme-accent-rgb), .13) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(var(--theme-accent-rgb), .13) 1px, transparent 1px);
-            background-size: 64px 64px;
-            opacity: var(--background-grid-opacity);
-            pointer-events: none;
-            z-index: 1;
+‏        .studio-container::before {
+‏            content: "";
+‏            position: absolute;
+‏            inset: 0;
+‏            z-index: 0;
+‏            pointer-events: none;
+‏            background:
+‏                radial-gradient(ellipse 34% 78% at 0% 52%, rgba(var(--theme-accent-rgb), var(--side-light-left)), transparent 72%),
+‏                radial-gradient(ellipse 34% 78% at 100% 52%, rgba(var(--theme-strong-rgb), var(--side-light-right)), transparent 72%),
+‏                radial-gradient(ellipse 48% 48% at 50% 100%, rgba(var(--theme-warm-rgb), var(--side-light-bottom)), transparent 75%);
+‏            filter: blur(12px) brightness(var(--background-brightness));
         }
 
-        /* Studio Ambient Lighting Flares */
-        .flare-left {
-            position: absolute;
-            top: -20%;
-            left: 5%;
-            width: 800px;
-            height: 800px;
-            background: radial-gradient(circle, rgba(var(--theme-accent-rgb), .42) 0%, rgba(0, 0, 0, 0) 70%);
-            filter: blur(65px);
-            pointer-events: none;
-            z-index: 1;
-            opacity: var(--background-flare-opacity);
+‏        [class*="text-cyan-"] { color: var(--theme-soft) !important; }
+‏        [class*="border-cyan-"] { border-color: color-mix(in srgb, var(--theme-accent) 45%, transparent) !important; }
+‏        [class*="text-amber-"] { color: var(--theme-warm) !important; }
+‏        [class*="border-amber-"] { border-color: color-mix(in srgb, var(--theme-warm) 48%, transparent) !important; }
+
+‏        .tech-grid {
+‏            position: absolute;
+‏            top: 0;
+‏            left: 0;
+‏            width: 100%;
+‏            height: 100%;
+‏            background-image: 
+‏                linear-gradient(to right, rgba(var(--theme-accent-rgb), .13) 1px, transparent 1px),
+‏                linear-gradient(to bottom, rgba(var(--theme-accent-rgb), .13) 1px, transparent 1px);
+‏            background-size: 64px 64px;
+‏            opacity: var(--background-grid-opacity);
+‏            pointer-events: none;
+‏            z-index: 1;
         }
 
-        .flare-right {
-            position: absolute;
-            bottom: -20%;
-            right: 5%;
-            width: 800px;
-            height: 800px;
-            background: radial-gradient(circle, rgba(var(--theme-warm-rgb), .34) 0%, rgba(0, 0, 0, 0) 70%);
-            filter: blur(65px);
-            pointer-events: none;
-            z-index: 1;
-            opacity: var(--background-flare-opacity);
+‏        .flare-left {
+‏            position: absolute;
+‏            top: -20%;
+‏            left: 5%;
+‏            width: 800px;
+‏            height: 800px;
+‏            background: radial-gradient(circle, rgba(var(--theme-accent-rgb), .42) 0%, rgba(0, 0, 0, 0) 70%);
+‏            filter: blur(65px);
+‏            pointer-events: none;
+‏            z-index: 1;
+‏            opacity: var(--background-flare-opacity);
         }
 
-        #canvas-container {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 2;
+‏        .flare-right {
+‏            position: absolute;
+‏            bottom: -20%;
+‏            right: 5%;
+‏            width: 800px;
+‏            height: 800px;
+‏            background: radial-gradient(circle, rgba(var(--theme-warm-rgb), .34) 0%, rgba(0, 0, 0, 0) 70%);
+‏            filter: blur(65px);
+‏            pointer-events: none;
+‏            z-index: 1;
+‏            opacity: var(--background-flare-opacity);
         }
 
-        /* Glass HUD Styling */
-        .glass-panel {
-            background: rgba(15, 23, 42, 0.85);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid color-mix(in srgb, var(--theme-accent) 45%, transparent);
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7);
+‏        #canvas-container {
+‏            position: absolute;
+‏            top: 0;
+‏            left: 0;
+‏            width: 100%;
+‏            height: 100%;
+‏            z-index: 2;
         }
 
-        .glass-gold {
-            background: rgba(26, 20, 8, 0.9);
-            backdrop-filter: blur(20px);
-            border: 1px solid color-mix(in srgb, var(--theme-warm) 60%, transparent);
-            box-shadow: 0 0 25px rgba(234, 179, 8, 0.3);
+‏        .glass-panel {
+‏            background: rgba(15, 23, 42, 0.85);
+‏            backdrop-filter: blur(20px);
+‏            -webkit-backdrop-filter: blur(20px);
+‏            border: 1px solid color-mix(in srgb, var(--theme-accent) 45%, transparent);
+‏            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7);
         }
 
-        /* Smooth Auto-Hide Animation */
-        .auto-hide-menu {
-            transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1), transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+‏        .glass-gold {
+‏            background: rgba(26, 20, 8, 0.9);
+‏            backdrop-filter: blur(20px);
+‏            border: 1px solid color-mix(in srgb, var(--theme-warm) 60%, transparent);
+‏            box-shadow: 0 0 25px rgba(234, 179, 8, 0.3);
         }
 
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 4px;
-        }
-        ::-webkit-scrollbar-track {
-            background: rgba(15, 23, 42, 0.5);
-        }
-        ::-webkit-scrollbar-thumb {
-            background: rgba(56, 189, 248, 0.5);
-            border-radius: 4px;
+‏        .auto-hide-menu {
+‏            transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1), transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .theme-btn {
-            width: 24px;
-            height: 24px;
-            padding: 2px;
-            border-radius: 999px;
-            border: 1px solid rgba(255,255,255,0.18);
-            background: rgba(15,23,42,0.75);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+‏        ::-webkit-scrollbar { width: 4px; }
+‏        ::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.5); }
+‏        ::-webkit-scrollbar-thumb { background: rgba(56, 189, 248, 0.5); border-radius: 4px; }
+
+‏        .theme-btn {
+‏            width: 24px;
+‏            height: 24px;
+‏            padding: 2px;
+‏            border-radius: 999px;
+‏            border: 1px solid rgba(255,255,255,0.18);
+‏            background: rgba(15,23,42,0.75);
+‏            display: inline-flex;
+‏            align-items: center;
+‏            justify-content: center;
+‏            cursor: pointer;
+‏            transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
         }
-        .theme-btn:hover { transform: scale(1.12); }
-        .theme-btn.active {
-            border-color: #fff;
-            box-shadow: 0 0 0 2px var(--theme-accent), 0 0 14px var(--theme-glow);
+‏        .theme-btn:hover { transform: scale(1.12); }
+‏        .theme-btn.active {
+‏            border-color: #fff;
+‏            box-shadow: 0 0 0 2px var(--theme-accent), 0 0 14px var(--theme-glow);
         }
-        .color-dot {
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
-            display: block;
+‏        .color-dot { width: 14px; height: 14px; border-radius: 50%; display: block; }
+‏        .theme-palette {
+‏            display: flex;
+‏            flex-wrap: wrap;
+‏            align-items: center;
+‏            justify-content: center;
+‏            gap: 3px;
+‏            max-width: 300px;
         }
-        .theme-palette {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            justify-content: center;
-            gap: 3px;
-            max-width: 300px;
+‏        .custom-color-btn {
+‏            position: relative;
+‏            width: 24px;
+‏            height: 24px;
+‏            padding: 2px;
+‏            border-radius: 999px;
+‏            border: 1px solid rgba(255,255,255,0.18);
+‏            background: conic-gradient(red, yellow, lime, cyan, blue, magenta, red);
+‏            display: inline-flex;
+‏            align-items: center;
+‏            justify-content: center;
+‏            cursor: pointer;
+‏            transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+‏            overflow: hidden;
         }
-        .custom-color-btn {
-            position: relative;
-            width: 24px;
-            height: 24px;
-            padding: 2px;
-            border-radius: 999px;
-            border: 1px solid rgba(255,255,255,0.18);
-            background: conic-gradient(red, yellow, lime, cyan, blue, magenta, red);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
-            overflow: hidden;
+‏        .custom-color-btn:hover { transform: scale(1.12); }
+‏        .custom-color-btn .custom-dot {
+‏            width: 14px;
+‏            height: 14px;
+‏            background: #38bdf8;
+‏            border: 1px solid rgba(255,255,255,.7);
         }
-        .custom-color-btn:hover { transform: scale(1.12); }
-        .custom-color-btn .custom-dot {
-            width: 14px;
-            height: 14px;
-            background: #38bdf8;
-            border: 1px solid rgba(255,255,255,.7);
+‏        .custom-color-btn input {
+‏            position: absolute;
+‏            inset: 0;
+‏            opacity: 0;
+‏            width: 100%;
+‏            height: 100%;
+‏            cursor: pointer;
         }
-        .custom-color-btn input {
-            position: absolute;
-            inset: 0;
-            opacity: 0;
-            width: 100%;
-            height: 100%;
-            cursor: pointer;
+‏        .brightness-control {
+‏            display: flex;
+‏            align-items: center;
+‏            gap: 6px;
+‏            min-width: 190px;
+‏            padding: 6px 8px;
+‏            border-radius: 12px;
+‏            background: rgba(2, 8, 23, 0.62);
+‏            border: 1px solid rgba(125, 211, 252, 0.18);
         }
-        .brightness-control {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            min-width: 190px;
-            padding: 6px 8px;
-            border-radius: 12px;
-            background: rgba(2, 8, 23, 0.62);
-            border: 1px solid rgba(125, 211, 252, 0.18);
+‏        .brightness-control label {
+‏            font-size: 9px;
+‏            font-weight: 700;
+‏            letter-spacing: .06em;
+‏            color: var(--theme-soft);
+‏            white-space: nowrap;
         }
-        .brightness-control label {
-            font-size: 9px;
-            font-weight: 700;
-            letter-spacing: .06em;
-            color: var(--theme-soft);
-            white-space: nowrap;
+‏        #background-brightness { width: 105px; accent-color: var(--theme-accent); cursor: pointer; }
+‏        #brightness-value {
+‏            width: 46px;
+‏            text-align: right;
+‏            font-family: 'Orbitron', sans-serif;
+‏            font-size: 9px;
+‏            color: var(--theme-soft);
         }
-        #background-brightness {
-            width: 105px;
-            accent-color: var(--theme-accent);
-            cursor: pointer;
+‏        .brightness-control button {
+‏            border: 1px solid rgba(255,255,255,.15);
+‏            background: rgba(15,23,42,.7);
+‏            color: var(--theme-soft);
+‏            width: 22px;
+‏            height: 22px;
+‏            border-radius: 7px;
+‏            cursor: pointer;
         }
-        #brightness-value {
-            width: 46px;
-            text-align: right;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 9px;
-            color: var(--theme-soft);
-        }
-        .brightness-control button {
-            border: 1px solid rgba(255,255,255,.15);
-            background: rgba(15,23,42,.7);
-            color: var(--theme-soft);
-            width: 22px;
-            height: 22px;
-            border-radius: 7px;
-            cursor: pointer;
-        }
-        .brightness-control button:hover {
-            background: rgba(255,255,255,.12);
+‏        .brightness-control button:hover { background: rgba(255,255,255,.12); }
+
+‏        .arc-mode-btn.active {
+‏            background: rgba(56, 189, 248, 0.25) !important;
+‏            border-color: var(--theme-accent) !important;
+‏            color: #fff !important;
+‏            box-shadow: 0 0 10px var(--theme-glow);
         }
 
-        @media (max-width: 1100px) {
-            .theme-palette { max-width: 240px; }
+‏        @media (max-width: 1100px) {
+‏            .theme-palette { max-width: 240px; }
         }
-    </style>
-</head>
-<body>
-    <div class="studio-container">
-        <div class="tech-grid"></div>
-        <div class="flare-left"></div>
-        <div class="flare-right"></div>
+‏    </style>
+‏</head>
+‏<body>
+‏    <div class="studio-container">
+‏        <div class="tech-grid"></div>
+‏        <div class="flare-left"></div>
+‏        <div class="flare-right"></div>
 
-        <!-- 3D Canvas -->
-        <div id="canvas-container"></div>
+‏        <div id="canvas-container"></div>
 
-        <!-- CONSOLIDATED AUTO-HIDING SINGLE MENU OVERLAY -->
-        <div id="unified-menu" class="auto-hide-menu opacity-0 pointer-events-none fixed top-6 left-1/2 transform -translate-x-1/2 z-30 w-11/12 max-w-5xl">
-            <div class="glass-panel rounded-2xl p-4 flex flex-wrap items-center justify-between gap-4 border border-cyan-500/30">
+‏        <div id="unified-menu" class="auto-hide-menu opacity-0 pointer-events-none fixed top-6 left-1/2 transform -translate-x-1/2 z-30 w-11/12 max-w-6xl">
+‏            <div class="glass-panel rounded-2xl p-4 flex flex-wrap items-center justify-between gap-4 border border-cyan-500/30">
                 
-                <!-- Studio Title / Status Badge -->
-                <div class="flex items-center gap-3">
-                    <div class="relative flex items-center justify-center">
-                        <span class="w-3 h-3 rounded-full bg-cyan-400 animate-ping absolute"></span>
-                        <span class="w-3 h-3 rounded-full bg-cyan-400"></span>
-                    </div>
-                    <div>
-                        <span class="font-orbitron text-xs text-cyan-200 tracking-widest font-bold block">3D GLOBE STUDIO</span>
-                        <span class="text-[10px] text-cyan-400/80">3840×1080 4K Ultra-Wide</span>
-                    </div>
-                </div>
+‏                <div class="flex items-center gap-3">
+‏                    <div class="relative flex items-center justify-center">
+‏                        <span class="w-3 h-3 rounded-full bg-cyan-400 animate-ping absolute"></span>
+‏                        <span class="w-3 h-3 rounded-full bg-cyan-400"></span>
+‏                    </div>
+‏                    <div>
+‏                        <span class="font-orbitron text-xs text-cyan-200 tracking-widest font-bold block">3D GLOBE STUDIO</span>
+‏                        <span class="text-[10px] text-cyan-400/80">3840×1080 4K Ultra-Wide</span>
+‏                    </div>
+‏                </div>
 
-                <!-- Country Search Bar -->
-                <div class="relative flex-1 max-w-md">
-                    <input type="text" id="country-search" placeholder="Search Country / بگەڕێ بۆ وڵات..." 
-                           class="w-full bg-slate-900/80 text-xs text-cyan-100 placeholder-cyan-400/50 px-4 py-2.5 pl-9 rounded-xl outline-none border border-cyan-500/40 focus:border-cyan-400 transition-all">
-                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-cyan-400 text-xs"></i>
-                    <!-- Auto-complete Search Dropdown -->
-                    <div id="search-results" class="absolute left-0 top-12 w-full glass-panel rounded-xl max-h-52 overflow-y-auto hidden z-40 divide-y divide-cyan-800/40"></div>
-                </div>
+‏                <div class="relative flex-1 max-w-xs">
+‏                    <input type="text" id="country-search" placeholder="Search Country / بگەڕێ بۆ وڵات..." 
+‏                           class="w-full bg-slate-900/80 text-xs text-cyan-100 placeholder-cyan-400/50 px-4 py-2.5 pl-9 rounded-xl outline-none border border-cyan-500/40 focus:border-cyan-400 transition-all">
+‏                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-cyan-400 text-xs"></i>
+‏                    <div id="search-results" class="absolute left-0 top-12 w-full glass-panel rounded-xl max-h-52 overflow-y-auto hidden z-40 divide-y divide-cyan-800/40"></div>
+‏                </div>
 
-                <!-- Color Theme Picker -->
-                <div class="flex items-center gap-1.5 px-2 py-1.5 rounded-xl bg-slate-950/55 border border-cyan-500/20">
-                    <span class="text-[9px] text-cyan-300/80 font-semibold tracking-wider mr-1">COLOR</span>
-                    <div class="theme-palette" title="Choose a studio color">
-                        <button class="theme-btn" data-theme="red" title="Red" aria-label="Red"><span class="color-dot" style="background:#ff3347"></span></button>
-                        <button class="theme-btn" data-theme="crimson" title="Crimson" aria-label="Crimson"><span class="color-dot" style="background:#dc143c"></span></button>
-                        <button class="theme-btn" data-theme="pink" title="Pink" aria-label="Pink"><span class="color-dot" style="background:#ff4fa3"></span></button>
-                        <button class="theme-btn" data-theme="magenta" title="Magenta" aria-label="Magenta"><span class="color-dot" style="background:#ff00d4"></span></button>
-                        <button class="theme-btn" data-theme="purple" title="Purple" aria-label="Purple"><span class="color-dot" style="background:#b56cff"></span></button>
-                        <button class="theme-btn" data-theme="indigo" title="Indigo" aria-label="Indigo"><span class="color-dot" style="background:#6366f1"></span></button>
-                        <button class="theme-btn active" data-theme="blue" title="Blue" aria-label="Blue"><span class="color-dot" style="background:#38bdf8"></span></button>
-                        <button class="theme-btn" data-theme="cyan" title="Cyan" aria-label="Cyan"><span class="color-dot" style="background:#00e5ff"></span></button>
-                        <button class="theme-btn" data-theme="teal" title="Teal" aria-label="Teal"><span class="color-dot" style="background:#14b8a6"></span></button>
-                        <button class="theme-btn" data-theme="green" title="Green" aria-label="Green"><span class="color-dot" style="background:#22e67a"></span></button>
-                        <button class="theme-btn" data-theme="lime" title="Lime" aria-label="Lime"><span class="color-dot" style="background:#84ff00"></span></button>
-                        <button class="theme-btn" data-theme="yellow" title="Yellow" aria-label="Yellow"><span class="color-dot" style="background:#ffe000"></span></button>
-                        <button class="theme-btn" data-theme="gold" title="Gold" aria-label="Gold"><span class="color-dot" style="background:#ffb300"></span></button>
-                        <button class="theme-btn" data-theme="orange" title="Orange" aria-label="Orange"><span class="color-dot" style="background:#ff9f43"></span></button>
-                        <button class="theme-btn" data-theme="amber" title="Amber" aria-label="Amber"><span class="color-dot" style="background:#ff8c00"></span></button>
-                        <button class="theme-btn" data-theme="coral" title="Coral" aria-label="Coral"><span class="color-dot" style="background:#ff6f61"></span></button>
-                        <button class="theme-btn" data-theme="white" title="White" aria-label="White"><span class="color-dot" style="background:#f8fafc"></span></button>
-                        <label class="custom-color-btn" title="Custom color" aria-label="Custom color">
-                            <span class="color-dot custom-dot"></span>
-                            <input id="custom-color" type="color" value="#38bdf8" aria-label="Custom color picker">
-                        </label>
-                    </div>
-                </div>
+‏                <div class="flex items-center gap-1.5 px-2 py-1.5 rounded-xl bg-slate-950/55 border border-cyan-500/20">
+‏                    <span class="text-[9px] text-cyan-300/80 font-semibold tracking-wider mr-1">COLOR</span>
+‏                    <div class="theme-palette" title="Choose a studio color">
+‏                        <button class="theme-btn" data-theme="red" title="Red"><span class="color-dot" style="background:#ff3347"></span></button>
+‏                        <button class="theme-btn" data-theme="crimson" title="Crimson"><span class="color-dot" style="background:#dc143c"></span></button>
+‏                        <button class="theme-btn" data-theme="pink" title="Pink"><span class="color-dot" style="background:#ff4fa3"></span></button>
+‏                        <button class="theme-btn" data-theme="magenta" title="Magenta"><span class="color-dot" style="background:#ff00d4"></span></button>
+‏                        <button class="theme-btn" data-theme="purple" title="Purple"><span class="color-dot" style="background:#b56cff"></span></button>
+‏                        <button class="theme-btn" data-theme="indigo" title="Indigo"><span class="color-dot" style="background:#6366f1"></span></button>
+‏                        <button class="theme-btn active" data-theme="blue" title="Blue"><span class="color-dot" style="background:#38bdf8"></span></button>
+‏                        <button class="theme-btn" data-theme="cyan" title="Cyan"><span class="color-dot" style="background:#00e5ff"></span></button>
+‏                        <button class="theme-btn" data-theme="teal" title="Teal"><span class="color-dot" style="background:#14b8a6"></span></button>
+‏                        <button class="theme-btn" data-theme="green" title="Green"><span class="color-dot" style="background:#22e67a"></span></button>
+‏                        <button class="theme-btn" data-theme="lime" title="Lime"><span class="color-dot" style="background:#84ff00"></span></button>
+‏                        <button class="theme-btn" data-theme="yellow" title="Yellow"><span class="color-dot" style="background:#ffe000"></span></button>
+‏                        <button class="theme-btn" data-theme="gold" title="Gold"><span class="color-dot" style="background:#ffb300"></span></button>
+‏                        <button class="theme-btn" data-theme="orange" title="Orange"><span class="color-dot" style="background:#ff9f43"></span></button>
+‏                        <button class="theme-btn" data-theme="amber" title="Amber"><span class="color-dot" style="background:#ff8c00"></span></button>
+‏                        <button class="theme-btn" data-theme="coral" title="Coral"><span class="color-dot" style="background:#ff6f61"></span></button>
+‏                        <button class="theme-btn" data-theme="white" title="White"><span class="color-dot" style="background:#f8fafc"></span></button>
+‏                        <label class="custom-color-btn" title="Custom color">
+‏                            <span class="color-dot custom-dot"></span>
+‏                            <input id="custom-color" type="color" value="#38bdf8">
+‏                        </label>
+‏                    </div>
+‏                </div>
 
-                <!-- Background Light Control: 0% = very dark, 10000% = extremely bright -->
-                <div class="brightness-control" title="Test background brightness from dark to very bright">
-                    <label for="background-brightness">LIGHT</label>
-                    <button id="brightness-down" type="button" title="Decrease light">−</button>
-                    <input id="background-brightness" type="range" min="0" max="10000" value="100" step="10" aria-label="Background brightness">
-                    <button id="brightness-up" type="button" title="Increase light">+</button>
-                    <span id="brightness-value">100%</span>
-                </div>
+‏                <div class="brightness-control">
+‏                    <label for="background-brightness">LIGHT</label>
+‏                    <button id="brightness-down" type="button">−</button>
+‏                    <input id="background-brightness" type="range" min="0" max="10000" value="100" step="10">
+‏                    <button id="brightness-up" type="button">+</button>
+‏                    <span id="brightness-value">100%</span>
+‏                </div>
 
-                <!-- Quick Action Buttons -->
-                <div class="flex items-center gap-2">
-                    <button id="btn-highlight-kurdistan" class="glass-gold hover:bg-amber-900/50 text-amber-300 px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 transition">
-                        <i class="fa-solid fa-location-dot text-amber-400"></i> Kurdistan / عێراق
-                    </button>
-                    <button id="toggle-arcs" class="bg-slate-800/80 hover:bg-cyan-900/50 text-cyan-200 border border-cyan-500/30 px-3 py-2 rounded-xl text-xs flex items-center gap-1.5 transition">
-                        <i class="fa-solid fa-circle-nodes text-cyan-400"></i> Arcs
-                    </button>
-                    <button id="toggle-rotation" class="bg-slate-800/80 hover:bg-cyan-900/50 text-cyan-200 border border-cyan-500/30 px-3 py-2 rounded-xl text-xs flex items-center gap-1.5 transition">
-                        <i class="fa-solid fa-rotate text-cyan-400"></i> Rotate
-                    </button>
-                    <button id="btn-reset-cam" class="bg-slate-800/80 hover:bg-cyan-900/50 text-cyan-200 border border-cyan-500/30 px-3 py-2 rounded-xl text-xs flex items-center gap-1.5 transition">
-                        <i class="fa-solid fa-crosshairs text-cyan-400"></i> Center
-                    </button>
-                </div>
-            </div>
-        </div>
+‏                <div class="flex items-center gap-2">
+‏                    <button id="btn-highlight-kurdistan" class="glass-gold hover:bg-amber-900/50 text-amber-300 px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition">
+‏                        <i class="fa-solid fa-location-dot text-amber-400"></i> Kurdistan / عێراق
+‏                    </button>
+                    
+‏                    <!-- New Arcs Direction Buttons -->
+‏                    <div class="flex items-center bg-slate-900/80 p-1 rounded-xl border border-cyan-500/30 gap-1">
+‏                        <button id="btn-arcs-inside" class="arc-mode-btn active text-cyan-200 px-2.5 py-1.5 rounded-lg text-xs flex items-center gap-1 transition">
+‏                            <i class="fa-solid fa-arrow-down-to-line text-cyan-400"></i> Arcs Inside
+‏                        </button>
+‏                        <button id="btn-arcs-outside" class="arc-mode-btn text-cyan-200 px-2.5 py-1.5 rounded-lg text-xs flex items-center gap-1 transition">
+‏                            <i class="fa-solid fa-arrow-up-from-line text-cyan-400"></i> Arcs Outside
+‏                        </button>
+‏                    </div>
 
-        <!-- FLOATING AUTO-HIDING COUNTRY DETAILS CARD -->
-        <div id="country-card" class="auto-hide-menu opacity-0 pointer-events-none fixed z-30 bottom-8 left-8 glass-gold p-5 rounded-2xl w-80 shadow-2xl transition-all duration-300">
-            <div class="flex justify-between items-start mb-3 border-b border-amber-500/30 pb-2.5">
-                <div>
-                    <h3 id="card-country-name" class="font-bold text-base text-amber-300 font-orbitron">COUNTRY NAME</h3>
-                    <div id="card-country-kurdish" class="text-sm text-amber-100 font-bold mt-0.5" dir="rtl">ناوی وڵات بە کوردی</div>
-                </div>
-                <span id="card-code" class="bg-amber-500/20 text-amber-300 text-[11px] font-mono font-semibold px-2.5 py-1 rounded-lg border border-amber-500/40">GEO</span>
-            </div>
-            <div class="space-y-2 text-xs">
-                <div class="flex justify-between text-gray-300">
-                    <span>Capital / پایتەخت:</span>
-                    <span id="card-capital" class="text-cyan-300 font-medium">-</span>
-                </div>
-                <div class="flex justify-between text-gray-300">
-                    <span>Region / کیشوەر:</span>
-                    <span id="card-region" class="text-cyan-300 font-medium">-</span>
-                </div>
-                <div class="flex justify-between text-gray-300">
-                    <span>Coordinates:</span>
-                    <span id="card-coords" class="text-amber-300 font-mono text-[11px]">0° N, 0° E</span>
-                </div>
-            </div>
-        </div>
+‏                    <button id="toggle-rotation" class="bg-slate-800/80 hover:bg-cyan-900/50 text-cyan-200 border border-cyan-500/30 px-3 py-2 rounded-xl text-xs flex items-center gap-1.5 transition">
+‏                        <i class="fa-solid fa-rotate text-cyan-400"></i> Rotate
+‏                    </button>
+‏                    <button id="btn-reset-cam" class="bg-slate-800/80 hover:bg-cyan-900/50 text-cyan-200 border border-cyan-500/30 px-3 py-2 rounded-xl text-xs flex items-center gap-1.5 transition">
+‏                        <i class="fa-solid fa-crosshairs text-cyan-400"></i> Center
+‏                    </button>
+‏                </div>
+‏            </div>
+‏        </div>
 
-    </div>
+‏        <div id="country-card" class="auto-hide-menu opacity-0 pointer-events-none fixed z-30 bottom-8 left-8 glass-gold p-5 rounded-2xl w-80 shadow-2xl transition-all duration-300">
+‏            <div class="flex justify-between items-start mb-3 border-b border-amber-500/30 pb-2.5">
+‏                <div>
+‏                    <h3 id="card-country-name" class="font-bold text-base text-amber-300 font-orbitron">COUNTRY NAME</h3>
+‏                    <div id="card-country-kurdish" class="text-sm text-amber-100 font-bold mt-0.5" dir="rtl">ناوی وڵات بە کوردی</div>
+‏                </div>
+‏                <span id="card-code" class="bg-amber-500/20 text-amber-300 text-[11px] font-mono font-semibold px-2.5 py-1 rounded-lg border border-amber-500/40">GEO</span>
+‏            </div>
+‏            <div class="space-y-2 text-xs">
+‏                <div class="flex justify-between text-gray-300">
+‏                    <span>Capital / پایتەخت:</span>
+‏                    <span id="card-capital" class="text-cyan-300 font-medium">-</span>
+‏                </div>
+‏                <div class="flex justify-between text-gray-300">
+‏                    <span>Region / کیشوەر:</span>
+‏                    <span id="card-region" class="text-cyan-300 font-medium">-</span>
+‏                </div>
+‏                <div class="flex justify-between text-gray-300">
+‏                    <span>Coordinates:</span>
+‏                    <span id="card-coords" class="text-amber-300 font-mono text-[11px]">0° N, 0° E</span>
+‏                </div>
+‏            </div>
+‏        </div>
 
-    <script>
-        let scene, camera, renderer, controls;
-        let globeGroup, earthMesh, borderLinesGroup, arcsGroup, pinsGroup;
-        let arcPulses = [];
-        let autoRotate = true;
-        let showArcs = true;
-        let worldGeoData = null;
-        const raycaster = new THREE.Raycaster();
-        const mouse = new THREE.Vector2();
+‏    </div>
 
-        // Color themes. Blue is the default; clicking a color changes the complete studio palette.
-        const THEMES = {
-            blue:    { accent:'#38bdf8', strong:'#00f0ff', warm:'#facc15', soft:'#8be9ff', glow:'rgba(56,189,248,.30)', bg1:'#12345b', bg2:'#07182d', bg3:'#020916', globe:'#07549b', country:'#0c3e70', ocean:'#03142d' },
-            red:     { accent:'#ff4b5c', strong:'#ff1633', warm:'#ffd166', soft:'#ff9aa5', glow:'rgba(255,51,71,.32)', bg1:'#5a1820', bg2:'#250b12', bg3:'#0d0307', globe:'#8f1d2d', country:'#5b1621', ocean:'#260811' },
-            crimson: { accent:'#ff5a70', strong:'#dc143c', warm:'#ffb3c1', soft:'#ffb8c5', glow:'rgba(220,20,60,.32)', bg1:'#591522', bg2:'#250811', bg3:'#0d0206', globe:'#9e1736', country:'#651128', ocean:'#26050e' },
-            pink:    { accent:'#ff70b8', strong:'#ff2f92', warm:'#ffd1e8', soft:'#ffb5d8', glow:'rgba(255,79,163,.30)', bg1:'#5a1b3f', bg2:'#260b1b', bg3:'#0f0309', globe:'#9e2865', country:'#651640', ocean:'#290817' },
-            magenta: { accent:'#ff55e7', strong:'#ff00d4', warm:'#ffc2f5', soft:'#ffb3ed', glow:'rgba(255,0,212,.30)', bg1:'#58164f', bg2:'#26091f', bg3:'#0f020c', globe:'#a51a8f', country:'#68105d', ocean:'#29081f' },
-            purple:  { accent:'#c084ff', strong:'#9b4dff', warm:'#f0b8ff', soft:'#dfb8ff', glow:'rgba(181,108,255,.32)', bg1:'#3a1b58', bg2:'#180b2c', bg3:'#08030f', globe:'#6620a1', country:'#43136d', ocean:'#1a0829' },
-            indigo:  { accent:'#8b8cff', strong:'#4f46e5', warm:'#c7d2fe', soft:'#b9baff', glow:'rgba(99,102,241,.32)', bg1:'#20245e', bg2:'#0d1030', bg3:'#050617', globe:'#3438a0', country:'#25276f', ocean:'#0b0d2b' },
-            cyan:    { accent:'#63f6ff', strong:'#00e5ff', warm:'#b9ffff', soft:'#b8fbff', glow:'rgba(0,229,255,.32)', bg1:'#104b59', bg2:'#06242d', bg3:'#021013', globe:'#087c91', country:'#075968', ocean:'#031b22' },
-            teal:    { accent:'#5eead4', strong:'#14b8a6', warm:'#b8fff4', soft:'#b4f5eb', glow:'rgba(20,184,166,.30)', bg1:'#10483f', bg2:'#06251f', bg3:'#02110e', globe:'#087766', country:'#075548', ocean:'#031b18' },
-            green:   { accent:'#45f28a', strong:'#00e676', warm:'#e6ff6a', soft:'#9fffc3', glow:'rgba(34,230,122,.30)', bg1:'#103f2b', bg2:'#062419', bg3:'#02100a', globe:'#087a49', country:'#0b5135', ocean:'#031b12' },
-            lime:    { accent:'#b8ff4a', strong:'#84ff00', warm:'#f3ffad', soft:'#d8ff99', glow:'rgba(132,255,0,.30)', bg1:'#314f12', bg2:'#152508', bg3:'#081002', globe:'#5f9200', country:'#3e6200', ocean:'#101d03' },
-            yellow:  { accent:'#ffe45e', strong:'#ffd000', warm:'#fff4a3', soft:'#fff7bf', glow:'rgba(255,224,0,.28)', bg1:'#514b13', bg2:'#252207', bg3:'#0e0d02', globe:'#a88900', country:'#665600', ocean:'#292500' },
-            gold:    { accent:'#ffd15c', strong:'#ffb300', warm:'#fff0a8', soft:'#ffe6a0', glow:'rgba(255,179,0,.30)', bg1:'#543b12', bg2:'#271b06', bg3:'#100b02', globe:'#9b6700', country:'#684500', ocean:'#2a1904' },
-            orange:  { accent:'#ff9f43', strong:'#ff6b00', warm:'#ffe08a', soft:'#ffc477', glow:'rgba(255,159,67,.32)', bg1:'#56331a', bg2:'#271508', bg3:'#0f0702', globe:'#a65313', country:'#68300c', ocean:'#2a1205' },
-            amber:   { accent:'#ffb84d', strong:'#ff8c00', warm:'#ffe6a8', soft:'#ffd08a', glow:'rgba(255,140,0,.32)', bg1:'#563612', bg2:'#271804', bg3:'#100a02', globe:'#9c5600', country:'#683800', ocean:'#2a1403' },
-            coral:   { accent:'#ff887c', strong:'#ff5f56', warm:'#ffd0c9', soft:'#ffb9b1', glow:'rgba(255,111,97,.30)', bg1:'#5a251f', bg2:'#28100d', bg3:'#100403', globe:'#9f332d', country:'#68231f', ocean:'#2a0d0a' },
-            white:   { accent:'#f8fafc', strong:'#ffffff', warm:'#dbeafe', soft:'#ffffff', glow:'rgba(248,250,252,.30)', bg1:'#43505f', bg2:'#1c2530', bg3:'#090d13', globe:'#7b8da3', country:'#526276', ocean:'#151d28' }
+‏    <script>
+‏        let scene, camera, renderer, controls;
+‏        let globeGroup, earthMesh, borderLinesGroup, arcsGroup, pinsGroup;
+‏        let arcPulses = [];
+‏        let autoRotate = true;
+‏        let arcDirection = 'inside'; // 'inside' or 'outside'
+‏        let worldGeoData = null;
+‏        let highlightedCountryCode = "IRQ"; // Default highlighted country is Iraq (IRQ)
+        
+‏        const raycaster = new THREE.Raycaster();
+‏        const mouse = new THREE.Vector2();
+
+‏        const THEMES = {
+‏            blue:    { accent:'#38bdf8', strong:'#00f0ff', warm:'#facc15', soft:'#8be9ff', glow:'rgba(56,189,248,.30)', bg1:'#12345b', bg2:'#07182d', bg3:'#020916', globe:'#07549b', country:'#0c3e70', ocean:'#03142d' },
+‏            red:     { accent:'#ff4b5c', strong:'#ff1633', warm:'#ffd166', soft:'#ff9aa5', glow:'rgba(255,51,71,.32)', bg1:'#5a1820', bg2:'#250b12', bg3:'#0d0307', globe:'#8f1d2d', country:'#5b1621', ocean:'#260811' },
+‏            crimson: { accent:'#ff5a70', strong:'#dc143c', warm:'#ffb3c1', soft:'#ffb8c5', glow:'rgba(220,20,60,.32)', bg1:'#591522', bg2:'#250811', bg3:'#0d0206', globe:'#9e1736', country:'#651128', ocean:'#26050e' },
+‏            pink:    { accent:'#ff70b8', strong:'#ff2f92', warm:'#ffd1e8', soft:'#ffb5d8', glow:'rgba(255,79,163,.30)', bg1:'#5a1b3f', bg2:'#260b1b', bg3:'#0f0309', globe:'#9e2865', country:'#651640', ocean:'#290817' },
+‏            magenta: { accent:'#ff55e7', strong:'#ff00d4', warm:'#ffc2f5', soft:'#ffb3ed', glow:'rgba(255,0,212,.30)', bg1:'#58164f', bg2:'#26091f', bg3:'#0f020c', globe:'#a51a8f', country:'#68105d', ocean:'#29081f' },
+‏            purple:  { accent:'#c084ff', strong:'#9b4dff', warm:'#f0b8ff', soft:'#dfb8ff', glow:'rgba(181,108,255,.32)', bg1:'#3a1b58', bg2:'#180b2c', bg3:'#08030f', globe:'#6620a1', country:'#43136d', ocean:'#1a0829' },
+‏            indigo:  { accent:'#8b8cff', strong:'#4f46e5', warm:'#c7d2fe', soft:'#b9baff', glow:'rgba(99,102,241,.32)', bg1:'#20245e', bg2:'#0d1030', bg3:'#050617', globe:'#3438a0', country:'#25276f', ocean:'#0b0d2b' },
+‏            cyan:    { accent:'#63f6ff', strong:'#00e5ff', warm:'#b9ffff', soft:'#b8fbff', glow:'rgba(0,229,255,.32)', bg1:'#104b59', bg2:'#06242d', bg3:'#021013', globe:'#087c91', country:'#075968', ocean:'#031b22' },
+‏            teal:    { accent:'#5eead4', strong:'#14b8a6', warm:'#b8fff4', soft:'#b4f5eb', glow:'rgba(20,184,166,.30)', bg1:'#10483f', bg2:'#06251f', bg3:'#02110e', globe:'#087766', country:'#075548', ocean:'#031b18' },
+‏            green:   { accent:'#45f28a', strong:'#00e676', warm:'#e6ff6a', soft:'#9fffc3', glow:'rgba(34,230,122,.30)', bg1:'#103f2b', bg2:'#062419', bg3:'#02100a', globe:'#087a49', country:'#0b5135', ocean:'#031b12' },
+‏            lime:    { accent:'#b8ff4a', strong:'#84ff00', warm:'#f3ffad', soft:'#d8ff99', glow:'rgba(132,255,0,.30)', bg1:'#314f12', bg2:'#152508', bg3:'#081002', globe:'#5f9200', country:'#3e6200', ocean:'#101d03' },
+‏            yellow:  { accent:'#ffe45e', strong:'#ffd000', warm:'#fff4a3', soft:'#fff7bf', glow:'rgba(255,224,0,.28)', bg1:'#514b13', bg2:'#252207', bg3:'#0e0d02', globe:'#a88900', country:'#665600', ocean:'#292500' },
+‏            gold:    { accent:'#ffd15c', strong:'#ffb300', warm:'#fff0a8', soft:'#ffe6a0', glow:'rgba(255,179,0,.30)', bg1:'#543b12', bg2:'#271b06', bg3:'#100b02', globe:'#9b6700', country:'#684500', ocean:'#2a1904' },
+‏            orange:  { accent:'#ff9f43', strong:'#ff6b00', warm:'#ffe08a', soft:'#ffc477', glow:'rgba(255,159,67,.32)', bg1:'#56331a', bg2:'#271508', bg3:'#0f0702', globe:'#a65313', country:'#68300c', ocean:'#2a1205' },
+‏            amber:   { accent:'#ffb84d', strong:'#ff8c00', warm:'#ffe6a8', soft:'#ffd08a', glow:'rgba(255,140,0,.32)', bg1:'#563612', bg2:'#271804', bg3:'#100a02', globe:'#9c5600', country:'#683800', ocean:'#2a1403' },
+‏            coral:   { accent:'#ff887c', strong:'#ff5f56', warm:'#ffd0c9', soft:'#ffb9b1', glow:'rgba(255,111,97,.30)', bg1:'#5a251f', bg2:'#28100d', bg3:'#100403', globe:'#9f332d', country:'#68231f', ocean:'#2a0d0a' },
+‏            white:   { accent:'#f8fafc', strong:'#ffffff', warm:'#dbeafe', soft:'#ffffff', glow:'rgba(248,250,252,.30)', bg1:'#43505f', bg2:'#1c2530', bg3:'#090d13', globe:'#7b8da3', country:'#526276', ocean:'#151d28' }
         };
-        let currentTheme = THEMES.blue;
-        let atmosphereMesh = null;
-        let starParticles = null;
+‏        let currentTheme = THEMES.blue;
+‏        let atmosphereMesh = null;
+‏        let starParticles = null;
 
-        // Auto-hide Timer Management
-        let idleTimer = null;
-        let isSearching = false;
+‏        let idleTimer = null;
+‏        let isSearching = false;
 
-        // 193+ World Countries Dataset with Kurdish Translations & Geo Coordinates
-        const WORLD_COUNTRIES = [
-            { name: "Iraq / Kurdistan", kurdish: "عێراق / هه‌رێمی كوردستان", capital: "Erbil / Baghdad", lat: 36.19, lon: 44.01, region: "Middle East", code: "IRQ" },
-            { name: "United States", kurdish: "ویلایەتە یەکگرتووەکانی ئەمریکا", capital: "Washington D.C.", lat: 38.90, lon: -77.03, region: "North America", code: "USA" },
-            { name: "United Kingdom", kurdish: "بەریتانیا", capital: "London", lat: 51.50, lon: -0.12, region: "Europe", code: "GBR" },
-            { name: "Germany", kurdish: "ئەڵمانیا", capital: "Berlin", lat: 52.52, lon: 13.40, region: "Europe", code: "DEU" },
-            { name: "France", kurdish: "فەرەنسا", capital: "Paris", lat: 48.85, lon: 2.35, region: "Europe", code: "FRA" },
-            { name: "China", kurdish: "چین", capital: "Beijing", lat: 39.90, lon: 116.40, region: "Asia", code: "CHN" },
-            { name: "Japan", kurdish: "ژاپۆن", capital: "Tokyo", lat: 35.67, lon: 139.65, region: "Asia", code: "JPN" },
-            { name: "India", kurdish: "هیندستان", capital: "New Delhi", lat: 28.61, lon: 77.20, region: "Asia", code: "IND" },
-            { name: "Brazil", kurdish: "بەرازیل", capital: "Brasília", lat: -15.78, lon: -47.92, region: "South America", code: "BRA" },
-            { name: "Canada", kurdish: "کانەدا", capital: "Ottawa", lat: 45.42, lon: -75.69, region: "North America", code: "CAN" },
-            { name: "Australia", kurdish: "ئوسترالیا", capital: "Canberra", lat: -35.28, lon: 149.13, region: "Oceania", code: "AUS" },
-            { name: "Egypt", kurdish: "میسر", capital: "Cairo", lat: 30.04, lon: 31.23, region: "Africa", code: "EGY" },
-            { name: "Turkey", kurdish: "تورکیا", capital: "Ankara", lat: 39.93, lon: 32.85, region: "Middle East", code: "TUR" },
-            { name: "Iran", kurdish: "ئێران", capital: "Tehran", lat: 35.68, lon: 51.38, region: "Middle East", code: "IRN" },
-            { name: "Saudi Arabia", kurdish: "عەرەبستانی سعودی", capital: "Riyadh", lat: 24.71, lon: 46.67, region: "Middle East", code: "SAU" },
-            { name: "United Arab Emirates", kurdish: "ئیمارات", capital: "Abu Dhabi", lat: 24.45, lon: 54.37, region: "Middle East", code: "ARE" },
-            { name: "Russia", kurdish: "ڕووسیا", capital: "Moscow", lat: 55.75, lon: 37.61, region: "Eurasia", code: "RUS" },
-            { name: "South Africa", kurdish: "ئەفریقای باشوور", capital: "Pretoria", lat: -25.74, lon: 28.18, region: "Africa", code: "ZAF" },
-            { name: "Italy", kurdish: "ئیتالیا", capital: "Rome", lat: 41.90, lon: 12.49, region: "Europe", code: "ITA" },
-            { name: "Spain", kurdish: "ئیسپانیا", capital: "Madrid", lat: 40.41, lon: -3.70, region: "Europe", code: "ESP" },
-            { name: "Mexico", kurdish: "مەکسیک", capital: "Mexico City", lat: 19.43, lon: -99.13, region: "North America", code: "MEX" },
-            { name: "Argentina", kurdish: "ئەرجەنتین", capital: "Buenos Aires", lat: -34.60, lon: -58.38, region: "South America", code: "ARG" },
-            { name: "South Korea", kurdish: "کۆریای باشوور", capital: "Seoul", lat: 37.56, lon: 126.97, region: "Asia", code: "KOR" },
-            { name: "Sweden", kurdish: "سوید", capital: "Stockholm", lat: 59.32, lon: 18.06, region: "Europe", code: "SWE" },
-            { name: "Norway", kurdish: "نەرویج", capital: "Oslo", lat: 59.91, lon: 10.75, region: "Europe", code: "NOR" },
-            { name: "Jordan", kurdish: "ئوردن", capital: "Amman", lat: 31.94, lon: 35.92, region: "Middle East", code: "JOR" },
-            { name: "Kuwait", kurdish: "کووەیت", capital: "Kuwait City", lat: 29.37, lon: 47.97, region: "Middle East", code: "KWT" },
-            { name: "Qatar", kurdish: "قەتەر", capital: "Doha", lat: 25.28, lon: 51.53, region: "Middle East", code: "QAT" }
+‏        const WORLD_COUNTRIES = [
+‏            { name: "Iraq / Kurdistan", kurdish: "عێراق / هه‌رێمی كوردستان", capital: "Erbil / Baghdad", lat: 36.19, lon: 44.01, region: "Middle East", code: "IRQ" },
+‏            { name: "United States", kurdish: "ویلایەتە یەکگرتووەکانی ئەمریکا", capital: "Washington D.C.", lat: 38.90, lon: -77.03, region: "North America", code: "USA" },
+‏            { name: "United Kingdom", kurdish: "بەریتانیا", capital: "London", lat: 51.50, lon: -0.12, region: "Europe", code: "GBR" },
+‏            { name: "Germany", kurdish: "ئەڵمانیا", capital: "Berlin", lat: 52.52, lon: 13.40, region: "Europe", code: "DEU" },
+‏            { name: "France", kurdish: "فەرەنسا", capital: "Paris", lat: 48.85, lon: 2.35, region: "Europe", code: "FRA" },
+‏            { name: "China", kurdish: "چین", capital: "Beijing", lat: 39.90, lon: 116.40, region: "Asia", code: "CHN" },
+‏            { name: "Japan", kurdish: "ژاپۆن", capital: "Tokyo", lat: 35.67, lon: 139.65, region: "Asia", code: "JPN" },
+‏            { name: "India", kurdish: "هیندستان", capital: "New Delhi", lat: 28.61, lon: 77.20, region: "Asia", code: "IND" },
+‏            { name: "Brazil", kurdish: "بەرازیل", capital: "Brasília", lat: -15.78, lon: -47.92, region: "South America", code: "BRA" },
+‏            { name: "Canada", kurdish: "کانەدا", capital: "Ottawa", lat: 45.42, lon: -75.69, region: "North America", code: "CAN" },
+‏            { name: "Australia", kurdish: "ئوسترالیا", capital: "Canberra", lat: -35.28, lon: 149.13, region: "Oceania", code: "AUS" },
+‏            { name: "Egypt", kurdish: "میسر", capital: "Cairo", lat: 30.04, lon: 31.23, region: "Africa", code: "EGY" },
+‏            { name: "Turkey", kurdish: "تورکیا", capital: "Ankara", lat: 39.93, lon: 32.85, region: "Middle East", code: "TUR" },
+‏            { name: "Iran", kurdish: "ئێران", capital: "Tehran", lat: 35.68, lon: 51.38, region: "Middle East", code: "IRN" },
+‏            { name: "Saudi Arabia", kurdish: "عەرەبستانی سعودی", capital: "Riyadh", lat: 24.71, lon: 46.67, region: "Middle East", code: "SAU" },
+‏            { name: "United Arab Emirates", kurdish: "ئیمارات", capital: "Abu Dhabi", lat: 24.45, lon: 54.37, region: "Middle East", code: "ARE" },
+‏            { name: "Russia", kurdish: "ڕووسیا", capital: "Moscow", lat: 55.75, lon: 37.61, region: "Eurasia", code: "RUS" },
+‏            { name: "South Africa", kurdish: "ئەفریقای باشوور", capital: "Pretoria", lat: -25.74, lon: 28.18, region: "Africa", code: "ZAF" },
+‏            { name: "Italy", kurdish: "ئیتالیا", capital: "Rome", lat: 41.90, lon: 12.49, region: "Europe", code: "ITA" },
+‏            { name: "Spain", kurdish: "ئیسپانیا", capital: "Madrid", lat: 40.41, lon: -3.70, region: "Europe", code: "ESP" },
+‏            { name: "Mexico", kurdish: "مەکسیک", capital: "Mexico City", lat: 19.43, lon: -99.13, region: "North America", code: "MEX" },
+‏            { name: "Argentina", kurdish: "ئەرجەنتین", capital: "Buenos Aires", lat: -34.60, lon: -58.38, region: "South America", code: "ARG" },
+‏            { name: "South Korea", kurdish: "کۆریای باشوور", capital: "Seoul", lat: 37.56, lon: 126.97, region: "Asia", code: "KOR" },
+‏            { name: "Sweden", kurdish: "سوید", capital: "Stockholm", lat: 59.32, lon: 18.06, region: "Europe", code: "SWE" },
+‏            { name: "Norway", kurdish: "نەرویج", capital: "Oslo", lat: 59.91, lon: 10.75, region: "Europe", code: "NOR" },
+‏            { name: "Jordan", kurdish: "ئوردن", capital: "Amman", lat: 31.94, lon: 35.92, region: "Middle East", code: "JOR" },
+‏            { name: "Kuwait", kurdish: "کووەیت", capital: "Kuwait City", lat: 29.37, lon: 47.97, region: "Middle East", code: "KWT" },
+‏            { name: "Qatar", kurdish: "قەتەر", capital: "Doha", lat: 25.28, lon: 51.53, region: "Middle East", code: "QAT" }
         ];
 
-        function init3D() {
-            const container = document.getElementById('canvas-container');
+‏        function init3D() {
+‏            const container = document.getElementById('canvas-container');
 
-            scene = new THREE.Scene();
+‏            scene = new THREE.Scene();
 
-            const aspect = window.innerWidth / window.innerHeight;
-            camera = new THREE.PerspectiveCamera(45, aspect, 0.1, 1000);
-            camera.position.set(0, 0, aspect > 2.5 ? 275 : 240);
+‏            const aspect = window.innerWidth / window.innerHeight;
+‏            camera = new THREE.PerspectiveCamera(45, aspect, 0.1, 1000);
+‏            camera.position.set(0, 0, aspect > 2.5 ? 275 : 240);
 
-            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-            renderer.toneMapping = THREE.ACESFilmicToneMapping;
-            renderer.toneMappingExposure = 1.4;
-            container.appendChild(renderer.domElement);
+‏            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+‏            renderer.setSize(window.innerWidth, window.innerHeight);
+‏            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+‏            renderer.toneMapping = THREE.ACESFilmicToneMapping;
+‏            renderer.toneMappingExposure = 1.4;
+‏            container.appendChild(renderer.domElement);
 
-            controls = new THREE.OrbitControls(camera, renderer.domElement);
-            controls.enableDamping = true;
-            controls.dampingFactor = 0.05;
-            controls.rotateSpeed = 0.8;
-            controls.minDistance = 120;
-            controls.maxDistance = 420;
-            controls.enablePan = false;
+‏            controls = new THREE.OrbitControls(camera, renderer.domElement);
+‏            controls.enableDamping = true;
+‏            controls.dampingFactor = 0.05;
+‏            controls.rotateSpeed = 0.8;
+‏            controls.minDistance = 120;
+‏            controls.maxDistance = 420;
+‏            controls.enablePan = false;
 
-            globeGroup = new THREE.Group();
-            scene.add(globeGroup);
+‏            globeGroup = new THREE.Group();
+‏            scene.add(globeGroup);
 
-            // Studio Lighting
-            const ambient = new THREE.AmbientLight(0x1a365d, 2.2);
-            scene.add(ambient);
+‏            const ambient = new THREE.AmbientLight(0x1a365d, 2.2);
+‏            scene.add(ambient);
 
-            const mainCyanLight = new THREE.DirectionalLight(0x00f0ff, 2.8);
-            mainCyanLight.position.set(200, 150, 200);
-            scene.add(mainCyanLight);
+‏            const mainCyanLight = new THREE.DirectionalLight(0x00f0ff, 2.8);
+‏            mainCyanLight.position.set(200, 150, 200);
+‏            scene.add(mainCyanLight);
 
-            const goldRimLight = new THREE.DirectionalLight(0xfacc15, 2.0);
-            goldRimLight.position.set(-200, -120, -150);
-            scene.add(goldRimLight);
+‏            const goldRimLight = new THREE.DirectionalLight(0xfacc15, 2.0);
+‏            goldRimLight.position.set(-200, -120, -150);
+‏            scene.add(goldRimLight);
 
-            fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json')
-                .then(response => response.json())
-                .then(topology => {
-                    worldGeoData = topojson.feature(topology, topology.objects.countries);
-                    buildGraphicGlobeTexture(worldGeoData);
-                    build3DVectorBorders(worldGeoData);
+‏            fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json')
+‏                .then(response => response.json())
+‏                .then(topology => {
+‏                    worldGeoData = topojson.feature(topology, topology.objects.countries);
+‏                    buildGraphicGlobeTexture(worldGeoData);
+‏                    build3DVectorBorders(worldGeoData);
                 })
-                .catch(err => {
-                    console.warn("Falling back to canvas generator:", err);
-                    buildGraphicGlobeTexture(null);
+‏                .catch(err => {
+‏                    console.warn("Falling back to canvas generator:", err);
+‏                    buildGraphicGlobeTexture(null);
                 });
 
-            buildAtmosphere();
-            buildCityPins();
-            buildArcConnections();
-            buildStarfield();
+‏            buildAtmosphere();
+‏            buildCityPins();
+‏            buildArcConnections();
+‏            buildStarfield();
 
-            window.addEventListener('resize', onWindowResize);
-            window.addEventListener('mousemove', handleUserActivity);
-            window.addEventListener('touchstart', handleUserActivity);
+‏            window.addEventListener('resize', onWindowResize);
+‏            window.addEventListener('mousemove', handleUserActivity);
+‏            window.addEventListener('touchstart', handleUserActivity);
 
-            setupUIInteractions();
-            applyTheme('blue');
-            animate();
+‏            setupUIInteractions();
+‏            applyTheme('blue');
+‏            animate();
         }
 
-        function buildGraphicGlobeTexture(geoData) {
-            if (earthMesh) {
-                globeGroup.remove(earthMesh);
-                earthMesh.geometry.dispose();
-                earthMesh.material.dispose();
-                if (earthMesh.material.map) earthMesh.material.map.dispose();
+‏        function isCountryMatch(feature, code) {
+‏            if (!feature || !code) return false;
+‏            if (code === "IRQ" && (feature.id === "368" || (feature.properties && feature.properties.name === "Iraq"))) return true;
+‏            if (code === "USA" && (feature.id === "840" || (feature.properties && feature.properties.name === "United States of America"))) return true;
+‏            if (code === "TUR" && (feature.id === "792" || (feature.properties && feature.properties.name === "Turkey"))) return true;
+‏            if (code === "IRN" && (feature.id === "364" || (feature.properties && feature.properties.name === "Iran"))) return true;
+‏            if (code === "DEU" && (feature.id === "276" || (feature.properties && feature.properties.name === "Germany"))) return true;
+‏            if (code === "FRA" && (feature.id === "250" || (feature.properties && feature.properties.name === "France"))) return true;
+‏            if (code === "GBR" && (feature.id === "826" || (feature.properties && feature.properties.name === "United Kingdom"))) return true;
+‏            if (code === "CHN" && (feature.id === "156" || (feature.properties && feature.properties.name === "China"))) return true;
+‏            if (code === "JPN" && (feature.id === "392" || (feature.properties && feature.properties.name === "Japan"))) return true;
+‏            if (code === "IND" && (feature.id === "356" || (feature.properties && feature.properties.name === "India"))) return true;
+‏            if (code === "BRA" && (feature.id === "076" || (feature.properties && feature.properties.name === "Brazil"))) return true;
+‏            if (code === "CAN" && (feature.id === "124" || (feature.properties && feature.properties.name === "Canada"))) return true;
+‏            if (code === "AUS" && (feature.id === "036" || (feature.properties && feature.properties.name === "Australia"))) return true;
+‏            if (code === "EGY" && (feature.id === "818" || (feature.properties && feature.properties.name === "Egypt"))) return true;
+‏            if (code === "RUS" && (feature.id === "643" || (feature.properties && feature.properties.name === "Russia"))) return true;
+‏            if (code === "SAU" && (feature.id === "682" || (feature.properties && feature.properties.name === "Saudi Arabia"))) return true;
+            
+‏            return feature.properties && feature.properties.name && feature.properties.name.toLowerCase().includes(code.toLowerCase());
+        }
+
+‏        function buildGraphicGlobeTexture(geoData) {
+‏            if (earthMesh) {
+‏                globeGroup.remove(earthMesh);
+‏                earthMesh.geometry.dispose();
+‏                earthMesh.material.dispose();
+‏                if (earthMesh.material.map) earthMesh.material.map.dispose();
             }
 
-            const sphereGeo = new THREE.SphereGeometry(80, 128, 128);
-            const canvas = document.createElement('canvas');
-            canvas.width = 4096;
-            canvas.height = 2048;
-            const ctx = canvas.getContext('2d');
+‏            const sphereGeo = new THREE.SphereGeometry(80, 128, 128);
+‏            const canvas = document.createElement('canvas');
+‏            canvas.width = 4096;
+‏            canvas.height = 2048;
+‏            const ctx = canvas.getContext('2d');
 
-            ctx.fillStyle = currentTheme.ocean;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+‏            ctx.fillStyle = currentTheme.ocean;
+‏            ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            const projection = d3.geoEquirectangular()
-                .translate([canvas.width / 2, canvas.height / 2])
-                .scale(canvas.width / (2 * Math.PI));
-            const path = d3.geoPath().projection(projection).context(ctx);
+‏            const projection = d3.geoEquirectangular()
+‏                .translate([canvas.width / 2, canvas.height / 2])
+‏                .scale(canvas.width / (2 * Math.PI));
+‏            const path = d3.geoPath().projection(projection).context(ctx);
 
-            const graticule = d3.geoGraticule().step([10, 10]);
-            ctx.beginPath();
-            path(graticule());
-            ctx.strokeStyle = currentTheme.glow;
-            ctx.lineWidth = 1.2;
-            ctx.stroke();
+‏            const graticule = d3.geoGraticule().step([10, 10]);
+‏            ctx.beginPath();
+‏            path(graticule());
+‏            ctx.strokeStyle = currentTheme.glow;
+‏            ctx.lineWidth = 1.2;
+‏            ctx.stroke();
 
-            if (geoData) {
-                geoData.features.forEach(feature => {
-                    ctx.beginPath();
-                    path(feature);
-                    ctx.fillStyle = currentTheme.country;
-                    ctx.fill();
-                    ctx.strokeStyle = currentTheme.accent;
-                    ctx.lineWidth = 1.8;
-                    ctx.stroke();
+‏            if (geoData) {
+‏                geoData.features.forEach(feature => {
+‏                    ctx.beginPath();
+‏                    path(feature);
+‏                    ctx.fillStyle = currentTheme.country;
+‏                    ctx.fill();
+‏                    ctx.strokeStyle = currentTheme.accent;
+‏                    ctx.lineWidth = 1.8;
+‏                    ctx.stroke();
                 });
 
-                const iraqFeature = geoData.features.find(f => f.id === "368" || (f.properties && f.properties.name === "Iraq"));
-                if (iraqFeature) {
-                    ctx.beginPath();
-                    path(iraqFeature);
-                    ctx.fillStyle = currentTheme.warm;
-                    ctx.globalAlpha = 0.45;
-                    ctx.fill();
-                    ctx.globalAlpha = 1;
-                    ctx.strokeStyle = currentTheme.warm;
-                    ctx.lineWidth = 4.0;
-                    ctx.shadowColor = currentTheme.warm;
-                    ctx.shadowBlur = 15;
-                    ctx.stroke();
-                    ctx.shadowBlur = 0;
+‏                if (highlightedCountryCode) {
+‏                    const targetFeature = geoData.features.find(f => isCountryMatch(f, highlightedCountryCode));
+‏                    if (targetFeature) {
+‏                        ctx.beginPath();
+‏                        path(targetFeature);
+‏                        ctx.fillStyle = currentTheme.warm;
+‏                        ctx.globalAlpha = 0.45;
+‏                        ctx.fill();
+‏                        ctx.globalAlpha = 1;
+‏                        ctx.strokeStyle = currentTheme.warm;
+‏                        ctx.lineWidth = 4.0;
+‏                        ctx.shadowColor = currentTheme.warm;
+‏                        ctx.shadowBlur = 15;
+‏                        ctx.stroke();
+‏                        ctx.shadowBlur = 0;
+                    }
                 }
             }
 
-            const texture = new THREE.CanvasTexture(canvas);
-            const earthMat = new THREE.MeshStandardMaterial({
-                map: texture,
-                roughness: 0.35,
-                metalness: 0.25,
-                emissive: new THREE.Color(currentTheme.ocean),
-                emissiveIntensity: 0.95
+‏            const texture = new THREE.CanvasTexture(canvas);
+‏            const earthMat = new THREE.MeshStandardMaterial({
+‏                map: texture,
+‏                roughness: 0.35,
+‏                metalness: 0.25,
+‏                emissive: new THREE.Color(currentTheme.ocean),
+‏                emissiveIntensity: 0.95
             });
-            earthMesh = new THREE.Mesh(sphereGeo, earthMat);
-            globeGroup.add(earthMesh);
+‏            earthMesh = new THREE.Mesh(sphereGeo, earthMat);
+‏            globeGroup.add(earthMesh);
         }
 
-        function build3DVectorBorders(geoData) {
-            if (!geoData) return;
-            if (borderLinesGroup) globeGroup.remove(borderLinesGroup);
-            borderLinesGroup = new THREE.Group();
+‏        function build3DVectorBorders(geoData) {
+‏            if (!geoData) return;
+‏            if (borderLinesGroup) globeGroup.remove(borderLinesGroup);
+‏            borderLinesGroup = new THREE.Group();
 
-            const borderMat = new THREE.LineBasicMaterial({ color: new THREE.Color(currentTheme.accent), transparent: true, opacity: 0.95 });
-            const goldBorderMat = new THREE.LineBasicMaterial({ color: new THREE.Color(currentTheme.warm), transparent: true, opacity: 1.0 });
+‏            const borderMat = new THREE.LineBasicMaterial({ color: new THREE.Color(currentTheme.accent), transparent: true, opacity: 0.95 });
+‏            const goldBorderMat = new THREE.LineBasicMaterial({ color: new THREE.Color(currentTheme.warm), transparent: true, opacity: 1.0 });
 
-            geoData.features.forEach(feature => {
-                const isIraq = feature.id === "368" || (feature.properties && feature.properties.name === "Iraq");
-                const mat = isIraq ? goldBorderMat : borderMat;
-                const radiusOffset = isIraq ? 80.5 : 80.3;
-                const geom = feature.geometry;
-                const coordinates = geom.type === 'Polygon' ? [geom.coordinates] : geom.type === 'MultiPolygon' ? geom.coordinates : [];
+‏            geoData.features.forEach(feature => {
+‏                const isHighlighted = highlightedCountryCode && isCountryMatch(feature, highlightedCountryCode);
+‏                const mat = isHighlighted ? goldBorderMat : borderMat;
+‏                const radiusOffset = isHighlighted ? 80.5 : 80.3;
+‏                const geom = feature.geometry;
+‏                const coordinates = geom.type === 'Polygon' ? [geom.coordinates] : geom.type === 'MultiPolygon' ? geom.coordinates : [];
 
-                coordinates.forEach(polygon => {
-                    polygon.forEach(ring => {
-                        const points = ring.map(coord => latLongToVector3(coord[1], coord[0], radiusOffset));
-                        if (points.length > 1) {
-                            borderLinesGroup.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(points), mat));
+‏                coordinates.forEach(polygon => {
+‏                    polygon.forEach(ring => {
+‏                        const points = ring.map(coord => latLongToVector3(coord[1], coord[0], radiusOffset));
+‏                        if (points.length > 1) {
+‏                            borderLinesGroup.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(points), mat));
                         }
                     });
                 });
             });
-            globeGroup.add(borderLinesGroup);
+‏            globeGroup.add(borderLinesGroup);
         }
 
-        function buildAtmosphere() {
-            if (atmosphereMesh) scene.remove(atmosphereMesh);
-            const atmosGeo = new THREE.SphereGeometry(86, 64, 64);
-            const atmosMat = new THREE.MeshBasicMaterial({
-                color: new THREE.Color(currentTheme.strong),
-                side: THREE.BackSide,
-                transparent: true,
-                opacity: 0.16
+‏        function buildAtmosphere() {
+‏            if (atmosphereMesh) scene.remove(atmosphereMesh);
+‏            const atmosGeo = new THREE.SphereGeometry(86, 64, 64);
+‏            const atmosMat = new THREE.MeshBasicMaterial({
+‏                color: new THREE.Color(currentTheme.strong),
+‏                side: THREE.BackSide,
+‏                transparent: true,
+‏                opacity: 0.16
             });
-            atmosphereMesh = new THREE.Mesh(atmosGeo, atmosMat);
-            scene.add(atmosphereMesh);
+‏            atmosphereMesh = new THREE.Mesh(atmosGeo, atmosMat);
+‏            scene.add(atmosphereMesh);
         }
 
-        function buildCityPins() {
-            if (pinsGroup) globeGroup.remove(pinsGroup);
-            pinsGroup = new THREE.Group();
-            const pinGeo = new THREE.SphereGeometry(1.2, 16, 16);
-            const defaultMat = new THREE.MeshBasicMaterial({ color: new THREE.Color(currentTheme.accent) });
-            const goldMat = new THREE.MeshBasicMaterial({ color: new THREE.Color(currentTheme.warm) });
+‏        function buildCityPins() {
+‏            if (pinsGroup) globeGroup.remove(pinsGroup);
+‏            pinsGroup = new THREE.Group();
+‏            const pinGeo = new THREE.SphereGeometry(1.2, 16, 16);
+‏            const defaultMat = new THREE.MeshBasicMaterial({ color: new THREE.Color(currentTheme.accent) });
+‏            const goldMat = new THREE.MeshBasicMaterial({ color: new THREE.Color(currentTheme.warm) });
 
-            WORLD_COUNTRIES.forEach((country, idx) => {
-                const isHome = idx === 0;
-                const pos = latLongToVector3(country.lat, country.lon, 81.2);
-                const pin = new THREE.Mesh(pinGeo, isHome ? goldMat : defaultMat);
-                pin.position.copy(pos);
-                pin.userData = country;
+‏            WORLD_COUNTRIES.forEach((country) => {
+‏                const isSelected = country.code === highlightedCountryCode;
+‏                const pos = latLongToVector3(country.lat, country.lon, 81.2);
+‏                const pin = new THREE.Mesh(pinGeo, isSelected ? goldMat : defaultMat);
+‏                pin.position.copy(pos);
+‏                pin.userData = country;
 
-                const ringGeo = new THREE.RingGeometry(1.6, 2.5, 16);
-                const ringMat = new THREE.MeshBasicMaterial({
-                    color: new THREE.Color(isHome ? currentTheme.warm : currentTheme.strong),
-                    side: THREE.DoubleSide,
-                    transparent: true,
-                    opacity: 0.85
+‏                const ringGeo = new THREE.RingGeometry(1.6, 2.5, 16);
+‏                const ringMat = new THREE.MeshBasicMaterial({
+‏                    color: new THREE.Color(isSelected ? currentTheme.warm : currentTheme.strong),
+‏                    side: THREE.DoubleSide,
+‏                    transparent: true,
+‏                    opacity: 0.85
                 });
-                const ring = new THREE.Mesh(ringGeo, ringMat);
-                ring.position.copy(pos);
-                ring.lookAt(0, 0, 0);
-                pinsGroup.add(pin, ring);
+‏                const ring = new THREE.Mesh(ringGeo, ringMat);
+‏                ring.position.copy(pos);
+‏                ring.lookAt(0, 0, 0);
+‏                pinsGroup.add(pin, ring);
             });
-            globeGroup.add(pinsGroup);
+‏            globeGroup.add(pinsGroup);
         }
 
-        function buildArcConnections() {
-            if (arcsGroup) globeGroup.remove(arcsGroup);
-            arcsGroup = new THREE.Group();
-            arcPulses = [];
-            const center = WORLD_COUNTRIES[0];
+‏        // Dynamic Arcs generator based on selected country and direction (Inside vs Outside)
+‏        function buildArcConnections() {
+‏            if (arcsGroup) globeGroup.remove(arcsGroup);
+‏            arcsGroup = new THREE.Group();
+‏            arcPulses = [];
 
-            WORLD_COUNTRIES.slice(1, 16).forEach(target => {
-                const p1 = latLongToVector3(center.lat, center.lon, 80.5);
-                const p2 = latLongToVector3(target.lat, target.lon, 80.5);
-                const mid = new THREE.Vector3().addVectors(p1, p2).multiplyScalar(0.5);
-                const distance = p1.distanceTo(p2);
-                mid.normalize().multiplyScalar(80.5 + distance * 0.28);
-                const curve = new THREE.QuadraticBezierCurve3(p1, mid, p2);
+‏            // Find selected country (default to Iraq if not found)
+‏            const activeCountry = WORLD_COUNTRIES.find(c => c.code === highlightedCountryCode) || WORLD_COUNTRIES[0];
+‏            const activePos = latLongToVector3(activeCountry.lat, activeCountry.lon, 80.5);
 
-                const tubeGeo = new THREE.TubeGeometry(curve, 64, 0.22, 8, false);
-                const tubeMat = new THREE.MeshBasicMaterial({ color: new THREE.Color(currentTheme.strong), transparent: true, opacity: 0.78 });
-                arcsGroup.add(new THREE.Mesh(tubeGeo, tubeMat));
+‏            // Connect to other countries
+‏            const otherCountries = WORLD_COUNTRIES.filter(c => c.code !== activeCountry.code);
 
-                const pulseGeo = new THREE.SphereGeometry(1.0, 16, 16);
-                const pulseMat = new THREE.MeshBasicMaterial({ color: new THREE.Color(currentTheme.warm) });
-                const pulseMesh = new THREE.Mesh(pulseGeo, pulseMat);
-                arcsGroup.add(pulseMesh);
-                arcPulses.push({ curve, pulseMesh, progress: Math.random(), speed: 0.003 + Math.random() * 0.003 });
+‏            otherCountries.slice(0, 15).forEach(target => {
+‏                const targetPos = latLongToVector3(target.lat, target.lon, 80.5);
+                
+‏                // Set start & end according to Arcs Direction (Inside vs Outside)
+‏                let startPos, endPos;
+‏                if (arcDirection === 'inside') {
+‏                    // Lines flow from external countries INSIDE to active country
+‏                    startPos = targetPos;
+‏                    endPos = activePos;
+‏                } else {
+‏                    // Lines flow OUTSIDE from active country to external countries
+‏                    startPos = activePos;
+‏                    endPos = targetPos;
+                }
+
+‏                const mid = new THREE.Vector3().addVectors(startPos, endPos).multiplyScalar(0.5);
+‏                const distance = startPos.distanceTo(endPos);
+‏                mid.normalize().multiplyScalar(80.5 + distance * 0.28);
+‏                const curve = new THREE.QuadraticBezierCurve3(startPos, mid, endPos);
+
+‏                const tubeGeo = new THREE.TubeGeometry(curve, 64, 0.22, 8, false);
+‏                const tubeMat = new THREE.MeshBasicMaterial({ color: new THREE.Color(currentTheme.strong), transparent: true, opacity: 0.78 });
+‏                arcsGroup.add(new THREE.Mesh(tubeGeo, tubeMat));
+
+‏                const pulseGeo = new THREE.SphereGeometry(1.0, 16, 16);
+‏                const pulseMat = new THREE.MeshBasicMaterial({ color: new THREE.Color(currentTheme.warm) });
+‏                const pulseMesh = new THREE.Mesh(pulseGeo, pulseMat);
+‏                arcsGroup.add(pulseMesh);
+                
+‏                arcPulses.push({ 
+‏                    curve, 
+‏                    pulseMesh, 
+‏                    progress: Math.random(), 
+‏                    speed: 0.003 + Math.random() * 0.003 
+                });
             });
-            globeGroup.add(arcsGroup);
+‏            globeGroup.add(arcsGroup);
         }
 
-        function buildStarfield() {
-            const count = 900;
-            const geometry = new THREE.BufferGeometry();
-            const positions = new Float32Array(count * 3);
-            for (let i = 0; i < count * 3; i += 3) {
-                positions[i] = (Math.random() - 0.5) * 700;
-                positions[i + 1] = (Math.random() - 0.5) * 700;
-                positions[i + 2] = (Math.random() - 0.5) * 700;
+‏        function buildStarfield() {
+‏            const count = 900;
+‏            const geometry = new THREE.BufferGeometry();
+‏            const positions = new Float32Array(count * 3);
+‏            for (let i = 0; i < count * 3; i += 3) {
+‏                positions[i] = (Math.random() - 0.5) * 700;
+‏                positions[i + 1] = (Math.random() - 0.5) * 700;
+‏                positions[i + 2] = (Math.random() - 0.5) * 700;
             }
-            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-            const material = new THREE.PointsMaterial({ color: new THREE.Color(currentTheme.accent), size: 1.2, transparent: true, opacity: 0.55 });
-            starParticles = new THREE.Points(geometry, material);
-            scene.add(starParticles);
+‏            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+‏            const material = new THREE.PointsMaterial({ color: new THREE.Color(currentTheme.accent), size: 1.2, transparent: true, opacity: 0.55 });
+‏            starParticles = new THREE.Points(geometry, material);
+‏            scene.add(starParticles);
         }
 
-        function createCustomTheme(hex) {
-            const color = new THREE.Color(hex);
-            const hsl = {};
-            color.getHSL(hsl);
+‏        function createCustomTheme(hex) {
+‏            const color = new THREE.Color(hex);
+‏            const hsl = {};
+‏            color.getHSL(hsl);
 
-            // Generate a readable studio palette from any chosen color.
-            const accent = '#' + color.getHexString();
-            const strongColor = new THREE.Color().setHSL(hsl.h, Math.min(1, hsl.s + 0.08), Math.min(0.72, hsl.l + 0.02));
-            const warmColor = new THREE.Color().setHSL((hsl.h + 0.12) % 1, Math.min(1, hsl.s + 0.05), Math.min(0.88, hsl.l + 0.25));
-            const softColor = new THREE.Color().setHSL(hsl.h, Math.max(0.18, hsl.s * 0.72), Math.min(0.9, hsl.l + 0.30));
-            const bg1 = new THREE.Color().setHSL(hsl.h, Math.min(0.72, hsl.s + 0.02), 0.16);
-            const bg2 = new THREE.Color().setHSL(hsl.h, Math.min(0.68, hsl.s), 0.075);
-            const bg3 = new THREE.Color().setHSL(hsl.h, Math.min(0.62, hsl.s), 0.025);
-            const globe = new THREE.Color().setHSL(hsl.h, Math.min(0.85, hsl.s + 0.08), 0.32);
-            const country = new THREE.Color().setHSL(hsl.h, Math.min(0.85, hsl.s + 0.05), 0.22);
-            const ocean = new THREE.Color().setHSL(hsl.h, Math.min(0.78, hsl.s), 0.045);
+‏            const accent = '#' + color.getHexString();
+‏            const strongColor = new THREE.Color().setHSL(hsl.h, Math.min(1, hsl.s + 0.08), Math.min(0.72, hsl.l + 0.02));
+‏            const warmColor = new THREE.Color().setHSL((hsl.h + 0.12) % 1, Math.min(1, hsl.s + 0.05), Math.min(0.88, hsl.l + 0.25));
+‏            const softColor = new THREE.Color().setHSL(hsl.h, Math.max(0.18, hsl.s * 0.72), Math.min(0.9, hsl.l + 0.30));
+‏            const bg1 = new THREE.Color().setHSL(hsl.h, Math.min(0.72, hsl.s + 0.02), 0.16);
+‏            const bg2 = new THREE.Color().setHSL(hsl.h, Math.min(0.68, hsl.s), 0.075);
+‏            const bg3 = new THREE.Color().setHSL(hsl.h, Math.min(0.62, hsl.s), 0.025);
+‏            const globe = new THREE.Color().setHSL(hsl.h, Math.min(0.85, hsl.s + 0.08), 0.32);
+‏            const country = new THREE.Color().setHSL(hsl.h, Math.min(0.85, hsl.s + 0.05), 0.22);
+‏            const ocean = new THREE.Color().setHSL(hsl.h, Math.min(0.78, hsl.s), 0.045);
 
-            return {
-                accent,
-                strong: '#' + strongColor.getHexString(),
-                warm: '#' + warmColor.getHexString(),
-                soft: '#' + softColor.getHexString(),
-                glow: `rgba(${Math.round(color.r * 255)},${Math.round(color.g * 255)},${Math.round(color.b * 255)},.32)`,
-                bg1: '#' + bg1.getHexString(),
-                bg2: '#' + bg2.getHexString(),
-                bg3: '#' + bg3.getHexString(),
-                globe: '#' + globe.getHexString(),
-                country: '#' + country.getHexString(),
-                ocean: '#' + ocean.getHexString()
+‏            return {
+‏                accent,
+‏                strong: '#' + strongColor.getHexString(),
+‏                warm: '#' + warmColor.getHexString(),
+‏                soft: '#' + softColor.getHexString(),
+‏                glow: `rgba(${Math.round(color.r * 255)},${Math.round(color.g * 255)},${Math.round(color.b * 255)},.32)`,
+‏                bg1: '#' + bg1.getHexString(),
+‏                bg2: '#' + bg2.getHexString(),
+‏                bg3: '#' + bg3.getHexString(),
+‏                globe: '#' + globe.getHexString(),
+‏                country: '#' + country.getHexString(),
+‏                ocean: '#' + ocean.getHexString()
             };
         }
 
-        function applyCustomColor(hex) {
-            currentTheme = createCustomTheme(hex);
-            applyThemeObject(currentTheme, 'custom');
-            const dot = document.querySelector('.custom-color-btn .custom-dot');
-            if (dot) dot.style.background = hex;
+‏        function applyCustomColor(hex) {
+‏            currentTheme = createCustomTheme(hex);
+‏            applyThemeObject(currentTheme, 'custom');
+‏            const dot = document.querySelector('.custom-color-btn .custom-dot');
+‏            if (dot) dot.style.background = hex;
         }
 
-        function hexToRgbString(hex) {
-            const clean = hex.replace('#', '');
-            const value = parseInt(clean, 16);
-            return `${(value >> 16) & 255},${(value >> 8) & 255},${value & 255}`;
+‏        function hexToRgbString(hex) {
+‏            const clean = hex.replace('#', '');
+‏            const value = parseInt(clean, 16);
+‏            return `${(value >> 16) & 255},${(value >> 8) & 255},${value & 255}`;
         }
 
-        function updateThemeRgbVariables(theme) {
-            const root = document.documentElement;
-            root.style.setProperty('--theme-accent-rgb', hexToRgbString(theme.accent));
-            root.style.setProperty('--theme-strong-rgb', hexToRgbString(theme.strong));
-            root.style.setProperty('--theme-warm-rgb', hexToRgbString(theme.warm));
-            root.style.setProperty('--theme-bg-rgb', hexToRgbString(theme.bg1));
+‏        function updateThemeRgbVariables(theme) {
+‏            const root = document.documentElement;
+‏            root.style.setProperty('--theme-accent-rgb', hexToRgbString(theme.accent));
+‏            root.style.setProperty('--theme-strong-rgb', hexToRgbString(theme.strong));
+‏            root.style.setProperty('--theme-warm-rgb', hexToRgbString(theme.warm));
+‏            root.style.setProperty('--theme-bg-rgb', hexToRgbString(theme.bg1));
         }
 
-        function setBackgroundBrightness(value) {
-            value = Math.max(0, Math.min(10000, Number(value) || 0));
-            const level = value / 100;
+‏        function setBackgroundBrightness(value) {
+‏            value = Math.max(0, Math.min(10000, Number(value) || 0));
+‏            const level = value / 100;
 
-            // This brightness affects ONLY the HTML/CSS background layers.
-            // The Three.js Earth, borders, pins and arcs are not brightness-filtered.
-            const cssBrightness = Math.min(4.0, 0.12 + level * 0.0388);
-            const left = Math.min(1.0, 0.01 + level * 0.035);
-            const right = Math.min(1.0, 0.01 + level * 0.032);
-            const bottom = Math.min(0.72, 0.005 + level * 0.024);
-            const grid = Math.min(1.0, 0.12 + level * 0.075);
-            const flares = Math.min(1.0, 0.05 + level * 0.09);
+‏            const cssBrightness = Math.min(4.0, 0.12 + level * 0.0388);
+‏            const left = Math.min(1.0, 0.01 + level * 0.035);
+‏            const right = Math.min(1.0, 0.01 + level * 0.032);
+‏            const bottom = Math.min(0.72, 0.005 + level * 0.024);
+‏            const grid = Math.min(1.0, 0.12 + level * 0.075);
+‏            const flares = Math.min(1.0, 0.05 + level * 0.09);
 
-            const root = document.documentElement;
-            root.style.setProperty('--background-brightness', cssBrightness.toFixed(3));
-            root.style.setProperty('--side-light-left', left.toFixed(3));
-            root.style.setProperty('--side-light-right', right.toFixed(3));
-            root.style.setProperty('--side-light-bottom', bottom.toFixed(3));
-            root.style.setProperty('--background-grid-opacity', grid.toFixed(3));
-            root.style.setProperty('--background-flare-opacity', flares.toFixed(3));
+‏            const root = document.documentElement;
+‏            root.style.setProperty('--background-brightness', cssBrightness.toFixed(3));
+‏            root.style.setProperty('--side-light-left', left.toFixed(3));
+‏            root.style.setProperty('--side-light-right', right.toFixed(3));
+‏            root.style.setProperty('--side-light-bottom', bottom.toFixed(3));
+‏            root.style.setProperty('--background-grid-opacity', grid.toFixed(3));
+‏            root.style.setProperty('--background-flare-opacity', flares.toFixed(3));
 
-            const slider = document.getElementById('background-brightness');
-            const output = document.getElementById('brightness-value');
-            if (slider) slider.value = value;
-            if (output) output.textContent = `${value}%`;
-            localStorage.setItem('globeBackgroundBrightness', String(value));
+‏            const slider = document.getElementById('background-brightness');
+‏            const output = document.getElementById('brightness-value');
+‏            if (slider) slider.value = value;
+‏            if (output) output.textContent = `${value}%`;
+‏            localStorage.setItem('globeBackgroundBrightness', String(value));
         }
 
-        function applyThemeObject(theme, name) {
-            currentTheme = theme;
-            const root = document.documentElement;
-            root.style.setProperty('--theme-accent', currentTheme.accent);
-            root.style.setProperty('--theme-strong', currentTheme.strong);
-            root.style.setProperty('--theme-warm', currentTheme.warm);
-            root.style.setProperty('--theme-soft', currentTheme.soft);
-            root.style.setProperty('--theme-glow', currentTheme.glow);
-            root.style.setProperty('--theme-bg-1', currentTheme.bg1);
-            root.style.setProperty('--theme-bg-2', currentTheme.bg2);
-            root.style.setProperty('--theme-bg-3', currentTheme.bg3);
-            updateThemeRgbVariables(currentTheme);
+‏        function applyThemeObject(theme, name) {
+‏            currentTheme = theme;
+‏            const root = document.documentElement;
+‏            root.style.setProperty('--theme-accent', currentTheme.accent);
+‏            root.style.setProperty('--theme-strong', currentTheme.strong);
+‏            root.style.setProperty('--theme-warm', currentTheme.warm);
+‏            root.style.setProperty('--theme-soft', currentTheme.soft);
+‏            root.style.setProperty('--theme-glow', currentTheme.glow);
+‏            root.style.setProperty('--theme-bg-1', currentTheme.bg1);
+‏            root.style.setProperty('--theme-bg-2', currentTheme.bg2);
+‏            root.style.setProperty('--theme-bg-3', currentTheme.bg3);
+‏            updateThemeRgbVariables(currentTheme);
 
-            document.querySelectorAll('.theme-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.theme === name));
+‏            document.querySelectorAll('.theme-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.theme === name));
 
-            if (worldGeoData && globeGroup) {
-                buildGraphicGlobeTexture(worldGeoData);
-                build3DVectorBorders(worldGeoData);
-                buildAtmosphere();
-                buildCityPins();
-                buildArcConnections();
-                if (arcsGroup) arcsGroup.visible = showArcs;
+‏            if (worldGeoData && globeGroup) {
+‏                buildGraphicGlobeTexture(worldGeoData);
+‏                build3DVectorBorders(worldGeoData);
+‏                buildAtmosphere();
+‏                buildCityPins();
+‏                buildArcConnections();
             }
-            if (starParticles) starParticles.material.color.set(currentTheme.accent);
-            if (renderer) renderer.setClearColor(new THREE.Color(currentTheme.bg3), 0);
+‏            if (starParticles) starParticles.material.color.set(currentTheme.accent);
+‏            if (renderer) renderer.setClearColor(new THREE.Color(currentTheme.bg3), 0);
         }
 
-        function applyTheme(name) {
-            if (!THEMES[name]) return;
-            applyThemeObject(THEMES[name], name);
+‏        function applyTheme(name) {
+‏            if (!THEMES[name]) return;
+‏            applyThemeObject(THEMES[name], name);
         }
 
-        function latLongToVector3(lat, lon, radius) {
-            const phi = (90 - lat) * (Math.PI / 180);
-            const theta = (lon + 180) * (Math.PI / 180);
+‏        function latLongToVector3(lat, lon, radius) {
+‏            const phi = (90 - lat) * (Math.PI / 180);
+‏            const theta = (lon + 180) * (Math.PI / 180);
 
-            const x = -(radius * Math.sin(phi) * Math.cos(theta));
-            const z = radius * Math.sin(phi) * Math.sin(theta);
-            const y = radius * Math.cos(phi);
+‏            const x = -(radius * Math.sin(phi) * Math.cos(theta));
+‏            const z = radius * Math.sin(phi) * Math.sin(theta);
+‏            const y = radius * Math.cos(phi);
 
-            return new THREE.Vector3(x, y, z);
+‏            return new THREE.Vector3(x, y, z);
         }
 
-        function handleUserActivity(event) {
-            if (event && event.type === 'mousemove') {
-                onHoverRaycast(event);
+‏        function handleUserActivity(event) {
+‏            if (event && event.type === 'mousemove') {
+‏                onHoverRaycast(event);
             }
 
-            const menu = document.getElementById('unified-menu');
+‏            const menu = document.getElementById('unified-menu');
             
-            // Show the consolidated menu when user moves mouse
-            menu.classList.remove('opacity-0', 'pointer-events-none');
-            menu.classList.add('opacity-100');
+‏            menu.classList.remove('opacity-0', 'pointer-events-none');
+‏            menu.classList.add('opacity-100');
 
-            // Reset inactivity hide timer (3.5 seconds)
-            clearTimeout(idleTimer);
+‏            clearTimeout(idleTimer);
 
-            // Only auto-hide if user is not actively typing in the search bar
-            if (!isSearching) {
-                idleTimer = setTimeout(() => {
-                    menu.classList.remove('opacity-100');
-                    menu.classList.add('opacity-0', 'pointer-events-none');
+‏            if (!isSearching) {
+‏                idleTimer = setTimeout(() => {
+‏                    menu.classList.remove('opacity-100');
+‏                    menu.classList.add('opacity-0', 'pointer-events-none');
                     
-                    const card = document.getElementById('country-card');
-                    card.classList.remove('opacity-100');
-                    card.classList.add('opacity-0', 'pointer-events-none');
+‏                    const card = document.getElementById('country-card');
+‏                    card.classList.remove('opacity-100');
+‏                    card.classList.add('opacity-0', 'pointer-events-none');
                 }, 3500);
             }
         }
 
-        function onHoverRaycast(event) {
-            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+‏        function onHoverRaycast(event) {
+‏            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+‏            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
-            raycaster.setFromCamera(mouse, camera);
-            const intersects = raycaster.intersectObjects(pinsGroup.children);
+‏            raycaster.setFromCamera(mouse, camera);
+‏            const intersects = raycaster.intersectObjects(pinsGroup.children);
 
-            const card = document.getElementById('country-card');
+‏            const card = document.getElementById('country-card');
 
-            if (intersects.length > 0) {
-                const target = intersects[0].object;
-                if (target.userData && target.userData.name) {
-                    showCountryCard(target.userData);
-                    return;
+‏            if (intersects.length > 0) {
+‏                const target = intersects[0].object;
+‏                if (target.userData && target.userData.name) {
+‏                    showCountryCard(target.userData);
+‏                    return;
                 }
             }
 
-            card.classList.remove('opacity-100');
-            card.classList.add('opacity-0', 'pointer-events-none');
+‏            card.classList.remove('opacity-100');
+‏            card.classList.add('opacity-0', 'pointer-events-none');
         }
 
-        function showCountryCard(data) {
-            const card = document.getElementById('country-card');
-            document.getElementById('card-country-name').textContent = data.name.toUpperCase();
-            document.getElementById('card-country-kurdish').textContent = data.kurdish;
-            document.getElementById('card-capital').textContent = data.capital;
-            document.getElementById('card-region').textContent = data.region;
-            document.getElementById('card-code').textContent = data.code;
-            document.getElementById('card-coords').textContent = `${data.lat.toFixed(2)}° N, ${data.lon.toFixed(2)}° E`;
+‏        function showCountryCard(data) {
+‏            const card = document.getElementById('country-card');
+‏            document.getElementById('card-country-name').textContent = data.name.toUpperCase();
+‏            document.getElementById('card-country-kurdish').textContent = data.kurdish;
+‏            document.getElementById('card-capital').textContent = data.capital;
+‏            document.getElementById('card-region').textContent = data.region;
+‏            document.getElementById('card-code').textContent = data.code;
+‏            document.getElementById('card-coords').textContent = `${data.lat.toFixed(2)}° N, ${data.lon.toFixed(2)}° E`;
 
-            card.classList.remove('opacity-0', 'pointer-events-none');
-            card.classList.add('opacity-100');
+‏            card.classList.remove('opacity-0', 'pointer-events-none');
+‏            card.classList.add('opacity-100');
         }
 
-        function focusOnCountry(country) {
-            showCountryCard(country);
+‏        function focusOnCountry(country) {
+‏            highlightedCountryCode = country.code;
+‏            if (worldGeoData) {
+‏                buildGraphicGlobeTexture(worldGeoData);
+‏                build3DVectorBorders(worldGeoData);
+‏                buildCityPins();
+‏                buildArcConnections(); // Rebuild arcs for selected country
+            }
 
-            const targetPos = latLongToVector3(country.lat, country.lon, 230);
+‏            showCountryCard(country);
+
+‏            const targetPos = latLongToVector3(country.lat, country.lon, 230);
             
-            let startTime = null;
-            const startPos = camera.position.clone();
+‏            let startTime = null;
+‏            const startPos = camera.position.clone();
 
-            function animateCam(time) {
-                if (!startTime) startTime = time;
-                const progress = Math.min((time - startTime) / 1000, 1);
+‏            function animateCam(time) {
+‏                if (!startTime) startTime = time;
+‏                const progress = Math.min((time - startTime) / 1000, 1);
 
-                camera.position.lerpVectors(startPos, targetPos, progress);
-                controls.update();
+‏                camera.position.lerpVectors(startPos, targetPos, progress);
+‏                controls.update();
 
-                if (progress < 1) {
-                    requestAnimationFrame(animateCam);
+‏                if (progress < 1) {
+‏                    requestAnimationFrame(animateCam);
                 }
             }
-            requestAnimationFrame(animateCam);
+‏            requestAnimationFrame(animateCam);
         }
 
-        function setupUIInteractions() {
-            document.querySelectorAll('.theme-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    applyTheme(btn.dataset.theme);
-                    handleUserActivity();
+‏        function setupUIInteractions() {
+‏            document.querySelectorAll('.theme-btn').forEach(btn => {
+‏                btn.addEventListener('click', () => {
+‏                    applyTheme(btn.dataset.theme);
+‏                    handleUserActivity();
                 });
             });
 
-            const customColor = document.getElementById('custom-color');
-            if (customColor) {
-                customColor.addEventListener('input', (event) => {
-                    applyCustomColor(event.target.value);
-                    handleUserActivity();
-                });
-            }
-
-            const brightnessSlider = document.getElementById('background-brightness');
-            const savedBrightness = Number(localStorage.getItem('globeBackgroundBrightness'));
-            setBackgroundBrightness(Number.isFinite(savedBrightness) ? savedBrightness : 100);
-            if (brightnessSlider) {
-                brightnessSlider.addEventListener('input', (event) => {
-                    setBackgroundBrightness(event.target.value);
-                    handleUserActivity();
+‏            const customColor = document.getElementById('custom-color');
+‏            if (customColor) {
+‏                customColor.addEventListener('input', (event) => {
+‏                    applyCustomColor(event.target.value);
+‏                    handleUserActivity();
                 });
             }
-            document.getElementById('brightness-down').addEventListener('click', () => {
-                setBackgroundBrightness(Number(brightnessSlider.value) - 10);
-                handleUserActivity();
-            });
-            document.getElementById('brightness-up').addEventListener('click', () => {
-                setBackgroundBrightness(Number(brightnessSlider.value) + 10);
-                handleUserActivity();
-            });
 
-            document.getElementById('toggle-rotation').addEventListener('click', () => {
-                autoRotate = !autoRotate;
+‏            const brightnessSlider = document.getElementById('background-brightness');
+‏            const savedBrightness = Number(localStorage.getItem('globeBackgroundBrightness'));
+‏            setBackgroundBrightness(Number.isFinite(savedBrightness) ? savedBrightness : 100);
+‏            if (brightnessSlider) {
+‏                brightnessSlider.addEventListener('input', (event) => {
+‏                    setBackgroundBrightness(event.target.value);
+‏                    handleUserActivity();
+                });
+            }
+‏            document.getElementById('brightness-down').addEventListener('click', () => {
+‏                setBackgroundBrightness(Number(brightnessSlider.value) - 10);
+‏                handleUserActivity();
             });
-
-            document.getElementById('toggle-arcs').addEventListener('click', () => {
-                showArcs = !showArcs;
-                arcsGroup.visible = showArcs;
-            });
-
-            document.getElementById('btn-reset-cam').addEventListener('click', () => {
-                camera.position.set(0, 0, 240);
-                controls.reset();
+‏            document.getElementById('brightness-up').addEventListener('click', () => {
+‏                setBackgroundBrightness(Number(brightnessSlider.value) + 10);
+‏                handleUserActivity();
             });
 
-            document.getElementById('btn-highlight-kurdistan').addEventListener('click', () => {
-                focusOnCountry(WORLD_COUNTRIES[0]);
+‏            document.getElementById('toggle-rotation').addEventListener('click', () => {
+‏                autoRotate = !autoRotate;
             });
 
-            const searchInput = document.getElementById('country-search');
-            const searchResults = document.getElementById('search-results');
+‏            // Arcs Inside / Outside button events
+‏            const btnInside = document.getElementById('btn-arcs-inside');
+‏            const btnOutside = document.getElementById('btn-arcs-outside');
 
-            searchInput.addEventListener('focus', () => { isSearching = true; });
-            searchInput.addEventListener('blur', () => { 
-                isSearching = false; 
-                setTimeout(() => searchResults.classList.add('hidden'), 200);
+‏            btnInside.addEventListener('click', () => {
+‏                arcDirection = 'inside';
+‏                btnInside.classList.add('active');
+‏                btnOutside.classList.remove('active');
+‏                buildArcConnections();
             });
 
-            searchInput.addEventListener('input', (e) => {
-                const query = e.target.value.toLowerCase().trim();
-                searchResults.innerHTML = '';
+‏            btnOutside.addEventListener('click', () => {
+‏                arcDirection = 'outside';
+‏                btnOutside.classList.add('active');
+‏                btnInside.classList.remove('active');
+‏                buildArcConnections();
+            });
 
-                if (!query) {
-                    searchResults.classList.add('hidden');
-                    return;
+‏            document.getElementById('btn-reset-cam').addEventListener('click', () => {
+‏                camera.position.set(0, 0, 240);
+‏                controls.reset();
+            });
+
+‏            document.getElementById('btn-highlight-kurdistan').addEventListener('click', () => {
+‏                focusOnCountry(WORLD_COUNTRIES[0]);
+            });
+
+‏            const searchInput = document.getElementById('country-search');
+‏            const searchResults = document.getElementById('search-results');
+
+‏            searchInput.addEventListener('focus', () => { isSearching = true; });
+‏            searchInput.addEventListener('blur', () => { 
+‏                isSearching = false; 
+‏                setTimeout(() => searchResults.classList.add('hidden'), 200);
+            });
+
+‏            searchInput.addEventListener('input', (e) => {
+‏                const query = e.target.value.toLowerCase().trim();
+‏                searchResults.innerHTML = '';
+
+‏                if (!query) {
+‏                    searchResults.classList.add('hidden');
+‏                    return;
                 }
 
-                const filtered = WORLD_COUNTRIES.filter(c => 
-                    c.name.toLowerCase().includes(query) || 
-                    c.kurdish.includes(query) ||
-                    c.code.toLowerCase().includes(query)
+‏                const filtered = WORLD_COUNTRIES.filter(c => 
+‏                    c.name.toLowerCase().includes(query) || 
+‏                    c.kurdish.includes(query) ||
+‏                    c.code.toLowerCase().includes(query)
                 );
 
-                if (filtered.length === 0) {
-                    searchResults.classList.add('hidden');
-                    return;
+‏                if (filtered.length === 0) {
+‏                    searchResults.classList.add('hidden');
+‏                    return;
                 }
 
-                filtered.forEach(item => {
-                    const div = document.createElement('div');
-                    div.className = 'px-4 py-2.5 text-xs hover:bg-cyan-900/50 cursor-pointer flex justify-between items-center transition';
-                    div.innerHTML = `
-                        <div>
-                            <span class="text-cyan-200 font-medium">${item.name}</span>
-                            <span class="text-amber-300 text-[10px] block font-bold">${item.kurdish}</span>
-                        </div>
-                        <span class="text-[10px] text-cyan-400 font-mono">${item.code}</span>
+‏                filtered.forEach(item => {
+‏                    const div = document.createElement('div');
+‏                    div.className = 'px-4 py-2.5 text-xs hover:bg-cyan-900/50 cursor-pointer flex justify-between items-center transition';
+‏                    div.innerHTML = `
+‏                        <div>
+‏                            <span class="text-cyan-200 font-medium">${item.name}</span>
+‏                            <span class="text-amber-300 text-[10px] block font-bold">${item.kurdish}</span>
+‏                        </div>
+‏                        <span class="text-[10px] text-cyan-400 font-mono">${item.code}</span>
                     `;
-                    div.addEventListener('click', () => {
-                        focusOnCountry(item);
-                        searchInput.value = item.name;
-                        searchResults.classList.add('hidden');
+‏                    div.addEventListener('click', () => {
+‏                        focusOnCountry(item);
+‏                        searchInput.value = item.name;
+‏                        searchResults.classList.add('hidden');
                     });
-                    searchResults.appendChild(div);
+‏                    searchResults.appendChild(div);
                 });
 
-                searchResults.classList.remove('hidden');
+‏                searchResults.classList.remove('hidden');
             });
         }
 
-        function onWindowResize() {
-            const aspect = window.innerWidth / window.innerHeight;
-            camera.aspect = aspect;
-            if (aspect > 2.5) {
-                camera.position.z = 275;
+‏        function onWindowResize() {
+‏            const aspect = window.innerWidth / window.innerHeight;
+‏            camera.aspect = aspect;
+‏            if (aspect > 2.5) {
+‏                camera.position.z = 275;
             }
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
+‏            camera.updateProjectionMatrix();
+‏            renderer.setSize(window.innerWidth, window.innerHeight);
         }
 
-        function animate() {
-            requestAnimationFrame(animate);
+‏        function animate() {
+‏            requestAnimationFrame(animate);
 
-            if (autoRotate && globeGroup) {
-                globeGroup.rotation.y += 0.002;
+‏            if (autoRotate && globeGroup) {
+‏                globeGroup.rotation.y += 0.002;
             }
 
-            // Animate traveling signal pulses along arcs
-            if (showArcs && arcPulses.length > 0) {
-                arcPulses.forEach(p => {
-                    p.progress = (p.progress + p.speed) % 1;
-                    p.pulseMesh.position.copy(p.curve.getPoint(p.progress));
+‏            if (arcPulses.length > 0) {
+‏                arcPulses.forEach(p => {
+‏                    p.progress = (p.progress + p.speed) % 1;
+‏                    p.pulseMesh.position.copy(p.curve.getPoint(p.progress));
                 });
             }
 
-            controls.update();
-            renderer.render(scene, camera);
+‏            controls.update();
+‏            renderer.render(scene, camera);
         }
 
-        window.onload = function() {
-            init3D();
+‏        window.onload = function() {
+‏            init3D();
         };
-    </script>
-</body>
-</html>
+‏    </script>
+‏</body>
+‏</html>
+
