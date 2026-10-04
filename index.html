@@ -253,6 +253,10 @@
                         <button id="btn-arcs-outside" class="arc-mode-btn text-cyan-200 px-2.5 py-1.5 rounded-lg text-xs flex items-center gap-1 transition">
                             <i class="fa-solid fa-arrow-up-from-line text-cyan-400"></i> Arcs Outside
                         </button>
+                        <!-- دوگمەی نوێ بۆ نیشاننەدانی Arcs -->
+                        <button id="btn-arcs-none" class="arc-mode-btn text-cyan-200 px-2.5 py-1.5 rounded-lg text-xs flex items-center gap-1 transition">
+                            <i class="fa-solid fa-eye-slash text-cyan-400"></i> No Arcs
+                        </button>
                     </div>
 
                     <button id="toggle-rotation" class="bg-slate-800/80 hover:bg-cyan-900/50 text-cyan-200 border border-cyan-500/30 px-3 py-2 rounded-xl text-xs flex items-center gap-1.5 transition">
@@ -563,6 +567,12 @@
             arcsGroup = new THREE.Group();
             arcPulses = [];
 
+            // ئەگەر arcDirection بەرامبەر 'none' بێت، هیچ Arcێک دروست ناکرێت
+            if (arcDirection === 'none') {
+                globeGroup.add(arcsGroup);
+                return;
+            }
+
             const activeCountry = WORLD_COUNTRIES.find(c => c.code === highlightedCountryCode) || WORLD_COUNTRIES[0];
             const activePos = latLongToVector3(activeCountry.lat, activeCountry.lon, 80.5);
             const otherCountries = WORLD_COUNTRIES.filter(c => c.code !== activeCountry.code);
@@ -854,11 +864,13 @@
 
             const btnInside = document.getElementById('btn-arcs-inside');
             const btnOutside = document.getElementById('btn-arcs-outside');
+            const btnNone = document.getElementById('btn-arcs-none');
 
             btnInside.addEventListener('click', () => {
                 arcDirection = 'inside';
                 btnInside.classList.add('active');
                 btnOutside.classList.remove('active');
+                btnNone.classList.remove('active');
                 buildArcConnections();
             });
 
@@ -866,6 +878,15 @@
                 arcDirection = 'outside';
                 btnOutside.classList.add('active');
                 btnInside.classList.remove('active');
+                btnNone.classList.remove('active');
+                buildArcConnections();
+            });
+
+            btnNone.addEventListener('click', () => {
+                arcDirection = 'none';
+                btnNone.classList.add('active');
+                btnInside.classList.remove('active');
+                btnOutside.classList.remove('active');
                 buildArcConnections();
             });
 
