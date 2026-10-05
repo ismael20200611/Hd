@@ -709,128 +709,57 @@
             });
             globeGroup.add(pinsGroup);
         }
-function buildArcConnections() {
-    if (arcsGroup) globeGroup.remove(arcsGroup);
-    arcsGroup = new THREE.Group();
-    arcPulses = [];
 
-    if (arcDirection === 'none') {
-        globeGroup.add(arcsGroup);
-        return;
-    }
+        function buildArcConnections() {
+            if (arcsGroup) globeGroup.remove(arcsGroup);
+            arcsGroup = new THREE.Group();
+            arcPulses = [];
 
-    // New A -> B mode: only used when both route countries are selected.
-    // If either side is empty, the original arc system below remains unchanged.
-    const routeFrom = WORLD_COUNTRIES.find(c => c.code === arcFromCountryCode);
-    const routeTo = WORLD_COUNTRIES.find(c => c.code === arcToCountryCode);
+            if (arcDirection === 'none') {
+                globeGroup.add(arcsGroup);
+                return;
+            }
 
-    if (routeFrom && routeTo && routeFrom.code !== routeTo.code) {
-        const fromPos = latLongToVector3(routeFrom.lat, routeFrom.lon, 80.5);
-        const toPos = latLongToVector3(routeTo.lat, routeTo.lon, 80.5);
+            // New A -> B mode: only used when both route countries are selected.
+            // If either side is empty, the original arc system below remains unchanged.
+            const routeFrom = WORLD_COUNTRIES.find(c => c.code === arcFromCountryCode);
+            const routeTo = WORLD_COUNTRIES.find(c => c.code === arcToCountryCode);
 
-        let startPos = arcDirection === 'inside' ? toPos : fromPos;
-        let endPos = arcDirection === 'inside' ? fromPos : toPos;
+            if (routeFrom && routeTo && routeFrom.code !== routeTo.code) {
+                const fromPos = latLongToVector3(routeFrom.lat, routeFrom.lon, 80.5);
+                const toPos = latLongToVector3(routeTo.lat, routeTo.lon, 80.5);
 
-        const mid = new THREE.Vector3().addVectors(startPos, endPos).multiplyScalar(0.5);
-        const distance = startPos.distanceTo(endPos);
-        mid.normalize().multiplyScalar(80.5 + distance * 0.28);
+                let startPos = arcDirection === 'inside' ? toPos : fromPos;
+                let endPos = arcDirection === 'inside' ? fromPos : toPos;
 
-        const curve = new THREE.QuadraticBezierCurve3(
-            startPos,
-            mid,
-            endPos
-        );
+                const mid = new THREE.Vector3().addVectors(startPos, endPos).multiplyScalar(0.5);
+                const distance = startPos.distanceTo(endPos);
+                mid.normalize().multiplyScalar(80.5 + distance * 0.28);
+                const curve = new THREE.QuadraticBezierCurve3(startPos, mid, endPos);
 
-        const tubeGeo = new THREE.TubeGeometry(
-            curve,
-            64,
-            0.30,
-            10,
-            false
-        );
+                const tubeGeo = new THREE.TubeGeometry(curve, 64, 0.30, 10, false);
+                const tubeMat = new THREE.MeshBasicMaterial({
+                    color: new THREE.Color(currentTheme.strong),
+                    transparent: true,
+                    opacity: 0.92
+                });
+                arcsGroup.add(new THREE.Mesh(tubeGeo, tubeMat));
 
-        const tubeMat = new THREE.MeshBasicMaterial({
-            color: new THREE.Color(currentTheme.strong),
-            transparent: true,
-            opacity: 0.92
-        });
+                const pulseGeo = new THREE.SphereGeometry(1.25, 18, 18);
+                const pulseMat = new THREE.MeshBasicMaterial({ color: new THREE.Color(currentTheme.warm) });
+                const pulseMesh = new THREE.Mesh(pulseGeo, pulseMat);
+                arcsGroup.add(pulseMesh);
 
-        arcsGroup.add(new THREE.Mesh(tubeGeo, tubeMat));
+                arcPulses.push({
+                    curve,
+                    pulseMesh,
+                    progress: 0,
+                    speed: 0.005
+                });
 
-        globeGroup.add(arcsGroup);
-        return;
-    }
-
-    const activeCountry =
-        WORLD_COUNTRIES.find(c => c.code === highlightedCountryCode) ||
-        WORLD_COUNTRIES[0];
-
-    const activePos = latLongToVector3(
-        activeCountry.lat,
-        activeCountry.lon,
-        80.5
-    );
-
-    const otherCountries = WORLD_COUNTRIES.filter(
-        c => c.code !== activeCountry.code
-    );
-
-    otherCountries.slice(0, 15).forEach(target => {
-
-        const targetPos = latLongToVector3(
-            target.lat,
-            target.lon,
-            80.5
-        );
-
-        let startPos =
-            arcDirection === 'inside'
-                ? targetPos
-                : activePos;
-
-        let endPos =
-            arcDirection === 'inside'
-                ? activePos
-                : targetPos;
-
-        const mid = new THREE.Vector3()
-            .addVectors(startPos, endPos)
-            .multiplyScalar(0.5);
-
-        const distance = startPos.distanceTo(endPos);
-
-        mid.normalize().multiplyScalar(
-            80.5 + distance * 0.28
-        );
-
-        const curve = new THREE.QuadraticBezierCurve3(
-            startPos,
-            mid,
-            endPos
-        );
-
-        const tubeGeo = new THREE.TubeGeometry(
-            curve,
-            64,
-            0.22,
-            8,
-            false
-        );
-
-        const tubeMat = new THREE.MeshBasicMaterial({
-            color: new THREE.Color(currentTheme.strong),
-            transparent: true,
-            opacity: 0.78
-        });
-
-        arcsGroup.add(
-            new THREE.Mesh(tubeGeo, tubeMat)
-        );
-    });
-
-    globeGroup.add(arcsGroup);
-}
-
+                globeGroup.add(arcsGroup);
+                return;
+            }
 
             const activeCountry = WORLD_COUNTRIES.find(c => c.code === highlightedCountryCode) || WORLD_COUNTRIES[0];
             const activePos = latLongToVector3(activeCountry.lat, activeCountry.lon, 80.5);
