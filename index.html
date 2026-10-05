@@ -129,7 +129,7 @@
         }
 
         .auto-hide-menu {
-            transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1), transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1), transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         ::-webkit-scrollbar { width: 4px; }
@@ -294,6 +294,26 @@
                         </button>
                     </div>
 
+                    <!-- Directed Arc Route: FROM -> TO. When both are empty, the original multi-country arcs remain. -->
+                    <div class="flex items-center gap-1 bg-black/60 p-1 rounded-xl border border-amber-500/30">
+                        <div class="relative">
+                            <input id="arc-from-search" type="text" autocomplete="off"
+                                   placeholder="FROM A" title="Arc From Country"
+                                   class="w-24 bg-slate-950/80 text-[10px] text-amber-100 placeholder-amber-400/50 px-2 py-1.5 rounded-lg outline-none border border-amber-500/20 focus:border-amber-400 transition-all">
+                            <div id="arc-from-results" class="absolute left-0 top-9 w-48 glass-panel rounded-lg max-h-44 overflow-y-auto hidden z-50 divide-y divide-amber-800/40"></div>
+                        </div>
+                        <i class="fa-solid fa-arrow-right text-amber-400 text-[10px]"></i>
+                        <div class="relative">
+                            <input id="arc-to-search" type="text" autocomplete="off"
+                                   placeholder="TO B" title="Arc To Country"
+                                   class="w-24 bg-slate-950/80 text-[10px] text-amber-100 placeholder-amber-400/50 px-2 py-1.5 rounded-lg outline-none border border-amber-500/20 focus:border-amber-400 transition-all">
+                            <div id="arc-to-results" class="absolute right-0 top-9 w-48 glass-panel rounded-lg max-h-44 overflow-y-auto hidden z-50 divide-y divide-amber-800/40"></div>
+                        </div>
+                        <button id="btn-arcs-clear-route" class="text-amber-300 hover:text-white px-1.5 py-1.5 rounded-lg hover:bg-amber-900/50 transition" title="Clear Arc Route">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+
                     <button id="toggle-rotation" class="bg-slate-900/80 hover:bg-amber-900/50 text-amber-200 border border-amber-500/30 px-2.5 py-2 rounded-xl text-xs flex items-center gap-1 transition">
                         <i class="fa-solid fa-rotate text-amber-400"></i> Rotate
                     </button>
@@ -340,6 +360,10 @@
         let arcDirection = 'inside';
         let worldGeoData = null;
         let highlightedCountryCode = "IRQ";
+
+        // Optional directed arc route. It only becomes active when BOTH countries are selected.
+        let arcFromCountryCode = null;
+        let arcToCountryCode = null;
         
         const raycaster = new THREE.Raycaster();
         const mouse = new THREE.Vector2();
@@ -364,36 +388,92 @@
         let idleTimer = null;
         let isSearching = false;
 
-        const WORLD_COUNTRIES = [
-            { name: "Iraq / Kurdistan", kurdish: "عێراق / هه‌رێمی كوردستان", capital: "Erbil / Baghdad", lat: 36.19, lon: 44.01, region: "Middle East", code: "IRQ" },
-            { name: "United States", kurdish: "ویلایەتە یەکگرتووەکانی ئەمریکا", capital: "Washington D.C.", lat: 38.90, lon: -77.03, region: "North America", code: "USA" },
+        // Initial fallback countries. The full 193 UN member states are loaded below.
+        let WORLD_COUNTRIES = [
+            { name: "Iraq", kurdish: "عێراق", capital: "Baghdad", lat: 33.31, lon: 44.36, region: "Asia", code: "IRQ" },
+            { name: "United States", kurdish: "ویلایەتە یەکگرتووەکانی ئەمریکا", capital: "Washington, D.C.", lat: 38.90, lon: -77.03, region: "Americas", code: "USA" },
             { name: "United Kingdom", kurdish: "بەریتانیا", capital: "London", lat: 51.50, lon: -0.12, region: "Europe", code: "GBR" },
             { name: "Germany", kurdish: "ئەڵمانیا", capital: "Berlin", lat: 52.52, lon: 13.40, region: "Europe", code: "DEU" },
             { name: "France", kurdish: "فەرەنسا", capital: "Paris", lat: 48.85, lon: 2.35, region: "Europe", code: "FRA" },
             { name: "China", kurdish: "چین", capital: "Beijing", lat: 39.90, lon: 116.40, region: "Asia", code: "CHN" },
             { name: "Japan", kurdish: "ژاپۆن", capital: "Tokyo", lat: 35.67, lon: 139.65, region: "Asia", code: "JPN" },
             { name: "India", kurdish: "هیندستان", capital: "New Delhi", lat: 28.61, lon: 77.20, region: "Asia", code: "IND" },
-            { name: "Brazil", kurdish: "بەرازیل", capital: "Brasília", lat: -15.78, lon: -47.92, region: "South America", code: "BRA" },
-            { name: "Canada", kurdish: "کانەدا", capital: "Ottawa", lat: 45.42, lon: -75.69, region: "North America", code: "CAN" },
+            { name: "Brazil", kurdish: "بەرازیل", capital: "Brasília", lat: -15.78, lon: -47.92, region: "Americas", code: "BRA" },
+            { name: "Canada", kurdish: "کانەدا", capital: "Ottawa", lat: 45.42, lon: -75.69, region: "Americas", code: "CAN" },
             { name: "Australia", kurdish: "ئوسترالیا", capital: "Canberra", lat: -35.28, lon: 149.13, region: "Oceania", code: "AUS" },
             { name: "Egypt", kurdish: "میسر", capital: "Cairo", lat: 30.04, lon: 31.23, region: "Africa", code: "EGY" },
-            { name: "Turkey", kurdish: "تورکیا", capital: "Ankara", lat: 39.93, lon: 32.85, region: "Middle East", code: "TUR" },
-            { name: "Iran", kurdish: "ئێران", capital: "Tehran", lat: 35.68, lon: 51.38, region: "Middle East", code: "IRN" },
-            { name: "Saudi Arabia", kurdish: "عەرەبستانی سعودی", capital: "Riyadh", lat: 24.71, lon: 46.67, region: "Middle East", code: "SAU" },
-            { name: "United Arab Emirates", kurdish: "ئیمارات", capital: "Abu Dhabi", lat: 24.45, lon: 54.37, region: "Middle East", code: "ARE" },
-            { name: "Russia", kurdish: "ڕووسیا", capital: "Moscow", lat: 55.75, lon: 37.61, region: "Eurasia", code: "RUS" },
+            { name: "Turkey", kurdish: "تورکیا", capital: "Ankara", lat: 39.93, lon: 32.85, region: "Asia", code: "TUR" },
+            { name: "Iran", kurdish: "ئێران", capital: "Tehran", lat: 35.68, lon: 51.38, region: "Asia", code: "IRN" },
+            { name: "Saudi Arabia", kurdish: "عەرەبستانی سعودی", capital: "Riyadh", lat: 24.71, lon: 46.67, region: "Asia", code: "SAU" },
+            { name: "United Arab Emirates", kurdish: "ئیمارات", capital: "Abu Dhabi", lat: 24.45, lon: 54.37, region: "Asia", code: "ARE" },
+            { name: "Russia", kurdish: "ڕووسیا", capital: "Moscow", lat: 55.75, lon: 37.61, region: "Europe", code: "RUS" },
             { name: "South Africa", kurdish: "ئەفریقای باشوور", capital: "Pretoria", lat: -25.74, lon: 28.18, region: "Africa", code: "ZAF" },
             { name: "Italy", kurdish: "ئیتالیا", capital: "Rome", lat: 41.90, lon: 12.49, region: "Europe", code: "ITA" },
             { name: "Spain", kurdish: "ئیسپانیا", capital: "Madrid", lat: 40.41, lon: -3.70, region: "Europe", code: "ESP" },
-            { name: "Mexico", kurdish: "مەکسیک", capital: "Mexico City", lat: 19.43, lon: -99.13, region: "North America", code: "MEX" },
-            { name: "Argentina", kurdish: "ئەرجەنتین", capital: "Buenos Aires", lat: -34.60, lon: -58.38, region: "South America", code: "ARG" },
+            { name: "Mexico", kurdish: "مەکسیک", capital: "Mexico City", lat: 19.43, lon: -99.13, region: "Americas", code: "MEX" },
+            { name: "Argentina", kurdish: "ئەرجەنتین", capital: "Buenos Aires", lat: -34.60, lon: -58.38, region: "Americas", code: "ARG" },
             { name: "South Korea", kurdish: "کۆریای باشوور", capital: "Seoul", lat: 37.56, lon: 126.97, region: "Asia", code: "KOR" },
             { name: "Sweden", kurdish: "سوید", capital: "Stockholm", lat: 59.32, lon: 18.06, region: "Europe", code: "SWE" },
             { name: "Norway", kurdish: "نەرویج", capital: "Oslo", lat: 59.91, lon: 10.75, region: "Europe", code: "NOR" },
-            { name: "Jordan", kurdish: "ئوردن", capital: "Amman", lat: 31.94, lon: 35.92, region: "Middle East", code: "JOR" },
-            { name: "Kuwait", kurdish: "کووەیت", capital: "Kuwait City", lat: 29.37, lon: 47.97, region: "Middle East", code: "KWT" },
-            { name: "Qatar", kurdish: "قەتەر", capital: "Doha", lat: 25.28, lon: 51.53, region: "Middle East", code: "QAT" }
+            { name: "Jordan", kurdish: "ئوردن", capital: "Amman", lat: 31.94, lon: 35.92, region: "Asia", code: "JOR" },
+            { name: "Kuwait", kurdish: "کووەیت", capital: "Kuwait City", lat: 29.37, lon: 47.97, region: "Asia", code: "KWT" },
+            { name: "Qatar", kurdish: "قەتەر", capital: "Doha", lat: 25.28, lon: 51.53, region: "Asia", code: "QAT" }
         ];
+
+        // Kurdish names already supplied in the original project.
+        const KURDISH_NAMES = Object.fromEntries(
+            WORLD_COUNTRIES.map(c => [c.code, c.kurdish])
+        );
+
+        async function loadAllUNCountries() {
+            try {
+                const response = await fetch(
+                    'https://restcountries.com/v3.1/all?fields=name,cca3,capital,latlng,region,unMember'
+                );
+                if (!response.ok) throw new Error('Country API request failed');
+
+                const data = await response.json();
+
+                const countries193 = data
+                    .filter(c => c.unMember === true && c.cca3 && Array.isArray(c.latlng) && c.latlng.length >= 2)
+                    .map(c => ({
+                        name: c.name?.common || c.name?.official || c.cca3,
+                        kurdish: KURDISH_NAMES[c.cca3] || "",
+                        capital: Array.isArray(c.capital) && c.capital.length ? c.capital[0] : "-",
+                        lat: Number(c.latlng[0]),
+                        lon: Number(c.latlng[1]),
+                        region: c.region || "-",
+                        code: c.cca3
+                    }))
+                    .sort((a, b) => a.name.localeCompare(b.name));
+
+                if (countries193.length === 193) {
+                    WORLD_COUNTRIES = countries193;
+                } else if (countries193.length > 0) {
+                    console.warn(`UN country list returned ${countries193.length} countries; keeping available results.`);
+                    WORLD_COUNTRIES = countries193;
+                }
+
+                // Keep Iraq selected by default, exactly like the original project.
+                highlightedCountryCode = "IRQ";
+
+                if (globeGroup) {
+                    buildGraphicGlobeTexture(worldGeoData);
+                    build3DVectorBorders(worldGeoData);
+                    buildCityPins();
+                    buildArcConnections();
+                }
+
+                const searchInput = document.getElementById('country-search');
+                if (searchInput) {
+                    searchInput.placeholder = `Search 193 Countries / بگەڕێ بۆ وڵات...`;
+                }
+
+                console.log(`Loaded ${WORLD_COUNTRIES.length} UN member states.`);
+            } catch (error) {
+                console.warn('Could not load all 193 countries. Using the built-in fallback list.', error);
+            }
+        }
 
         function init3D() {
             const container = document.getElementById('canvas-container');
@@ -456,14 +536,59 @@
             window.addEventListener('touchstart', handleUserActivity);
 
             setupUIInteractions();
+            loadAllUNCountries();
             applyTheme('rudaw');
             animate();
         }
 
+        function normalizeCountryName(name) {
+            return String(name || "")
+                .toLowerCase()
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "")
+                .replace(/&/g, "and")
+                .replace(/[^a-z0-9]+/g, "");
+        }
+
         function isCountryMatch(feature, code) {
             if (!feature || !code) return false;
-            if (code === "IRQ" && (feature.id === "368" || (feature.properties && feature.properties.name === "Iraq"))) return true;
-            return feature.properties && feature.properties.name && feature.properties.name.toLowerCase().includes(code.toLowerCase());
+
+            const mapName = feature.properties && feature.properties.name;
+            if (!mapName) return false;
+
+            const country = WORLD_COUNTRIES.find(c => c.code === code);
+            if (!country) return false;
+
+            const a = normalizeCountryName(mapName);
+            const b = normalizeCountryName(country.name);
+
+            // Common names used by the world-atlas dataset.
+            const aliases = {
+                "USA": ["unitedstatesofamerica", "unitedstates"],
+                "GBR": ["unitedkingdom"],
+                "RUS": ["russianfederation", "russia"],
+                "KOR": ["republicofkorea", "southkorea"],
+                "PRK": ["democraticpeoplesrepublicofkorea", "northkorea"],
+                "TUR": ["turkiye", "turkey"],
+                "IRN": ["iran", "islamicrepublicofiran"],
+                "SYR": ["syrianarabrepublic", "syria"],
+                "LAO": ["laopeoplesdemocraticrepublic", "laos"],
+                "VNM": ["vietnamsocialistrepublic", "vietnam"],
+                "TZA": ["unitedrepublicoftanzania", "tanzania"],
+                "BOL": ["plurinationalstateofbolivia", "bolivia"],
+                "VEN": ["bolivarianrepublicofvenezuela", "venezuela"],
+                "COD": ["democraticrepublicofthecongo", "democraticrepublicofthecongo"],
+                "COG": ["republicofthecongo", "congo"],
+                "CZE": ["czechia", "czechrepublic"],
+                "MDA": ["republicofmoldova", "moldova"],
+                "MKD": ["northmacedonia", "macedonia"],
+                "SWZ": ["eswatini", "swaziland"]
+            };
+
+            return a === b ||
+                a.includes(b) ||
+                b.includes(a) ||
+                (aliases[code] && aliases[code].includes(a));
         }
 
         function buildGraphicGlobeTexture(geoData) {
@@ -591,6 +716,47 @@
             arcPulses = [];
 
             if (arcDirection === 'none') {
+                globeGroup.add(arcsGroup);
+                return;
+            }
+
+            // New A -> B mode: only used when both route countries are selected.
+            // If either side is empty, the original arc system below remains unchanged.
+            const routeFrom = WORLD_COUNTRIES.find(c => c.code === arcFromCountryCode);
+            const routeTo = WORLD_COUNTRIES.find(c => c.code === arcToCountryCode);
+
+            if (routeFrom && routeTo && routeFrom.code !== routeTo.code) {
+                const fromPos = latLongToVector3(routeFrom.lat, routeFrom.lon, 80.5);
+                const toPos = latLongToVector3(routeTo.lat, routeTo.lon, 80.5);
+
+                let startPos = arcDirection === 'inside' ? toPos : fromPos;
+                let endPos = arcDirection === 'inside' ? fromPos : toPos;
+
+                const mid = new THREE.Vector3().addVectors(startPos, endPos).multiplyScalar(0.5);
+                const distance = startPos.distanceTo(endPos);
+                mid.normalize().multiplyScalar(80.5 + distance * 0.28);
+                const curve = new THREE.QuadraticBezierCurve3(startPos, mid, endPos);
+
+                const tubeGeo = new THREE.TubeGeometry(curve, 64, 0.30, 10, false);
+                const tubeMat = new THREE.MeshBasicMaterial({
+                    color: new THREE.Color(currentTheme.strong),
+                    transparent: true,
+                    opacity: 0.92
+                });
+                arcsGroup.add(new THREE.Mesh(tubeGeo, tubeMat));
+
+                const pulseGeo = new THREE.SphereGeometry(1.25, 18, 18);
+                const pulseMat = new THREE.MeshBasicMaterial({ color: new THREE.Color(currentTheme.warm) });
+                const pulseMesh = new THREE.Mesh(pulseGeo, pulseMat);
+                arcsGroup.add(pulseMesh);
+
+                arcPulses.push({
+                    curve,
+                    pulseMesh,
+                    progress: 0,
+                    speed: 0.005
+                });
+
                 globeGroup.add(arcsGroup);
                 return;
             }
@@ -740,7 +906,7 @@
                     const card = document.getElementById('country-card');
                     card.classList.remove('opacity-100');
                     card.classList.add('opacity-0', 'pointer-events-none');
-                }, 4000);
+                }, 1500);
             }
         }
 
@@ -800,7 +966,108 @@
             requestAnimationFrame(animateCam);
         }
 
+        function getArcSearchMatches(query) {
+            const q = String(query || '').trim().toLowerCase();
+            if (!q) return WORLD_COUNTRIES.slice(0, 12);
+
+            return WORLD_COUNTRIES.filter(country => {
+                const name = String(country.name || '').toLowerCase();
+                const kurdish = String(country.kurdish || '').toLowerCase();
+                const code = String(country.code || '').toLowerCase();
+                const capital = String(country.capital || '').toLowerCase();
+                return name.includes(q) || kurdish.includes(q) || code.includes(q) || capital.includes(q);
+            }).slice(0, 12);
+        }
+
+        function renderArcCountryResults(inputId, resultsId, matches, side) {
+            const results = document.getElementById(resultsId);
+            if (!results) return;
+
+            results.innerHTML = matches.map(country => `
+                <button type="button" class="w-full text-left px-3 py-2 hover:bg-amber-900/60 transition text-amber-100 text-[10px] flex items-center justify-between gap-2" data-arc-code="${country.code}">
+                    <span class="truncate">${country.name}</span>
+                    <span class="text-amber-400/70 text-[9px]">${country.code}</span>
+                </button>
+            `).join('');
+
+            results.querySelectorAll('[data-arc-code]').forEach(button => {
+                button.addEventListener('click', () => {
+                    const country = WORLD_COUNTRIES.find(c => c.code === button.dataset.arcCode);
+                    if (!country) return;
+
+                    document.getElementById(inputId).value = country.name;
+                    if (side === 'from') arcFromCountryCode = country.code;
+                    if (side === 'to') arcToCountryCode = country.code;
+
+                    results.classList.add('hidden');
+                    buildArcConnections();
+                    handleUserActivity();
+                });
+            });
+
+            results.classList.toggle('hidden', matches.length === 0);
+        }
+
+        function setupArcRouteSearch(inputId, resultsId, side) {
+            const input = document.getElementById(inputId);
+            const results = document.getElementById(resultsId);
+            if (!input || !results) return;
+
+            input.addEventListener('focus', () => {
+                renderArcCountryResults(inputId, resultsId, getArcSearchMatches(input.value), side);
+            });
+
+            input.addEventListener('input', () => {
+                // Typing a new value clears the old selected route endpoint until a country is chosen.
+                if (side === 'from') arcFromCountryCode = null;
+                if (side === 'to') arcToCountryCode = null;
+                renderArcCountryResults(inputId, resultsId, getArcSearchMatches(input.value), side);
+                buildArcConnections();
+                handleUserActivity();
+            });
+
+            input.addEventListener('keydown', event => {
+                if (event.key === 'Enter') {
+                    const matches = getArcSearchMatches(input.value);
+                    if (matches.length) {
+                        const country = matches[0];
+                        input.value = country.name;
+                        if (side === 'from') arcFromCountryCode = country.code;
+                        if (side === 'to') arcToCountryCode = country.code;
+                        results.classList.add('hidden');
+                        buildArcConnections();
+                        handleUserActivity();
+                    }
+                }
+                if (event.key === 'Escape') results.classList.add('hidden');
+            });
+
+            document.addEventListener('click', event => {
+                if (!input.contains(event.target) && !results.contains(event.target)) {
+                    results.classList.add('hidden');
+                }
+            });
+        }
+
+        function clearArcRoute() {
+            arcFromCountryCode = null;
+            arcToCountryCode = null;
+            const from = document.getElementById('arc-from-search');
+            const to = document.getElementById('arc-to-search');
+            if (from) from.value = '';
+            if (to) to.value = '';
+            document.getElementById('arc-from-results')?.classList.add('hidden');
+            document.getElementById('arc-to-results')?.classList.add('hidden');
+            buildArcConnections();
+            handleUserActivity();
+        }
+
         function setupUIInteractions() {
+            // Directed Arc A -> B country search controls
+            setupArcRouteSearch('arc-from-search', 'arc-from-results', 'from');
+            setupArcRouteSearch('arc-to-search', 'arc-to-results', 'to');
+            document.getElementById('btn-arcs-clear-route')?.addEventListener('click', clearArcRoute);
+
             // Theme Select
             document.querySelectorAll('.theme-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
@@ -922,9 +1189,9 @@
 
                 const filtered = WORLD_COUNTRIES.filter(c => 
                     c.name.toLowerCase().includes(query) || 
-                    c.kurdish.includes(query) ||
+                    c.kurdish.toLowerCase().includes(query) ||
                     c.code.toLowerCase().includes(query)
-                );
+                ).slice(0, 20);
 
                 if (filtered.length === 0) {
                     searchResults.classList.add('hidden');
@@ -950,6 +1217,33 @@
                 });
 
                 searchResults.classList.remove('hidden');
+            });
+
+            // Press Enter to immediately select an exact match or the first result.
+            searchInput.addEventListener('keydown', (e) => {
+                if (e.key !== 'Enter') return;
+
+                const query = searchInput.value.toLowerCase().trim();
+                if (!query) return;
+
+                const exact = WORLD_COUNTRIES.find(c =>
+                    c.name.toLowerCase() === query ||
+                    c.code.toLowerCase() === query ||
+                    c.kurdish.toLowerCase() === query
+                );
+
+                const first = exact || WORLD_COUNTRIES.find(c =>
+                    c.name.toLowerCase().includes(query) ||
+                    c.code.toLowerCase().includes(query) ||
+                    c.kurdish.toLowerCase().includes(query)
+                );
+
+                if (first) {
+                    focusOnCountry(first);
+                    searchInput.value = first.name;
+                    searchResults.classList.add('hidden');
+                    searchInput.blur();
+                }
             });
         }
 
