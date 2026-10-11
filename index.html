@@ -180,6 +180,218 @@
 
         @media (max-width: 1100px) { .theme-palette { max-width: 240px; } }
     </style>
+
+    <style> 
+/* =========================================
+   GLASS BROADCAST TITLE SYSTEM
+   Left panel | Clear center | Right panel
+========================================= */
+
+:root {
+    --glass-tint: 255, 255, 255;
+    --glass-opacity: 0.13;
+    --glass-darkness: 0.32;
+    --glass-blur: 18px;
+    --glass-brightness: 1.12;
+    --glass-border-opacity: 0.42;
+}
+
+.glass-foreground {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(160px, 36vw) minmax(0, 1fr);
+    align-items: center;
+    gap: clamp(10px, 2vw, 32px);
+    padding: clamp(20px, 3vw, 54px);
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.glass-center-clear {
+    min-width: 0;
+    height: 100%;
+    pointer-events: none;
+}
+
+.glass-title-panel {
+    position: relative;
+    min-width: 0;
+    padding: clamp(14px, 2vw, 28px);
+    overflow: hidden;
+    color: #fff;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(var(--glass-tint), var(--glass-opacity)),
+            rgba(0, 0, 0, var(--glass-darkness))
+        );
+
+    backdrop-filter:
+        blur(var(--glass-blur))
+        brightness(var(--glass-brightness));
+    -webkit-backdrop-filter:
+        blur(var(--glass-blur))
+        brightness(var(--glass-brightness));
+
+    border: 1px solid
+        rgba(var(--glass-tint), var(--glass-border-opacity));
+
+    border-radius: 18px;
+
+    box-shadow:
+        0 12px 42px rgba(0, 0, 0, 0.22),
+        inset 0 1px 0 rgba(255, 255, 255, 0.22),
+        0 0 24px var(--theme-glow);
+
+    animation: glass-title-enter 900ms ease both;
+}
+
+.glass-title-panel::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(
+        115deg,
+        rgba(255,255,255,0.18),
+        transparent 35%,
+        transparent 70%,
+        rgba(var(--glass-tint),0.08)
+    );
+}
+
+.glass-title-left {
+    justify-self: start;
+    width: 100%;
+    max-width: 390px;
+    border-left: 3px solid var(--theme-accent);
+}
+
+.glass-title-right {
+    justify-self: end;
+    width: 100%;
+    max-width: 390px;
+    text-align: right;
+    border-right: 3px solid var(--theme-accent);
+}
+
+.glass-eyebrow {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    color: var(--theme-soft);
+    font-size: clamp(8px, 0.75vw, 11px);
+    font-weight: 800;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+}
+
+.glass-eyebrow-right {
+    justify-content: flex-end;
+}
+
+.glass-live-dot {
+    width: 7px;
+    height: 7px;
+    flex: 0 0 7px;
+    border-radius: 50%;
+    background: var(--theme-accent);
+    box-shadow: 0 0 12px var(--theme-accent);
+}
+
+.glass-title-panel h1,
+.glass-title-panel h2 {
+    position: relative;
+    margin: 13px 0 7px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(19px, 2.1vw, 36px);
+    font-weight: 900;
+    line-height: 1.15;
+    letter-spacing: 0.045em;
+    overflow-wrap: anywhere;
+    text-shadow: 0 2px 18px rgba(0,0,0,0.55);
+}
+
+.glass-title-panel p {
+    position: relative;
+    margin: 0;
+    color: rgba(255,255,255,0.78);
+    font-size: clamp(10px, 0.9vw, 13px);
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+}
+
+.glass-title-line {
+    position: relative;
+    width: 54px;
+    height: 2px;
+    margin-top: 18px;
+    background: var(--theme-accent);
+    box-shadow: 0 0 12px var(--theme-accent);
+}
+
+.glass-title-right .glass-title-line {
+    margin-left: auto;
+}
+
+@keyframes glass-title-enter {
+    from {
+        opacity: 0;
+        transform: translateY(14px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Mobile: preserve a clear globe area */
+@media (max-width: 760px) {
+    .glass-foreground {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        align-content: end;
+        align-items: end;
+        gap: 10px;
+        padding: 12px;
+        padding-bottom: 8vh;
+    }
+
+    .glass-center-clear {
+        display: none;
+    }
+
+    .glass-title-panel {
+        padding: 12px;
+        border-radius: 12px;
+    }
+
+    .glass-title-panel h1,
+    .glass-title-panel h2 {
+        font-size: clamp(14px, 3vw, 22px);
+        margin-top: 9px;
+    }
+
+    .glass-title-panel p {
+        font-size: 10px;
+    }
+
+    .glass-eyebrow {
+        font-size: 8px;
+        letter-spacing: 0.08em;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .glass-title-panel {
+        animation: none;
+    }
+}
+    </style>
+    
 </head>
 <body>
     <div class="studio-container">
@@ -351,6 +563,122 @@
         </div>
     </div>
 
+    
+<!-- GLASS BROADCAST FOREGROUND: LEFT / OPEN CENTER / RIGHT -->
+<div id="glass-foreground" class="glass-foreground">
+
+    <section class="glass-title-panel glass-title-left">
+        <div class="glass-eyebrow">
+            <span class="glass-live-dot"></span>
+            <span id="glass-left-kicker">GLOBAL NEWS</span>
+        </div>
+        <h1 id="glass-left-title">WORLD</h1>
+        <p id="glass-left-subtitle">Connecting the world</p>
+        <div class="glass-title-line"></div>
+    </section>
+
+    <!-- Keep the center clear for the 3D globe -->
+    <div class="glass-center-clear" aria-hidden="true"></div>
+
+    <section class="glass-title-panel glass-title-right">
+        <div class="glass-eyebrow glass-eyebrow-right">
+            <span id="glass-right-kicker">LIVE CONNECTIONS</span>
+            <span class="glass-live-dot"></span>
+        </div>
+        <h2 id="glass-right-title">NWEZHYAN</h2>
+        <p id="glass-right-subtitle">Global Broadcast Studio</p>
+        <div class="glass-title-line"></div>
+    </section>
+
+</div>
+
+<script> 
+/* GLASS MATERIAL CONTROLS */
+const glassRoot = document.documentElement;
+
+const glassColorPicker = document.getElementById('glass-color-picker');
+const glassLightSlider = document.getElementById('glass-light');
+const glassDarkSlider = document.getElementById('glass-darkness');
+const glassOpacitySlider = document.getElementById('glass-opacity');
+const glassBlurSlider = document.getElementById('glass-blur');
+
+function hexToGlassRgb(hex) {
+    const value = parseInt(hex.replace('#', ''), 16);
+    return `${(value >> 16) & 255},${(value >> 8) & 255},${value & 255}`;
+}
+
+function updateGlassControl(slider, outputId, suffix, applyValue) {
+    if (!slider) return;
+
+    const update = () => {
+        const value = Number(slider.value);
+        document.getElementById(outputId).textContent = `${value}${suffix}`;
+        applyValue(value);
+    };
+
+    slider.addEventListener('input', () => {
+        update();
+        handleUserActivity();
+    });
+
+    update();
+}
+
+// Glass tint color
+if (glassColorPicker) {
+    glassColorPicker.addEventListener('input', () => {
+        glassRoot.style.setProperty(
+            '--glass-tint',
+            hexToGlassRgb(glassColorPicker.value)
+        );
+        handleUserActivity();
+    });
+}
+
+// Glass brightness
+updateGlassControl(
+    glassLightSlider,
+    'glass-light-value',
+    '%',
+    value => glassRoot.style.setProperty(
+        '--glass-brightness',
+        (value / 100).toFixed(2)
+    )
+);
+
+// Glass darkness
+updateGlassControl(
+    glassDarkSlider,
+    'glass-darkness-value',
+    '%',
+    value => glassRoot.style.setProperty(
+        '--glass-darkness',
+        (value / 100).toFixed(2)
+    )
+);
+
+// Glass transparency
+updateGlassControl(
+    glassOpacitySlider,
+    'glass-opacity-value',
+    '%',
+    value => glassRoot.style.setProperty(
+        '--glass-opacity',
+        (value / 100).toFixed(2)
+    )
+);
+
+// Glass blur
+updateGlassControl(
+    glassBlurSlider,
+    'glass-blur-value',
+    'px',
+    value => glassRoot.style.setProperty(
+        '--glass-blur',
+        `${value}px`
+    )
+);
+</script>
     <script>
         let scene, camera, renderer, controls;
         let globeGroup, earthMesh, borderLinesGroup, arcsGroup, pinsGroup;
