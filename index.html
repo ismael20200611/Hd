@@ -201,6 +201,14 @@
             box-shadow: 0 0 10px var(--theme-glow);
         }
 
+        /* Toggle switch active state */
+        .toggle-active {
+            background: rgba(255, 153, 0, 0.3) !important;
+            border-color: var(--theme-accent) !important;
+            color: #fff !important;
+            box-shadow: 0 0 10px var(--theme-glow);
+        }
+
         @media (max-width: 1100px) { .theme-palette { max-width: 240px; } }
     </style>
 
@@ -231,6 +239,14 @@
     padding: clamp(20px, 3vw, 54px);
     pointer-events: none;
     overflow: hidden;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* Hidden state for Glass Foreground panel */
+.glass-foreground.glass-panel-hidden {
+    opacity: 0 !important;
+    pointer-events: none !important;
+    transform: translateY(20px);
 }
 
 /* Clear center slot for globe visibility */
@@ -465,6 +481,39 @@
                     <div id="search-results" class="absolute left-0 top-11 w-full glass-panel rounded-xl max-h-52 overflow-y-auto hidden z-40 divide-y divide-amber-800/40"></div>
                 </div>
 
+                <!-- NEW FEATURE 1: GLASS TITLE PANEL CONTROLS (COLOR, LIGHT/DARK LEVEL, BLUR, ON/OFF TOGGLE) -->
+                <div class="flex items-center gap-2 px-2.5 py-1.5 rounded-xl bg-black/60 border border-amber-500/30">
+                    <span class="text-[9px] text-amber-300/90 font-bold tracking-wider flex items-center gap-1">
+                        <i class="fa-solid fa-window-restore text-amber-400"></i> GLASS
+                    </span>
+
+                    <!-- Glass Color Picker -->
+                    <input id="glass-color-picker" type="color" value="#ffffff" class="w-5 h-5 rounded cursor-pointer border-0 p-0 bg-transparent" title="Glass Panel Color Tint">
+
+                    <!-- Glass Light/Dark Level Slider -->
+                    <div class="ctrl-slider-group min-w-0" style="padding: 2px 6px; min-width: 90px;">
+                        <label for="glass-light"><span>LEVEL</span> <span id="glass-light-value">112%</span></label>
+                        <input id="glass-light" type="range" min="20" max="250" value="112">
+                    </div>
+
+                    <!-- Glass Blur Slider -->
+                    <div class="ctrl-slider-group min-w-0" style="padding: 2px 6px; min-width: 80px;">
+                        <label for="glass-blur"><span>BLUR</span> <span id="glass-blur-value">18px</span></label>
+                        <input id="glass-blur" type="range" min="0" max="40" value="18">
+                    </div>
+
+                    <!-- Hidden inputs for opacity and darkness logic -->
+                    <input id="glass-darkness" type="range" min="0" max="100" value="32" class="hidden">
+                    <span id="glass-darkness-value" class="hidden">32%</span>
+                    <input id="glass-opacity" type="range" min="0" max="100" value="13" class="hidden">
+                    <span id="glass-opacity-value" class="hidden">13%</span>
+
+                    <!-- NEW FEATURE 2: GLASS TITLE PANEL ON / OFF TOGGLE SWITCH -->
+                    <button id="btn-toggle-glass-panel" class="toggle-active text-amber-200 border border-amber-500/40 px-2 py-1 rounded-lg text-xs font-bold flex items-center gap-1 transition" title="Toggle Glass Title Panel On/Off">
+                        <i class="fa-solid fa-power-off text-amber-400"></i> <span id="glass-toggle-status">ON</span>
+                    </button>
+                </div>
+
                 <!-- Color Palette -->
                 <div class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-black/60 border border-amber-500/20">
                     <span class="text-[9px] text-amber-300/80 font-bold tracking-wider mr-1">COLOR</span>
@@ -643,6 +692,12 @@ const glassLightSlider = document.getElementById('glass-light');
 const glassDarkSlider = document.getElementById('glass-darkness');
 const glassOpacitySlider = document.getElementById('glass-opacity');
 const glassBlurSlider = document.getElementById('glass-blur');
+const glassToggleBtn = document.getElementById('btn-toggle-glass-panel');
+const glassForeground = document.getElementById('glass-foreground');
+const glassToggleStatus = document.getElementById('glass-toggle-status');
+
+/* State variable for Glass Title Panel visibility switch */
+let isGlassPanelVisible = true;
 
 /* Convert hex color string to RGB comma-separated string */
 function hexToGlassRgb(hex) {
@@ -656,7 +711,8 @@ function updateGlassControl(slider, outputId, suffix, applyValue) {
 
     const update = () => {
         const value = Number(slider.value);
-        document.getElementById(outputId).textContent = `${value}${suffix}`;
+        const out = document.getElementById(outputId);
+        if (out) out.textContent = `${value}${suffix}`;
         applyValue(value);
     };
 
@@ -668,7 +724,7 @@ function updateGlassControl(slider, outputId, suffix, applyValue) {
     update();
 }
 
-/* Event listener for glass color picker */
+/* Event listener for glass color picker tint feature */
 if (glassColorPicker) {
     glassColorPicker.addEventListener('input', () => {
         glassRoot.style.setProperty(
@@ -679,7 +735,7 @@ if (glassColorPicker) {
     });
 }
 
-/* Bind glass brightness control */
+/* Bind glass light level control */
 updateGlassControl(
     glassLightSlider,
     'glass-light-value',
@@ -690,7 +746,7 @@ updateGlassControl(
     )
 );
 
-/* Bind glass darkness control */
+/* Bind glass darkness level control */
 updateGlassControl(
     glassDarkSlider,
     'glass-darkness-value',
@@ -712,7 +768,7 @@ updateGlassControl(
     )
 );
 
-/* Bind glass blur control */
+/* Bind glass blur strength control */
 updateGlassControl(
     glassBlurSlider,
     'glass-blur-value',
@@ -722,6 +778,23 @@ updateGlassControl(
         `${value}px`
     )
 );
+
+/* NEW FEATURE 2: On/Off Toggle functionality for Glass Broadcast Title Panels */
+if (glassToggleBtn && glassForeground) {
+    glassToggleBtn.addEventListener('click', () => {
+        isGlassPanelVisible = !isGlassPanelVisible;
+        if (isGlassPanelVisible) {
+            glassForeground.classList.remove('glass-panel-hidden');
+            glassToggleBtn.classList.add('toggle-active');
+            if (glassToggleStatus) glassToggleStatus.textContent = "ON";
+        } else {
+            glassForeground.classList.add('glass-panel-hidden');
+            glassToggleBtn.classList.remove('toggle-active');
+            if (glassToggleStatus) glassToggleStatus.textContent = "OFF";
+        }
+        handleUserActivity();
+    });
+}
 </script>
 
     <script>
