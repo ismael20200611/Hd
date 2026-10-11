@@ -1,27 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Define character encoding for the document -->
     <meta charset="UTF-8">
+    <!-- Ensure responsive scaling across different device viewports -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Page title displayed in browser tab -->
     <title>3D World HD Globe Background - Studio Edition</title>
     
-    <!-- Tailwind CSS -->
+    <!-- Load Tailwind CSS framework for utility classes -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Three.js Library -->
+    <!-- Load Three.js library for 3D graphics rendering -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <!-- OrbitControls -->
+    <!-- Load OrbitControls plugin for Three.js camera movement -->
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
-    <!-- D3.js & TopoJSON -->
+    <!-- Load D3.js library for geographical projections and path calculations -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+    <!-- Load TopoJSON library to decode geographical topology data -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
-    <!-- FontAwesome Icons -->
+    <!-- Load FontAwesome icons for UI symbols and buttons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
+        /* Import Google Fonts: Orbitron for tech headers, Inter for UI text, Noto Sans Arabic for Kurdish text */
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800;900&family=Inter:wght@300;400;600;700&family=Noto+Sans+Arabic:wght@400;700;900&display=swap');
 
         :root {
-            /* Rudaw Default Theme Setup */
+            /* Initialize CSS variables for Rudaw Default Theme Setup */
             --theme-accent: #ff9900;
             --theme-strong: #ffaa00;
             --theme-warm: #ffdd00;
@@ -39,6 +44,7 @@
             --background-flare-opacity: 0.55;
         }
 
+        /* Set baseline body and html layout properties */
         body, html {
             margin: 0;
             padding: 0;
@@ -52,8 +58,10 @@
             cursor: default;
         }
 
+        /* Utility class for Orbitron font family */
         .font-orbitron { font-family: 'Orbitron', sans-serif; }
 
+        /* Main Studio Container layout */
         .studio-container {
             width: 100vw;
             height: 100vh;
@@ -64,6 +72,7 @@
             justify-content: space-between;
         }
 
+        /* Radial gradient background overlay for depth */
         .studio-container::after {
             content: "";
             position: absolute;
@@ -74,6 +83,7 @@
             filter: brightness(var(--background-brightness));
         }
 
+        /* Ambient background side illumination lighting effects */
         .studio-container::before {
             content: "";
             position: absolute;
@@ -87,6 +97,7 @@
             filter: blur(12px) brightness(var(--background-brightness));
         }
 
+        /* Tech grid overlay styling */
         .tech-grid {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -99,20 +110,24 @@
             z-index: 1;
         }
 
+        /* Left side glowing light flare */
         .flare-left {
             position: absolute; top: -20%; left: 5%; width: 800px; height: 800px;
             background: radial-gradient(circle, rgba(var(--theme-accent-rgb, 255,153,0), .42) 0%, rgba(0, 0, 0, 0) 70%);
             filter: blur(65px); pointer-events: none; z-index: 1; opacity: var(--background-flare-opacity);
         }
 
+        /* Right side glowing light flare */
         .flare-right {
             position: absolute; bottom: -20%; right: 5%; width: 800px; height: 800px;
             background: radial-gradient(circle, rgba(var(--theme-warm-rgb, 255,221,0), .34) 0%, rgba(0, 0, 0, 0) 70%);
             filter: blur(65px); pointer-events: none; z-index: 1; opacity: var(--background-flare-opacity);
         }
 
+        /* 3D Canvas container wrapper */
         #canvas-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; }
 
+        /* Glassmorphism panel styling */
         .glass-panel {
             background: rgba(15, 12, 10, 0.88);
             backdrop-filter: blur(20px);
@@ -121,6 +136,7 @@
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
         }
 
+        /* Gold-tinted glass panel styling */
         .glass-gold {
             background: rgba(30, 18, 5, 0.92);
             backdrop-filter: blur(20px);
@@ -128,14 +144,17 @@
             box-shadow: 0 0 25px rgba(255, 153, 0, 0.35);
         }
 
+        /* Auto-hide transition utility for UI bars */
         .auto-hide-menu {
             transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1), transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
+        /* Custom scrollbar styles */
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: rgba(15, 10, 5, 0.5); }
         ::-webkit-scrollbar-thumb { background: rgba(255, 153, 0, 0.5); border-radius: 4px; }
 
+        /* Theme button selector styling */
         .theme-btn {
             width: 24px; height: 24px; padding: 2px; border-radius: 999px;
             border: 1px solid rgba(255,255,255,0.18); background: rgba(15,23,42,0.75);
@@ -147,6 +166,7 @@
         .color-dot { width: 14px; height: 14px; border-radius: 50%; display: block; }
         .theme-palette { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 4px; max-width: 320px; }
         
+        /* Custom color picker wrapper */
         .custom-color-btn {
             position: relative; width: 24px; height: 24px; padding: 2px; border-radius: 999px;
             border: 1px solid rgba(255,255,255,0.25); background: conic-gradient(red, yellow, lime, cyan, blue, magenta, red);
@@ -156,6 +176,7 @@
         .custom-color-btn .custom-dot { width: 14px; height: 14px; background: #ff9900; border: 1px solid rgba(255,255,255,.8); }
         .custom-color-btn input { position: absolute; inset: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer; }
 
+        /* Control slider group layout */
         .ctrl-slider-group {
             display: flex; flex-direction: column; gap: 4px; min-width: 130px; padding: 6px 10px;
             border-radius: 12px; background: rgba(5, 3, 2, 0.7); border: 1px solid rgba(255, 153, 0, 0.22);
@@ -163,6 +184,7 @@
         .ctrl-slider-group label { font-size: 9px; font-weight: 700; letter-spacing: .05em; color: var(--theme-soft); display: flex; justify-content: space-between; align-items: center; }
         .ctrl-slider-group input[type="range"] { width: 100%; accent-color: var(--theme-accent); cursor: pointer; height: 4px; }
 
+        /* Rudaw badge styling */
         .rudaw-btn-badge {
             background: linear-gradient(135deg, #ff9900 0%, #e65c00 100%);
             color: #fff; font-weight: 900; font-family: 'Orbitron', sans-serif;
@@ -171,6 +193,7 @@
         }
         .rudaw-btn-badge:hover { transform: scale(1.08); }
 
+        /* Active arc mode button styling */
         .arc-mode-btn.active {
             background: rgba(255, 153, 0, 0.3) !important;
             border-color: var(--theme-accent) !important;
@@ -196,6 +219,7 @@
     --glass-border-opacity: 0.42;
 }
 
+/* Foreground layout container grid */
 .glass-foreground {
     position: absolute;
     inset: 0;
@@ -209,12 +233,14 @@
     overflow: hidden;
 }
 
+/* Clear center slot for globe visibility */
 .glass-center-clear {
     min-width: 0;
     height: 100%;
     pointer-events: none;
 }
 
+/* Glass title panel styling */
 .glass-title-panel {
     position: relative;
     min-width: 0;
@@ -249,6 +275,7 @@
     animation: glass-title-enter 900ms ease both;
 }
 
+/* Subtle gradient sheen overlay on glass panels */
 .glass-title-panel::before {
     content: "";
     position: absolute;
@@ -263,6 +290,7 @@
     );
 }
 
+/* Left title panel positioning and border accent */
 .glass-title-left {
     justify-self: start;
     width: 100%;
@@ -270,6 +298,7 @@
     border-left: 3px solid var(--theme-accent);
 }
 
+/* Right title panel positioning and border accent */
 .glass-title-right {
     justify-self: end;
     width: 100%;
@@ -278,6 +307,7 @@
     border-right: 3px solid var(--theme-accent);
 }
 
+/* Eyebrow header text styling */
 .glass-eyebrow {
     position: relative;
     display: flex;
@@ -294,6 +324,7 @@
     justify-content: flex-end;
 }
 
+/* Live pulsing indicator dot */
 .glass-live-dot {
     width: 7px;
     height: 7px;
@@ -303,6 +334,7 @@
     box-shadow: 0 0 12px var(--theme-accent);
 }
 
+/* Main title headings typography */
 .glass-title-panel h1,
 .glass-title-panel h2 {
     position: relative;
@@ -316,6 +348,7 @@
     text-shadow: 0 2px 18px rgba(0,0,0,0.55);
 }
 
+/* Subtitle paragraph styling */
 .glass-title-panel p {
     position: relative;
     margin: 0;
@@ -325,6 +358,7 @@
     overflow-wrap: anywhere;
 }
 
+/* Decorative glowing bottom line */
 .glass-title-line {
     position: relative;
     width: 54px;
@@ -338,6 +372,7 @@
     margin-left: auto;
 }
 
+/* Panel entrance keyframes animation */
 @keyframes glass-title-enter {
     from {
         opacity: 0;
@@ -349,7 +384,7 @@
     }
 }
 
-/* Mobile: preserve a clear globe area */
+/* Mobile responsive adjustments */
 @media (max-width: 760px) {
     .glass-foreground {
         grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
@@ -394,11 +429,16 @@
     
 </head>
 <body>
+    <!-- Main Studio Wrapper Div -->
     <div class="studio-container">
+        <!-- Background tech grid pattern -->
         <div class="tech-grid"></div>
+        <!-- Left ambient background flare -->
         <div class="flare-left"></div>
+        <!-- Right ambient background flare -->
         <div class="flare-right"></div>
 
+        <!-- 3D Three.js WebGL canvas mount container -->
         <div id="canvas-container"></div>
 
         <!-- Main Studio Top Controller Bar -->
@@ -481,7 +521,7 @@
                         <input id="sky-color-picker" type="color" value="#3a1c02" class="w-full h-4 rounded cursor-pointer border-0 p-0 bg-transparent mt-0.5" title="Change Sky Background Color">
                     </div>
 
-                    <!-- Ambient BG Light (0 - 100%) -->
+                    <!-- Ambient BG Light (0 - 500%) -->
                     <div class="ctrl-slider-group">
                         <label for="background-brightness"><span><i class="fa-solid fa-lightbulb text-amber-300 mr-1"></i> BG LIGHT</span> <span id="brightness-value">100%</span></label>
                         <input id="background-brightness" type="range" min="0" max="500" value="100">
@@ -506,7 +546,7 @@
                         </button>
                     </div>
 
-                    <!-- Directed Arc Route: FROM -> TO. When both are empty, the original multi-country arcs remain. -->
+                    <!-- Directed Arc Route: FROM -> TO -->
                     <div class="flex items-center gap-1 bg-black/60 p-1 rounded-xl border border-amber-500/30">
                         <div class="relative">
                             <input id="arc-from-search" type="text" autocomplete="off"
@@ -567,6 +607,7 @@
 <!-- GLASS BROADCAST FOREGROUND: LEFT / OPEN CENTER / RIGHT -->
 <div id="glass-foreground" class="glass-foreground">
 
+    <!-- Left Broadcast Title Panel -->
     <section class="glass-title-panel glass-title-left">
         <div class="glass-eyebrow">
             <span class="glass-live-dot"></span>
@@ -577,9 +618,10 @@
         <div class="glass-title-line"></div>
     </section>
 
-    <!-- Keep the center clear for the 3D globe -->
+    <!-- Keep center clear for 3D globe -->
     <div class="glass-center-clear" aria-hidden="true"></div>
 
+    <!-- Right Broadcast Title Panel -->
     <section class="glass-title-panel glass-title-right">
         <div class="glass-eyebrow glass-eyebrow-right">
             <span id="glass-right-kicker">LIVE CONNECTIONS</span>
@@ -593,7 +635,7 @@
 </div>
 
 <script> 
-/* GLASS MATERIAL CONTROLS */
+/* GLASS MATERIAL CONTROLS SCRIPT */
 const glassRoot = document.documentElement;
 
 const glassColorPicker = document.getElementById('glass-color-picker');
@@ -602,11 +644,13 @@ const glassDarkSlider = document.getElementById('glass-darkness');
 const glassOpacitySlider = document.getElementById('glass-opacity');
 const glassBlurSlider = document.getElementById('glass-blur');
 
+/* Convert hex color string to RGB comma-separated string */
 function hexToGlassRgb(hex) {
     const value = parseInt(hex.replace('#', ''), 16);
     return `${(value >> 16) & 255},${(value >> 8) & 255},${value & 255}`;
 }
 
+/* Update glass CSS variables based on control input */
 function updateGlassControl(slider, outputId, suffix, applyValue) {
     if (!slider) return;
 
@@ -624,7 +668,7 @@ function updateGlassControl(slider, outputId, suffix, applyValue) {
     update();
 }
 
-// Glass tint color
+/* Event listener for glass color picker */
 if (glassColorPicker) {
     glassColorPicker.addEventListener('input', () => {
         glassRoot.style.setProperty(
@@ -635,7 +679,7 @@ if (glassColorPicker) {
     });
 }
 
-// Glass brightness
+/* Bind glass brightness control */
 updateGlassControl(
     glassLightSlider,
     'glass-light-value',
@@ -646,7 +690,7 @@ updateGlassControl(
     )
 );
 
-// Glass darkness
+/* Bind glass darkness control */
 updateGlassControl(
     glassDarkSlider,
     'glass-darkness-value',
@@ -657,7 +701,7 @@ updateGlassControl(
     )
 );
 
-// Glass transparency
+/* Bind glass opacity control */
 updateGlassControl(
     glassOpacitySlider,
     'glass-opacity-value',
@@ -668,7 +712,7 @@ updateGlassControl(
     )
 );
 
-// Glass blur
+/* Bind glass blur control */
 updateGlassControl(
     glassBlurSlider,
     'glass-blur-value',
@@ -679,7 +723,9 @@ updateGlassControl(
     )
 );
 </script>
+
     <script>
+        /* Core Three.js and Application State Variables */
         let scene, camera, renderer, controls;
         let globeGroup, earthMesh, borderLinesGroup, arcsGroup, pinsGroup;
         let mainSunLight, moonLight, ambientLight;
@@ -689,14 +735,14 @@ updateGlassControl(
         let worldGeoData = null;
         let highlightedCountryCode = "IRQ";
 
-        // Optional directed arc route. It only becomes active when BOTH countries are selected.
+        /* Directed Arc Route state variables */
         let arcFromCountryCode = null;
         let arcToCountryCode = null;
         
         const raycaster = new THREE.Raycaster();
         const mouse = new THREE.Vector2();
 
-        /* Theme Color Palettes (Including Rudaw Theme) */
+        /* Theme Color Palettes Definition */
         const THEMES = {
             rudaw:   { accent:'#ff9900', strong:'#ffaa00', warm:'#ffdd00', soft:'#ffcc66', glow:'rgba(255,153,0,.40)', bg1:'#3a1c02', bg2:'#1c0a00', bg3:'#0a0300', globe:'#7a3b00', country:'#4a2100', ocean:'#1a0a00', atmos:'#ffaa00' },
             gold:    { accent:'#ffd15c', strong:'#ffb300', warm:'#fff0a8', soft:'#ffe6a0', glow:'rgba(255,179,0,.30)', bg1:'#543b12', bg2:'#271b06', bg3:'#100b02', globe:'#9b6700', country:'#684500', ocean:'#2a1904', atmos:'#ffb300' },
@@ -716,7 +762,7 @@ updateGlassControl(
         let idleTimer = null;
         let isSearching = false;
 
-        // Initial fallback countries. The full 193 UN member states are loaded below.
+        /* Initial fallback country list */
         let WORLD_COUNTRIES = [
             { name: "Iraq", kurdish: "عێراق", capital: "Baghdad", lat: 33.31, lon: 44.36, region: "Asia", code: "IRQ" },
             { name: "United States", kurdish: "ویلایەتە یەکگرتووەکانی ئەمریکا", capital: "Washington, D.C.", lat: 38.90, lon: -77.03, region: "Americas", code: "USA" },
@@ -748,11 +794,12 @@ updateGlassControl(
             { name: "Qatar", kurdish: "قەتەر", capital: "Doha", lat: 25.28, lon: 51.53, region: "Asia", code: "QAT" }
         ];
 
-        // Kurdish names already supplied in the original project.
+        /* Map Kurdish country names */
         const KURDISH_NAMES = Object.fromEntries(
             WORLD_COUNTRIES.map(c => [c.code, c.kurdish])
         );
 
+        /* Asynchronously fetch UN countries dataset */
         async function loadAllUNCountries() {
             try {
                 const response = await fetch(
@@ -782,7 +829,6 @@ updateGlassControl(
                     WORLD_COUNTRIES = countries193;
                 }
 
-                // Keep Iraq selected by default, exactly like the original project.
                 highlightedCountryCode = "IRQ";
 
                 if (globeGroup) {
@@ -803,6 +849,7 @@ updateGlassControl(
             }
         }
 
+        /* Initialize 3D scene, camera, renderer, and controls */
         function init3D() {
             const container = document.getElementById('canvas-container');
             scene = new THREE.Scene();
@@ -829,20 +876,19 @@ updateGlassControl(
             globeGroup = new THREE.Group();
             scene.add(globeGroup);
 
-            // Lighting Setup
+            /* Ambient & Directional Lighting Setup */
             ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
             scene.add(ambientLight);
 
-            // Sun Light
             mainSunLight = new THREE.DirectionalLight(0xfffaed, 3.2);
             mainSunLight.position.set(200, 150, 200);
             scene.add(mainSunLight);
 
-            // Moon Light (Secondary Rim)
             moonLight = new THREE.DirectionalLight(0xffaa00, 1.8);
             moonLight.position.set(-200, -120, -150);
             scene.add(moonLight);
 
+            /* Load TopoJSON world geography dataset */
             fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json')
                 .then(response => response.json())
                 .then(topology => {
@@ -869,6 +915,7 @@ updateGlassControl(
             animate();
         }
 
+        /* Normalize country names for comparison */
         function normalizeCountryName(name) {
             return String(name || "")
                 .toLowerCase()
@@ -878,6 +925,7 @@ updateGlassControl(
                 .replace(/[^a-z0-9]+/g, "");
         }
 
+        /* Check if feature matches given country code */
         function isCountryMatch(feature, code) {
             if (!feature || !code) return false;
 
@@ -890,7 +938,6 @@ updateGlassControl(
             const a = normalizeCountryName(mapName);
             const b = normalizeCountryName(country.name);
 
-            // Common names used by the world-atlas dataset.
             const aliases = {
                 "USA": ["unitedstatesofamerica", "unitedstates"],
                 "GBR": ["unitedkingdom"],
@@ -919,6 +966,7 @@ updateGlassControl(
                 (aliases[code] && aliases[code].includes(a));
         }
 
+        /* Build procedural 2D canvas texture for the globe */
         function buildGraphicGlobeTexture(geoData) {
             if (earthMesh) {
                 globeGroup.remove(earthMesh);
@@ -971,6 +1019,7 @@ updateGlassControl(
             globeGroup.add(earthMesh);
         }
 
+        /* Build 3D vector border lines on the globe */
         function build3DVectorBorders(geoData) {
             if (!geoData) return;
             if (borderLinesGroup) globeGroup.remove(borderLinesGroup);
@@ -998,6 +1047,7 @@ updateGlassControl(
             globeGroup.add(borderLinesGroup);
         }
 
+        /* Build globe atmosphere halo mesh */
         function buildAtmosphere() {
             if (atmosphereMesh) scene.remove(atmosphereMesh);
             const atmosGeo = new THREE.SphereGeometry(86, 64, 64);
@@ -1011,6 +1061,7 @@ updateGlassControl(
             scene.add(atmosphereMesh);
         }
 
+        /* Build interactive 3D location pins */
         function buildCityPins() {
             if (pinsGroup) globeGroup.remove(pinsGroup);
             pinsGroup = new THREE.Group();
@@ -1038,6 +1089,7 @@ updateGlassControl(
             globeGroup.add(pinsGroup);
         }
 
+        /* Build curved connection arcs and animated pulses */
         function buildArcConnections() {
             if (arcsGroup) globeGroup.remove(arcsGroup);
             arcsGroup = new THREE.Group();
@@ -1048,8 +1100,6 @@ updateGlassControl(
                 return;
             }
 
-            // New A -> B mode: only used when both route countries are selected.
-            // If either side is empty, the original arc system below remains unchanged.
             const routeFrom = WORLD_COUNTRIES.find(c => c.code === arcFromCountryCode);
             const routeTo = WORLD_COUNTRIES.find(c => c.code === arcToCountryCode);
 
@@ -1120,6 +1170,7 @@ updateGlassControl(
             globeGroup.add(arcsGroup);
         }
 
+        /* Build background starfield particles */
         function buildStarfield() {
             const count = 900;
             const geometry = new THREE.BufferGeometry();
@@ -1135,6 +1186,7 @@ updateGlassControl(
             scene.add(starParticles);
         }
 
+        /* Create custom theme palette from hex color */
         function createCustomTheme(hex) {
             const color = new THREE.Color(hex);
             const hsl = {};
@@ -1169,6 +1221,7 @@ updateGlassControl(
             root.style.setProperty('--theme-warm-rgb', hexToRgbString(theme.warm));
         }
 
+        /* Apply theme object to scene and UI */
         function applyThemeObject(theme, name) {
             currentTheme = theme;
             const root = document.documentElement;
@@ -1182,7 +1235,6 @@ updateGlassControl(
             root.style.setProperty('--theme-bg-3', currentTheme.bg3);
             updateThemeRgbVariables(currentTheme);
 
-            // Sync Sky & Atmosphere Pickers
             const skyPicker = document.getElementById('sky-color-picker');
             const atmosPicker = document.getElementById('atmos-color-picker');
             if (skyPicker) skyPicker.value = currentTheme.bg1;
@@ -1205,6 +1257,7 @@ updateGlassControl(
             applyThemeObject(THEMES[name], name);
         }
 
+        /* Convert latitude and longitude to 3D Vector3 coordinates */
         function latLongToVector3(lat, lon, radius) {
             const phi = (90 - lat) * (Math.PI / 180);
             const theta = (lon + 180) * (Math.PI / 180);
@@ -1215,6 +1268,7 @@ updateGlassControl(
             );
         }
 
+        /* Handle user mouse and touch activity for UI auto-hide */
         function handleUserActivity(event) {
             if (event && event.type === 'mousemove') {
                 onHoverRaycast(event);
@@ -1238,6 +1292,7 @@ updateGlassControl(
             }
         }
 
+        /* Raycast hover detection for country pins */
         function onHoverRaycast(event) {
             mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
             mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
@@ -1257,6 +1312,7 @@ updateGlassControl(
             card.classList.add('opacity-0', 'pointer-events-none');
         }
 
+        /* Display country information card */
         function showCountryCard(data) {
             const card = document.getElementById('country-card');
             document.getElementById('card-country-name').textContent = data.name.toUpperCase();
@@ -1270,6 +1326,7 @@ updateGlassControl(
             card.classList.add('opacity-100');
         }
 
+        /* Smooth camera transition to focus on selected country */
         function focusOnCountry(country) {
             highlightedCountryCode = country.code;
             if (worldGeoData) {
@@ -1346,7 +1403,6 @@ updateGlassControl(
             });
 
             input.addEventListener('input', () => {
-                // Typing a new value clears the old selected route endpoint until a country is chosen.
                 if (side === 'from') arcFromCountryCode = null;
                 if (side === 'to') arcToCountryCode = null;
                 renderArcCountryResults(inputId, resultsId, getArcSearchMatches(input.value), side);
@@ -1390,13 +1446,12 @@ updateGlassControl(
             handleUserActivity();
         }
 
+        /* Set up UI event listeners and interactive controls */
         function setupUIInteractions() {
-            // Directed Arc A -> B country search controls
             setupArcRouteSearch('arc-from-search', 'arc-from-results', 'from');
             setupArcRouteSearch('arc-to-search', 'arc-to-results', 'to');
             document.getElementById('btn-arcs-clear-route')?.addEventListener('click', clearArcRoute);
 
-            // Theme Select
             document.querySelectorAll('.theme-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
                     applyTheme(btn.dataset.theme);
@@ -1404,14 +1459,12 @@ updateGlassControl(
                 });
             });
 
-            // Custom Theme Color Picker
             document.getElementById('custom-color').addEventListener('input', (e) => {
                 applyThemeObject(createCustomTheme(e.target.value), 'custom');
                 document.querySelector('.custom-color-btn .custom-dot').style.background = e.target.value;
                 handleUserActivity();
             });
 
-            // Sun Light Slider (0 - 100%)
             const sunSlider = document.getElementById('sun-light');
             sunSlider.addEventListener('input', (e) => {
                 const val = Number(e.target.value);
@@ -1420,7 +1473,6 @@ updateGlassControl(
                 handleUserActivity();
             });
 
-            // Moon Light Slider (0 - 100%)
             const moonSlider = document.getElementById('moon-light');
             moonSlider.addEventListener('input', (e) => {
                 const val = Number(e.target.value);
@@ -1429,7 +1481,6 @@ updateGlassControl(
                 handleUserActivity();
             });
 
-            // Atmosphere Power Slider (0 - 100%)
             const atmosSlider = document.getElementById('atmos-power');
             atmosSlider.addEventListener('input', (e) => {
                 document.getElementById('atmos-val').textContent = `${e.target.value}%`;
@@ -1437,13 +1488,11 @@ updateGlassControl(
                 handleUserActivity();
             });
 
-            // Atmosphere Color Picker
             document.getElementById('atmos-color-picker').addEventListener('input', () => {
                 buildAtmosphere();
                 handleUserActivity();
             });
 
-            // Sky Background Color Picker
             document.getElementById('sky-color-picker').addEventListener('input', (e) => {
                 const root = document.documentElement;
                 root.style.setProperty('--theme-bg-1', e.target.value);
@@ -1452,7 +1501,6 @@ updateGlassControl(
                 handleUserActivity();
             });
 
-            // BG Light Intensity
             const bgLightSlider = document.getElementById('background-brightness');
             bgLightSlider.addEventListener('input', (e) => {
                 const val = Number(e.target.value);
@@ -1461,12 +1509,10 @@ updateGlassControl(
                 handleUserActivity();
             });
 
-            // Toggle Auto-Rotation
             document.getElementById('toggle-rotation').addEventListener('click', () => {
                 autoRotate = !autoRotate;
             });
 
-            // Arc Direction Toggle Buttons
             const btnInside = document.getElementById('btn-arcs-inside');
             const btnOutside = document.getElementById('btn-arcs-outside');
             const btnNone = document.getElementById('btn-arcs-none');
@@ -1496,7 +1542,6 @@ updateGlassControl(
                 focusOnCountry(WORLD_COUNTRIES[0]);
             });
 
-            // Country Search Bar
             const searchInput = document.getElementById('country-search');
             const searchResults = document.getElementById('search-results');
 
@@ -1547,7 +1592,6 @@ updateGlassControl(
                 searchResults.classList.remove('hidden');
             });
 
-            // Press Enter to immediately select an exact match or the first result.
             searchInput.addEventListener('keydown', (e) => {
                 if (e.key !== 'Enter') return;
 
@@ -1575,6 +1619,7 @@ updateGlassControl(
             });
         }
 
+        /* Handle window resize events */
         function onWindowResize() {
             const aspect = window.innerWidth / window.innerHeight;
             camera.aspect = aspect;
@@ -1583,6 +1628,7 @@ updateGlassControl(
             renderer.setSize(window.innerWidth, window.innerHeight);
         }
 
+        /* Main animation loop */
         function animate() {
             requestAnimationFrame(animate);
 
@@ -1601,6 +1647,7 @@ updateGlassControl(
             renderer.render(scene, camera);
         }
 
+        /* Trigger initialization on window load */
         window.onload = function() {
             init3D();
         };
